@@ -1,0 +1,118 @@
+apply plugin: 'com.android.application'
+def protoPath = 'src/main/proto'
+def wireGeneratedPath = 'build/generated/source/wire'
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+    defaultConfig {
+        applicationId "com.sendkoin.koincustomer"
+        minSdkVersion 15
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.android.support:gridlayout-v7:25.3.1'
+
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    // JUnit 4
+    testCompile 'junit:junit:4.12'
+    // Mockito
+    testCompile 'org.mockito:mockito-core:1.10.19'
+    // Roboelectric
+    testCompile "org.robolectric:robolectric:3.3.2"
+    // AssertJ
+    testCompile 'org.assertj:assertj-core:3.6.2'
+
+    // AndroidSwipeLayout
+    compile "com.daimajia.swipelayout:library:1.2.0@aar"
+
+    // FAB
+    compile 'com.getbase:floatingactionbutton:1.9.1'
+
+    // Dagger
+    compile "com.google.dagger:dagger:2.9"
+    annotationProcessor "com.google.dagger:dagger-compiler:2.9"
+    provided 'javax.annotation:jsr250-api:1.0'
+
+    testCompile "com.google.dagger:dagger:2.9"
+    testAnnotationProcessor 'com.google.dagger:dagger-compiler:2.9'
+
+    // Retrofit
+    compile 'com.squareup.retrofit2:retrofit:2.0.2'
+
+    // OkHttp
+    compile 'com.squareup.okhttp3:okhttp:3.2.0'
+    compile 'com.squareup.okio:okio:1.7.0'
+
+    // Gson
+    compile 'com.google.code.gson:gson:2.6.2'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.1'
+
+    // Butterknife
+    compile 'com.jakewharton:butterknife:8.5.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+
+    //RxJava
+    compile 'io.reactivex:rxjava:1.2.9'
+    compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.2.0'
+
+    // StorIO
+    compile 'com.pushtorefresh.storio:sqlite:1.12.3'
+    compile 'com.pushtorefresh.storio:content-resolver:1.12.3'
+    compile 'com.pushtorefresh.storio:sqlite-annotations:1.12.3'
+    annotationProcessor 'com.pushtorefresh.storio:sqlite-annotations-processor:1.12.3'
+    compile 'com.pushtorefresh.storio:content-resolver-annotations:1.12.3'
+    annotationProcessor 'com.pushtorefresh.storio:content-resolver-annotations-processor:1.12.3'
+
+    // Lightweight-Stream-API
+    compile 'com.annimon:stream:1.1.7'
+
+    // QrGen
+    compile 'com.github.kenglxn.QRGen:android:2.2.0'
+
+    // Calligraphy
+    compile 'uk.co.chrisjenx:calligraphy:2.2.0'
+
+    // Facebook SDK
+    compile 'com.facebook.android:facebook-android-sdk:[4,5)'
+
+    // Wire
+    compile 'com.squareup.wire:wire-runtime:2.2.0'
+}
+
+// This handles the protocol buffer generation with wire
+task generateWireClasses {
+    description = 'Generate Java classes from protocol buffer (.proto) schema files for use with squareup\'s wire library'
+    delete(wireGeneratedPath)
+    fileTree(dir: protoPath, include: '**/*.proto').each { File file ->
+        doLast {
+            javaexec {
+                main = 'com.squareup.wire.WireCompiler'
+                classpath = buildscript.configurations.classpath
+                args = ["--proto_path=${protoPath}", "--java_out=${wireGeneratedPath}", "${file}"]
+            }
+        }
+    }
+}
+
+preBuild.dependsOn generateWireClasses
