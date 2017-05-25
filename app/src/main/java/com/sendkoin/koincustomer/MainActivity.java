@@ -1,34 +1,38 @@
 package com.sendkoin.koincustomer;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
 
 import com.sendkoin.koincustomer.Payment.MainPaymentFragment;
 import com.sendkoin.koincustomer.Profile.MainProfileFragment;
 import com.sendkoin.koincustomer.Transfer.MainTransferFragment;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity {
 
-    ViewPager mMainViewPager;
-    TabLayout mMainTabLayout;
+    public static final String PAY = "Pay";
+    public static final String TRANSFER = "Transfer";
+    public static final String PROFILE = "Profile";
+
+    @BindView(R.id.main_view_pager) ViewPager mMainViewPager;
+    @BindView(R.id.main_tab_layout) TabLayout mMainTabLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+        setViewPagerWithTabLayout();
+        setUpBottomTabs();
+    }
 
-        mMainViewPager = (ViewPager) findViewById(R.id.main_view_pager);
-        mMainTabLayout = (TabLayout) findViewById(R.id.main_tab_layout);
-
+    private void setViewPagerWithTabLayout() {
         // remove the indicator
         mMainTabLayout.setSelectedTabIndicatorHeight(0);
         // connect Tab Layout with View Pager
@@ -57,7 +61,9 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+    }
 
+    private void setUpBottomTabs() {
         mMainTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -76,11 +82,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mMainTabLayout.setupWithViewPager(mMainViewPager);
-        mMainTabLayout.getTabAt(0).setText("Pay");
-        mMainTabLayout.getTabAt(1).setText("Transfer");
-        mMainTabLayout.getTabAt(2).setText("Profile");
-
-
+        mMainTabLayout.getTabAt(0).setText(PAY);
+        mMainTabLayout.getTabAt(1).setText(TRANSFER);
+        mMainTabLayout.getTabAt(2).setText(PROFILE);
     }
 
 }

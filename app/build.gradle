@@ -1,6 +1,11 @@
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'realm-android'
+
+
 def protoPath = 'src/main/proto'
 def wireGeneratedPath = 'build/generated/source/wire'
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
@@ -17,6 +22,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -70,6 +79,11 @@ dependencies {
     // Butterknife
     compile 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+
+    // ZXing Barcode
+    compile 'me.dm7.barcodescanner:zxing:1.8.4'
+    compile 'me.dm7.barcodescanner:zbar:1.9.2'
+    compile 'com.journeyapps:zxing-android-embedded:3.5.0'
 
     //RxJava
     compile 'io.reactivex:rxjava:1.2.9'

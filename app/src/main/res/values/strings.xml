@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Koin</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="scanned">Scanned:</string>
+    <string name="qr_scanner_dialog_title">Buy</string>
+    <string name="alert_dialog_create">Pay</string>
+    <string name="alert_dialog_cancel">Cancel</string>
 </resources>
