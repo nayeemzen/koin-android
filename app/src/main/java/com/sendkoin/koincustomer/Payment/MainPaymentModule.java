@@ -1,6 +1,7 @@
 package com.sendkoin.koincustomer.Payment;
 
 import com.sendkoin.koincustomer.Data.Dagger.CustomScope;
+import com.sendkoin.koincustomer.Data.Payments.Local.LocalPaymentDataStore;
 
 import dagger.Module;
 import dagger.Provides;
@@ -27,8 +28,8 @@ public class MainPaymentModule {
 
     @Provides
     @CustomScope
-    MainPaymentContract.Presenter providesMainPaymentPresenter(MainPaymentContract.View view){
-        return new MainPaymentPresenter(view);
+    MainPaymentContract.Presenter providesMainPaymentPresenter(MainPaymentContract.View view, LocalPaymentDataStore localPaymentDataStore){
+        return new MainPaymentPresenter(view, localPaymentDataStore);
     }
 }
 

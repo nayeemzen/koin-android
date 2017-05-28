@@ -8,6 +8,7 @@ import com.sendkoin.koincustomer.Data.Dagger.Module.AppModule;
 import com.sendkoin.koincustomer.Data.Dagger.Module.NetModule;
 
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 /**
@@ -35,7 +36,10 @@ public class KoinApplication extends Application{
                 .setFontAttrId(R.attr.fontPath)
                 .build());
 
+
         Realm.init(getApplicationContext());
+        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();
+        Realm.setDefaultConfiguration(realmConfiguration);
     }
 
     public NetComponent getNetComponent() {

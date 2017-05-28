@@ -15,9 +15,34 @@ import io.realm.RealmObject;
 public class Payment extends RealmObject{
 
     public Integer id;
-    public String transactionId;
-    public Integer totalPrice;
-    public String merchantName;
+    private String transactionId;
+    private Integer totalPrice;
+    private String merchantName;
+    private String merchantType;
+    private String date;
+
+
+
+    public String getMerchantType() {
+      return merchantType;
+    }
+
+    public Payment setMerchantType(String merchantType) {
+      this.merchantType = merchantType;
+      return this;
+    }
+
+
+    public String getDate() {
+      return date;
+    }
+
+
+    public Payment setDate(String date) {
+      this.date = date;
+      return this;
+    }
+
 
     public Payment() {
     }

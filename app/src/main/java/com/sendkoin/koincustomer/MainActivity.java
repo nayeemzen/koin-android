@@ -1,18 +1,27 @@
 package com.sendkoin.koincustomer;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.sendkoin.koincustomer.Payment.MainPaymentFragment;
 import com.sendkoin.koincustomer.Profile.MainProfileFragment;
 import com.sendkoin.koincustomer.Transfer.MainTransferFragment;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,6 +39,14 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setViewPagerWithTabLayout();
         setUpBottomTabs();
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Payments");
+        }
+
+    }
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     private void setViewPagerWithTabLayout() {
@@ -68,6 +85,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mMainViewPager.setCurrentItem(tab.getPosition());
+
+                if (getSupportActionBar() != null){
+                    if (tab.getPosition()==0)
+                        getSupportActionBar().setTitle("Payments");
+                    else if (tab.getPosition()==1)
+                        getSupportActionBar().setTitle("Transfers");
+                    else
+                        getSupportActionBar().setTitle("Profile");
+                }
+
+
             }
 
             @Override
@@ -87,4 +115,24 @@ public class MainActivity extends AppCompatActivity {
         mMainTabLayout.getTabAt(2).setText(PROFILE);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_search, menu);
+        MenuItem searchViewItem = menu.findItem(R.id.action_search);
+        final SearchView searchViewAndroidActionBar = (SearchView) MenuItemCompat.getActionView(searchViewItem);
+        searchViewAndroidActionBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchViewAndroidActionBar.clearFocus();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
+    }
 }

@@ -12,5 +12,5 @@ import dagger.Component;
 @CustomScope
 @Component(dependencies = NetComponent.class, modules = MainPaymentModule.class)
 public interface MainPaymentComponent {
-    void inject (MainPaymentContract.View view);
+    void inject (MainPaymentFragment mainPaymentFragment);
 }

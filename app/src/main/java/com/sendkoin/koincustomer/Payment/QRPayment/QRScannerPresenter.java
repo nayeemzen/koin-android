@@ -42,11 +42,14 @@ public class QRScannerPresenter  implements QRScannerContract.Presenter{
     String merchant_id = paymentJson.has(MERCHANT_ID) ? paymentJson.getString(MERCHANT_ID) : "";
     String merchant_name = paymentJson.has(MERCHANT_NAME) ? paymentJson.getString(MERCHANT_NAME) : "";
     String sale_amount = paymentJson.has(SALE_AMOUNT) ? paymentJson.getString(SALE_AMOUNT) : "";
+    String date = "Thursday, May 26th";
     // todo: Change the transaction id later (its merchant id now
     Payment payment = new Payment()
         .setTransactionId(merchant_id)
         .setTotalPrice(Integer.valueOf(sale_amount))
-        .setMerchantName(merchant_name);
+        .setMerchantName(merchant_name)
+        .setDate(date)
+        .setMerchantType("Restaurant");
 
     subscription = localPaymentDataStore.createPayment(payment).subscribe(realmAsyncTask -> Toast.makeText(view.getContext(), "Payment Saved!", Toast.LENGTH_SHORT).show());
 
@@ -54,7 +57,10 @@ public class QRScannerPresenter  implements QRScannerContract.Presenter{
 
   @Override
   public void unsubscribe() {
-    subscription.unsubscribe();
+    if (subscription!=null){
+      subscription.unsubscribe();
+    }
+
   }
 
   @Override
