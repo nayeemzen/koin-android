@@ -7,15 +7,19 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.sendkoin.koincustomer.Payment.MainPaymentFragment;
 import com.sendkoin.koincustomer.Profile.MainProfileFragment;
 import com.sendkoin.koincustomer.Transfer.MainTransferFragment;
+
+import org.w3c.dom.Text;
 
 import javax.inject.Inject;
 
@@ -37,13 +41,24 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        setViewPagerWithTabLayout();
-        setUpBottomTabs();
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Payments");
+            getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+            getSupportActionBar().setCustomView(R.layout.custom_tab_layout);
+            setupActionBar("Payments");
         }
 
+        setViewPagerWithTabLayout();
+        setUpBottomTabs();
+
     }
+
+    private void setupActionBar(String title) {
+
+        TextView titleTextview = (TextView) getSupportActionBar().getCustomView().findViewById(R.id.main_tab_title);
+        titleTextview.setText(title);
+
+    }
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
@@ -88,11 +103,11 @@ public class MainActivity extends AppCompatActivity {
 
                 if (getSupportActionBar() != null){
                     if (tab.getPosition()==0)
-                        getSupportActionBar().setTitle("Payments");
+                        setupActionBar("Payments");
                     else if (tab.getPosition()==1)
-                        getSupportActionBar().setTitle("Transfers");
+                        setupActionBar("Transfers");
                     else
-                        getSupportActionBar().setTitle("Profile");
+                        setupActionBar("Profile");
                 }
 
 
