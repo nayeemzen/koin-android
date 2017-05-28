@@ -151,7 +151,7 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     public PaymentItem setPlaceType(String placeType) {
-      this.placeType = placeType;
+      this.placeType = "#"+placeType;
       return this;
     }
 
