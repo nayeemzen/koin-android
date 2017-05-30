@@ -6,6 +6,16 @@ apply plugin: 'realm-android'
 def protoPath = 'src/main/proto'
 def wireGeneratedPath = 'build/generated/source/wire'
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.squareup.wire:wire-compiler:2.2.0'
+    }
+}
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
@@ -26,6 +36,9 @@ android {
     compileOptions {
         targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
+    }
+    sourceSets {
+        main.java.srcDirs += wireGeneratedPath
     }
 }
 
@@ -109,6 +122,9 @@ dependencies {
 
     // Facebook SDK
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
+
+    // Fancy Buttons
+    compile 'com.github.medyo:fancybuttons:1.8.3'
 
     // Wire
     compile 'com.squareup.wire:wire-runtime:2.2.0'

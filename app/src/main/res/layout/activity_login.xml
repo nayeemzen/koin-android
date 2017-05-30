@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:fancy="http://schemas.android.com/apk/res-auto"
+                 xmlns:app="http://schemas.android.com/apk/res-auto"
+                 android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/layout_login_banner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginStart="20dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@+id/login_buttons_layout"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/img_login_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/color_logo_transparent_background"/>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/login_buttons_layout"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:layout_marginBottom="50dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:layout_marginTop="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <mehdi.sakout.fancybuttons.FancyButton
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/fb_login"/>
+
+        <mehdi.sakout.fancybuttons.FancyButton
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id="@+id/sms_login"
+            android:layout_above="@+id/fb_login"
+            android:layout_marginBottom="15dp"/>
+
+
+    </RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>
