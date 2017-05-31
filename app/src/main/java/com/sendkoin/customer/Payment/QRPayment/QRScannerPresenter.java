@@ -9,6 +9,9 @@ import com.sendkoin.customer.Data.Payments.Models.Payment;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import javax.inject.Inject;
 
 import rx.Subscription;
@@ -40,7 +43,8 @@ public class QRScannerPresenter  implements QRScannerContract.Presenter{
     String merchant_id = paymentJson.has(MERCHANT_ID) ? paymentJson.getString(MERCHANT_ID) : "";
     String merchant_name = paymentJson.has(MERCHANT_NAME) ? paymentJson.getString(MERCHANT_NAME) : "";
     String sale_amount = paymentJson.has(SALE_AMOUNT) ? paymentJson.getString(SALE_AMOUNT) : "";
-    String date = "Thursday, May 26th";
+    Date currentDate = new Date();
+    String date = getFormattedDate(currentDate);
     // todo: Change the transaction id later (its merchant id now
     Payment payment = new Payment()
         .setTransactionId(merchant_id)
@@ -59,6 +63,12 @@ public class QRScannerPresenter  implements QRScannerContract.Presenter{
       subscription.unsubscribe();
     }
 
+  }
+
+  public String getFormattedDate(Date date){
+
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, MMMM dd");
+    return simpleDateFormat.format(date);
   }
 
   @Override

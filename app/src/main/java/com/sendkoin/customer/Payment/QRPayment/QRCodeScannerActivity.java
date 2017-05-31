@@ -71,10 +71,10 @@ public class QRCodeScannerActivity extends AppCompatActivity implements ZBarScan
     // Do something with the result here
     Log.v(TAG, result.getContents()); // Prints scan results
     Log.v(TAG, result.getBarcodeFormat().getName()); // Prints the scan format (qrcode, pdf417 etc.)
-    Intent intent = new Intent(QRCodeScannerActivity.this, PaymentConfirmationActivity.class);
-    startActivity(intent);
-//    AlertDialog dialog = paymentConfirmationDialog(result);
-//    dialog.show();
+//    Intent intent = new Intent(QRCodeScannerActivity.this, PaymentConfirmationActivity.class);
+//    startActivity(intent);
+    AlertDialog dialog = paymentConfirmationDialog(result);
+    dialog.show();
 
     // If you would like to resume scanning, call this method below:
 //        mScannerView.resumeCameraPreview(this);

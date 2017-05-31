@@ -184,4 +184,5 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
       return TYPE_DATE;
     }
   }
+
 }
