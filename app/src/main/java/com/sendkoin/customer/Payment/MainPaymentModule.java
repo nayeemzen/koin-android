@@ -1,10 +1,16 @@
 package com.sendkoin.customer.Payment;
 
+import com.sendkoin.customer.Data.Authentication.AuthenticationService;
+import com.sendkoin.customer.Data.Authentication.RealSessionManager;
 import com.sendkoin.customer.Data.Dagger.CustomScope;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
+import com.sendkoin.customer.Data.Payments.Models.Payment;
+import com.sendkoin.customer.Data.Payments.PaymentRepository;
+import com.sendkoin.customer.Data.Payments.PaymentService;
 
 import dagger.Module;
 import dagger.Provides;
+import retrofit2.Retrofit;
 
 /**
  * Created by warefhaque on 5/20/17.
@@ -22,14 +28,24 @@ public class MainPaymentModule {
 
     @Provides
     @CustomScope
+    PaymentService providesPaymentService(Retrofit retrofit){
+        return retrofit.create(PaymentService.class);
+    }
+
+    @Provides
+    @CustomScope
     MainPaymentContract.View providesMainPaymentView(){
         return view;
     }
 
     @Provides
     @CustomScope
-    MainPaymentContract.Presenter providesMainPaymentPresenter(MainPaymentContract.View view, LocalPaymentDataStore localPaymentDataStore){
-        return new MainPaymentPresenter(view, localPaymentDataStore);
+    MainPaymentContract.Presenter providesMainPaymentPresenter(MainPaymentContract.View view,
+                                                               LocalPaymentDataStore localPaymentDataStore,
+                                                               PaymentRepository paymentRepository,
+                                                               PaymentService paymentService,
+                                                               RealSessionManager realSessionManager){
+        return new MainPaymentPresenter(view, localPaymentDataStore, paymentRepository, paymentService, realSessionManager);
     }
 }
 

@@ -53,6 +53,8 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment impleme
         setUpDagger();
         setupRecyclerView();
         listenForListScroll();
+
+//        mPresenter.deleteAll();
     }
 
 
@@ -103,6 +105,7 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment impleme
 
   @Override
   public void showPaymentItems(HashMap<String, List<Payment>> payments) {
+
     mMainPaymentHistoryAdapter.setGroupedList(payments);
     mMainPaymentHistoryAdapter.notifyDataSetChanged();
   }

@@ -1,10 +1,12 @@
 package com.sendkoin.customer.Data.Payments;
 
+import com.sendkoin.api.ListTransactionsResponse;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.Data.Payments.Models.Payment;
 
 import io.realm.RealmAsyncTask;
 import io.realm.RealmResults;
+import retrofit2.Retrofit;
 import rx.Observable;
 
 /**
@@ -26,7 +28,7 @@ public class PaymentRepository implements PaymentDataStore{
     }
 
     @Override
-    public Observable<RealmResults<Payment>> getAllPayments() {
-        return localPaymentDataStore.getAllTransactions();
+    public Observable<ListTransactionsResponse> getAllPayments(PaymentService paymentService, String authToken) {
+        return paymentService.getAllPayments(authToken);
     }
 }

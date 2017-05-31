@@ -13,6 +13,7 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.sendkoin.customer.Payment.MainPaymentFragment;
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupActionBar(String title) {
+
 
         TextView viepPagerTitle = (TextView) getSupportActionBar().getCustomView().findViewById(R.id.main_tab_title);
         viepPagerTitle.setText(title);

@@ -47,8 +47,8 @@ public class QRScannerPresenter  implements QRScannerContract.Presenter{
     String date = getFormattedDate(currentDate);
     // todo: Change the transaction id later (its merchant id now
     Payment payment = new Payment()
-        .setTransactionId(merchant_id)
-        .setTotalPrice(Integer.valueOf(sale_amount))
+        .setTransactionToken(merchant_id)
+        .setAmount(Integer.valueOf(sale_amount))
         .setMerchantName(merchant_name)
         .setDate(date)
         .setMerchantType("Restaurant");
@@ -65,7 +65,7 @@ public class QRScannerPresenter  implements QRScannerContract.Presenter{
 
   }
 
-  public String getFormattedDate(Date date){
+  public static String getFormattedDate(Date date){
 
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, MMMM dd");
     return simpleDateFormat.format(date);

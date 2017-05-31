@@ -47,7 +47,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         .subscribe(new Observer<AuthenticationResponse>() {
           @Override
           public void onCompleted() {
-            Log.d(TAG, "Facebook Login Complete!");
+//            Log.d(TAG, "Facebook Login Complete!");
           }
 
           @Override
@@ -57,14 +57,12 @@ public class LoginPresenter implements LoginContract.Presenter {
 
           @Override
           public void onNext(AuthenticationResponse authenticationResponse) {
-            Log.d(TAG, "Authenticated: " + authenticationResponse.customer.full_name + "through facebook!");
+            Log.d(TAG, "Authenticated: " + authenticationResponse.customer.full_name + " through facebook!");
+            Log.d(TAG, "Session Token: " + authenticationResponse.session_token);
             realSessionManager.putSessionToken(authenticationResponse.session_token);
             view.loginWithFbSuccess(formatName(authenticationResponse.customer.full_name));
           }
         });
-
-
-
   }
 
   @Override
@@ -73,6 +71,7 @@ public class LoginPresenter implements LoginContract.Presenter {
       subscription.unsubscribe();
     }
   }
+
 
 
   public String formatName(String name){

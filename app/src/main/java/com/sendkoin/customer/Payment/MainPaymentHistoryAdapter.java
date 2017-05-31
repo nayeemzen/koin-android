@@ -1,9 +1,11 @@
 package com.sendkoin.customer.Payment;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.TranslateAnimation;
 import android.widget.TextView;
 
 import com.sendkoin.customer.Data.Payments.Models.Payment;
@@ -22,10 +24,16 @@ import butterknife.ButterKnife;
 
 public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+  private static final String TAG = "MPaymentHistoryAdapter";
   public List<ListItem> groupedList;
+
+  public MainPaymentHistoryAdapter() {
+    groupedList = new ArrayList<>();
+  }
 
   public void setGroupedList(HashMap<String, List<Payment>> payments) {
     groupedList = groupPaymentsByDate(payments);
+    Log.d(TAG, groupedList.toString());
   }
 
   public List<ListItem> groupPaymentsByDate(HashMap<String, List<Payment>> groupedHashMap){
@@ -41,7 +49,7 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
         PaymentItem paymentItem = new PaymentItem()
             .setPlaceName(payment.getMerchantName())
             .setPlaceType(payment.getMerchantType())
-            .setPaidAmount(Integer.toString(payment.getTotalPrice()));
+            .setPaidAmount(Integer.toString(payment.getAmount()));
 
         result.add(paymentItem);
       }

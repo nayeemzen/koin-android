@@ -11,11 +11,13 @@ import java.util.List;
 
 public interface MainPaymentContract {
 
-    public interface View {
-      public void showPaymentItems(HashMap<String, List<Payment>> payments);
+     interface View {
+       void showPaymentItems(HashMap<String, List<Payment>> payments);
     }
 
-    public interface Presenter {
-      public void loadItems();
+     interface Presenter {
+       void loadItems();
+       void deleteAll();
+
     }
 }

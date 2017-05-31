@@ -1,6 +1,9 @@
 package com.sendkoin.customer.Data.Payments.Local;
 
 import com.sendkoin.customer.Data.Payments.Models.Payment;
+import com.sendkoin.customer.Data.Payments.PaymentService;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -30,6 +33,17 @@ public class LocalPaymentDataStore{
 
     public Observable<RealmResults<Payment>> getAllTransactions() {
        return realm.where(Payment.class).findAllAsync().asObservable();
+    }
+
+    public Observable<RealmAsyncTask> saveAllTransactions(List<Payment> payments){
+        return Observable.fromCallable(() -> realm.executeTransactionAsync(realm1 -> realm1.insert(payments)));
+    }
+
+    /**
+     * Debugging purposes
+     */
+    public void deleteAllTranscations(){
+        realm.executeTransaction(realm1 -> realm1.delete(Payment.class));
     }
 
     public void close(){
