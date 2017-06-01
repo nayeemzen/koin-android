@@ -1,10 +1,14 @@
 package com.sendkoin.customer.Payment.QRPayment;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
+import com.google.gson.Gson;
 import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 import com.sendkoin.customer.KoinApplication;
 import com.sendkoin.customer.R;
@@ -21,11 +25,13 @@ import me.dm7.barcodescanner.zbar.ZBarScannerView;
  */
 
 
-public class QRCodeScannerActivity extends AppCompatActivity implements ZBarScannerView.ResultHandler, QRScannerContract.View {
+public class QRCodeScannerActivity extends Activity implements ZBarScannerView.ResultHandler, QRScannerContract.View {
 
   @Inject QRScannerContract.Presenter mPresenter;
   @Inject ZBarScannerView mScannerView;
 
+  @Inject
+  Gson gson;
   private String TAG = "QRScannerActivity";
 
   @Override
@@ -68,10 +74,20 @@ public class QRCodeScannerActivity extends AppCompatActivity implements ZBarScan
   @Override
   public void handleResult(me.dm7.barcodescanner.zbar.Result result) {
 
-    try {
-      mPresenter.createPaymentDetails(new JSONObject(result.getContents()));
-    } catch (JSONException e) {
-      e.printStackTrace();
+//    try {
+//      mPresenter.createPaymentDetails(new JSONObject(result.getContents()));
+//    } catch (JSONException e) {
+//      e.printStackTrace();
+//    }
+
+    // other wise on high def cameras it keeps scanning
+    if (result.getContents().contains(QRScannerPresenter.MERCHANT_NAME)){
+      Log.d(TAG, result.getContents());
+      Intent intent = new Intent(QRCodeScannerActivity.this, PaymentConfirmationActivity.class);
+      startActivity(intent);
+    }
+    else{
+      mScannerView.resumeCameraPreview(this);
     }
   }
 

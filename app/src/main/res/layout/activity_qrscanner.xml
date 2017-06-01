@@ -5,4 +5,15 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
     android:animateLayoutChanges="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <me.dm7.barcodescanner.zbar.ZBarScannerView
+            android:layout_width="match_parent"
+            android:id="@+id/scanner_view"
+            android:layout_height="match_parent"/>
+
+    </RelativeLayout>
 </LinearLayout>
