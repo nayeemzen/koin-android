@@ -1,11 +1,14 @@
 package com.sendkoin.customer.Payment.QRPayment;
 
+import com.sendkoin.customer.Data.Authentication.RealSessionManager;
 import com.sendkoin.customer.Data.Dagger.CustomScope;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
+import com.sendkoin.customer.Data.Payments.PaymentService;
 
 import dagger.Module;
 import dagger.Provides;
 import me.dm7.barcodescanner.zbar.ZBarScannerView;
+import retrofit2.Retrofit;
 
 /**
  * Created by warefhaque on 5/23/17.
@@ -21,8 +24,19 @@ public class QRPaymentModule {
 
   @Provides
   @CustomScope
-  public QRScannerContract.Presenter providesPresenter(LocalPaymentDataStore localPaymentDataStore){
-    return new QRScannerPresenter(view, localPaymentDataStore);
+  public PaymentService providesPaymentService(Retrofit retrofit){
+    return  retrofit.create(PaymentService.class);
+  }
+
+  @Provides
+  @CustomScope
+  public QRScannerContract.Presenter providesPresenter(LocalPaymentDataStore localPaymentDataStore,
+                                                       PaymentService paymentService,
+                                                       RealSessionManager realSessionManager){
+    return new QRScannerPresenter(view,
+        localPaymentDataStore,
+        paymentService,
+        realSessionManager);
   }
 
   @Provides

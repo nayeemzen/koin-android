@@ -38,7 +38,8 @@ public class LoginPresenter implements LoginContract.Presenter {
 
   @Override
   public void loginWithFacebook(String accessToken) {
-     subscription = authenticationService.authenticateWithFacebook(
+    Log.d(TAG, "FB Access Token: " + accessToken);
+    subscription = authenticationService.authenticateWithFacebook(
         new FacebookAuthenticationRequest.Builder()
         .access_token(accessToken)
         .build())

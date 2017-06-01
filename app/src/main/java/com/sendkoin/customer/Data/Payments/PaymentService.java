@@ -1,8 +1,11 @@
 package com.sendkoin.customer.Data.Payments;
 
+import com.sendkoin.api.AcceptTransactionRequest;
 import com.sendkoin.api.ListTransactionsResponse;
+import com.sendkoin.api.Transaction;
 import com.sendkoin.customer.Data.Authentication.RealSessionManager;
 
+import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
@@ -17,5 +20,9 @@ import rx.Observable;
 public interface PaymentService {
   @GET("transactions/customer/list/")
   Observable<ListTransactionsResponse> getAllPayments(@Header("Authorization") String token);
+
+  @POST("/transactions/customer/accept")
+  Observable<Transaction> acceptCurrentTransaction(@Header("Authorization") String token,
+                                                   @Body AcceptTransactionRequest acceptTransactionRequest);
 
 }

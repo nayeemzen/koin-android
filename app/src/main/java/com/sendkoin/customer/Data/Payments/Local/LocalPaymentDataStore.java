@@ -1,7 +1,6 @@
 package com.sendkoin.customer.Data.Payments.Local;
 
-import com.sendkoin.customer.Data.Payments.Models.Payment;
-import com.sendkoin.customer.Data.Payments.PaymentService;
+import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 
 import java.util.List;
 
@@ -26,24 +25,24 @@ public class LocalPaymentDataStore{
         this.realm = realm;
     }
 
-    public Observable<RealmAsyncTask> createPayment(Payment payment) {
-        return Observable.fromCallable(() -> realm.executeTransactionAsync(realm1 -> realm1.insert(payment)));
+    public Observable<RealmAsyncTask> createPayment(RealmTransaction realmTransaction) {
+        return Observable.fromCallable(() -> realm.executeTransactionAsync(realm1 -> realm1.insert(realmTransaction)));
     }
 
 
-    public Observable<RealmResults<Payment>> getAllTransactions() {
-       return realm.where(Payment.class).findAllAsync().asObservable();
+    public Observable<RealmResults<RealmTransaction>> getAllTransactions() {
+       return realm.where(RealmTransaction.class).findAllAsync().asObservable();
     }
 
-    public Observable<RealmAsyncTask> saveAllTransactions(List<Payment> payments){
-        return Observable.fromCallable(() -> realm.executeTransactionAsync(realm1 -> realm1.insert(payments)));
+    public Observable<RealmAsyncTask> saveAllTransactions(List<RealmTransaction> realmTransactions){
+        return Observable.fromCallable(() -> realm.executeTransactionAsync(realm1 -> realm1.insert(realmTransactions)));
     }
 
     /**
      * Debugging purposes
      */
     public void deleteAllTranscations(){
-        realm.executeTransaction(realm1 -> realm1.delete(Payment.class));
+        realm.executeTransaction(realm1 -> realm1.delete(RealmTransaction.class));
     }
 
     public void close(){

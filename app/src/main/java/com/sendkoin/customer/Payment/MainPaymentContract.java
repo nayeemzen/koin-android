@@ -1,6 +1,6 @@
 package com.sendkoin.customer.Payment;
 
-import com.sendkoin.customer.Data.Payments.Models.Payment;
+import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,11 +12,11 @@ import java.util.List;
 public interface MainPaymentContract {
 
      interface View {
-       void showPaymentItems(HashMap<String, List<Payment>> payments);
+       void showPaymentItems(HashMap<String, List<RealmTransaction>> payments);
     }
 
      interface Presenter {
-       void loadItems();
+       void loadItemsFromDatabase();
        void deleteAll();
 
     }

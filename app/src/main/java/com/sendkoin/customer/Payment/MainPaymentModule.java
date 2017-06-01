@@ -1,10 +1,8 @@
 package com.sendkoin.customer.Payment;
 
-import com.sendkoin.customer.Data.Authentication.AuthenticationService;
 import com.sendkoin.customer.Data.Authentication.RealSessionManager;
 import com.sendkoin.customer.Data.Dagger.CustomScope;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
-import com.sendkoin.customer.Data.Payments.Models.Payment;
 import com.sendkoin.customer.Data.Payments.PaymentRepository;
 import com.sendkoin.customer.Data.Payments.PaymentService;
 

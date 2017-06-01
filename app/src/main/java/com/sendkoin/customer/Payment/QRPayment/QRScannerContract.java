@@ -2,6 +2,8 @@ package com.sendkoin.customer.Payment.QRPayment;
 
 import android.content.Context;
 
+import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -11,13 +13,22 @@ import org.json.JSONObject;
 
 public interface QRScannerContract {
 
-  public interface View{
+  interface View {
     Context getContext();
+
+    void showPaymentConfirmationScreen(RealmTransaction realmTransaction);
   }
-  public interface Presenter{
-    void createPayment(JSONObject payment) throws JSONException;
+
+  interface Presenter {
+
+    void createPayment(String transactionToken);
+
     void unsubscribe();
+
     void close();
+
+    void
+    createPaymentDetails(JSONObject payment) throws JSONException;
   }
 
 

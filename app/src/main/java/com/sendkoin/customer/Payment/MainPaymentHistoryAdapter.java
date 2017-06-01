@@ -5,10 +5,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.TranslateAnimation;
 import android.widget.TextView;
 
-import com.sendkoin.customer.Data.Payments.Models.Payment;
+import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 import com.sendkoin.customer.R;
 
 import java.util.ArrayList;
@@ -31,12 +30,12 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
     groupedList = new ArrayList<>();
   }
 
-  public void setGroupedList(HashMap<String, List<Payment>> payments) {
+  public void setGroupedList(HashMap<String, List<RealmTransaction>> payments) {
     groupedList = groupPaymentsByDate(payments);
     Log.d(TAG, groupedList.toString());
   }
 
-  public List<ListItem> groupPaymentsByDate(HashMap<String, List<Payment>> groupedHashMap){
+  public List<ListItem> groupPaymentsByDate(HashMap<String, List<RealmTransaction>> groupedHashMap){
 
     List<ListItem> result = new ArrayList<>();
 
@@ -45,11 +44,11 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
       dateItem.date = date;
       result.add(dateItem);
 
-      for (Payment payment: groupedHashMap.get(date)){
+      for (RealmTransaction realmTransaction : groupedHashMap.get(date)){
         PaymentItem paymentItem = new PaymentItem()
-            .setPlaceName(payment.getMerchantName())
-            .setPlaceType(payment.getMerchantType())
-            .setPaidAmount(Integer.toString(payment.getAmount()));
+            .setPlaceName(realmTransaction.getMerchantName())
+            .setPlaceType(realmTransaction.getMerchantType())
+            .setPaidAmount(Integer.toString(realmTransaction.getAmount()));
 
         result.add(paymentItem);
       }

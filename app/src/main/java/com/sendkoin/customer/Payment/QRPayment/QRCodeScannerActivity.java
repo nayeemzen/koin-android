@@ -1,12 +1,11 @@
 package com.sendkoin.customer.Payment.QRPayment;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
+import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 import com.sendkoin.customer.KoinApplication;
 import com.sendkoin.customer.R;
 
@@ -68,38 +67,32 @@ public class QRCodeScannerActivity extends AppCompatActivity implements ZBarScan
 
   @Override
   public void handleResult(me.dm7.barcodescanner.zbar.Result result) {
-    // Do something with the result here
-    Log.v(TAG, result.getContents()); // Prints scan results
-    Log.v(TAG, result.getBarcodeFormat().getName()); // Prints the scan format (qrcode, pdf417 etc.)
-//    Intent intent = new Intent(QRCodeScannerActivity.this, PaymentConfirmationActivity.class);
-//    startActivity(intent);
-    AlertDialog dialog = paymentConfirmationDialog(result);
-    dialog.show();
 
-    // If you would like to resume scanning, call this method below:
-//        mScannerView.resumeCameraPreview(this);
-  }
-
-  private AlertDialog paymentConfirmationDialog(me.dm7.barcodescanner.zbar.Result result) {
-    return new AlertDialog.Builder(this)
-        .setTitle(R.string.qr_scanner_dialog_title)
-        .setMessage(result.getContents())
-        .setPositiveButton(R.string.alert_dialog_create, (dialogInterface, i) -> {
-          try {
-            JSONObject paymentDetails = new JSONObject(result.getContents());
-            mPresenter.createPayment(paymentDetails);
-          } catch (JSONException e) {
-            e.printStackTrace();
-          }
-        })
-        .setNegativeButton(R.string.alert_dialog_cancel, (dialogInterface, i) -> {
-
-        })
-        .create();
+    try {
+      mPresenter.createPaymentDetails(new JSONObject(result.getContents()));
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override
   public Context getContext() {
     return getApplicationContext();
+  }
+
+  @Override
+  public void showPaymentConfirmationScreen(RealmTransaction realmTransaction) {
+    AlertDialog alertDialog =  new AlertDialog.Builder(this)
+        .setTitle(R.string.qr_scanner_dialog_title)
+        .setMessage(realmTransaction.getMerchantName() + " " + realmTransaction.getAmount())
+        .setPositiveButton(R.string.alert_dialog_create, (dialogInterface, i) -> {
+         mPresenter.createPayment(realmTransaction.getTransactionToken());
+        })
+        .setNegativeButton(R.string.alert_dialog_cancel, (dialogInterface, i) -> {
+          mScannerView.resumeCameraPreview(this);
+        })
+        .create();
+
+    alertDialog.show();
   }
 }
