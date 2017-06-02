@@ -11,10 +11,8 @@ import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 import com.sendkoin.customer.Data.Payments.PaymentRepository;
 import com.sendkoin.customer.Data.Payments.PaymentService;
-import com.sendkoin.customer.Payment.QRPayment.QRScannerPresenter;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -55,7 +53,7 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
   }
 
   @Override
-  public void loadItemsFromDatabase() {
+  public void subscribeToRemoteDB() {
     subscription = paymentRepository
         .getAllPayments(paymentService, "Bearer " + realSessionManager.getSessionToken())
         .subscribeOn(Schedulers.io())
@@ -75,9 +73,8 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
           public void onNext(ListTransactionsResponse listTransactionsResponse) {
 
             List<Transaction> transactions = listTransactionsResponse.transactions;
-            view.showPaymentItems(groupPaymentsIntoHashMap(RealmTransaction
-                .transactionListToRealmTranscationList(transactions)));
 
+            // you save the items here, on resume calls the realm db  and updates the view
             localPaymentDataStore.saveAllTransactions(RealmTransaction
                 .transactionListToRealmTranscationList(transactions))
                 .subscribe(realmAsyncTask -> Log.d(TAG, "Saved from DB to realm!"));
@@ -97,7 +94,7 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
   }
 
 
-  public HashMap<String, List<RealmTransaction>> groupPaymentsIntoHashMap(List<RealmTransaction> realmTransactions) {
+  public HashMap<String, List<RealmTransaction>> groupTransactionsIntoHashMap(List<RealmTransaction> realmTransactions) {
     HashMap<String, List<RealmTransaction>> groupedResult = new HashMap<>();
 
     for (RealmTransaction realmTransaction : realmTransactions) {
@@ -112,7 +109,7 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
     return groupedResult;
   }
 
-  private void loadItemsFromRealm() {
+  private void loadTransactionsFromRealm() {
     subscription = localPaymentDataStore.getAllTransactions()
         .subscribe(new Subscriber<RealmResults<RealmTransaction>>() {
           @Override
@@ -128,9 +125,27 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
           @Override
           public void onNext(RealmResults<RealmTransaction> realmTransactions) {
             List<RealmTransaction> items = Stream.of(realmTransactions).collect(Collectors.toList());
-            view.showPaymentItems(groupPaymentsIntoHashMap(items));
+            view.showPaymentItems(groupTransactionsIntoHashMap(items));
           }
         });
   }
 
+  @Override
+  public void subscribe() {
+    loadTransactionsFromRealm();
+  }
+
+  @Override
+  public void unsubscribe() {
+    if (subscription != null){
+      subscription.unsubscribe();
+    }
+  }
+
+  @Override
+  public void closeRealm() {
+    if(localPaymentDataStore != null) {
+      localPaymentDataStore.close();
+    }
+  }
 }

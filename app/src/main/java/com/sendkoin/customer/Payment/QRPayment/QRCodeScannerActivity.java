@@ -1,22 +1,17 @@
 package com.sendkoin.customer.Payment.QRPayment;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 import com.sendkoin.customer.KoinApplication;
 import com.sendkoin.customer.R;
@@ -28,7 +23,8 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import me.dm7.barcodescanner.zbar.ZBarScannerView;
+import butterknife.OnClick;
+import butterknife.Unbinder;
 import mehdi.sakout.fancybuttons.FancyButton;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -51,9 +47,17 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   @BindView(R.id.pay_button)
   FancyButton payButton;
 
-  QRScannerFragement qrScannerFragement;
+  @BindView(R.id.merchant_name)
+  TextView merchantName;
 
-  public enum UIState {
+  @BindView(R.id.sale_amount)
+  TextView saleAmount;
+
+  QRScannerFragement qrScannerFragement;
+  private RealmTransaction realmTransaction;
+  private Unbinder unbinder;
+
+  private enum UIState {
     SCANNER,
     PAYMENT_CONFIRMATION
   }
@@ -63,8 +67,8 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_qrscanner);
     setUpDagger();
-    ButterKnife.bind(this);
-     qrScannerFragement = new QRScannerFragement();
+    unbinder = ButterKnife.bind(this);
+    qrScannerFragement = new QRScannerFragement();
     FragmentTransaction transaction = getFragmentManager().beginTransaction();
     transaction.add(R.id.scanner_fragment_layout, qrScannerFragement);
     transaction.commit();
@@ -104,14 +108,31 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     return getApplicationContext();
   }
 
-  public void createTansaction(JSONObject jsonPaymentDetails) throws JSONException {
-    mPresenter.createPaymentDetails(jsonPaymentDetails);
+  public void getTransactionConfirmationDetails(JSONObject jsonPaymentDetails) throws JSONException {
+    mPresenter.getTransactionConfirmationDetails(jsonPaymentDetails);
   }
 
   @Override
-  public void showPaymentConfirmationScreen(RealmTransaction realmTransaction) {
+  public void showTransactionConfirmationScreen(RealmTransaction realmTransaction) {
+    this.realmTransaction = realmTransaction;
     setUIState(UIState.PAYMENT_CONFIRMATION);
+    merchantName.setText(realmTransaction.getMerchantName());
+    saleAmount.setText(realmTransaction.getAmount());
     setupPayButton();
+  }
+
+  @Override
+  public void showTransactionComplete() {
+    //loading indicator off and show check mark
+  }
+
+  @OnClick(R.id.pay_button)
+  void processPayment() {
+    if (realmTransaction != null) {
+      //loading indicator ON
+      mPresenter.createTransaction(realmTransaction.getTransactionToken());
+      realmTransaction = null;
+    }
   }
 
   public void setUIState(UIState uiState) {
@@ -139,17 +160,37 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
 
   @Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
-    if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0){
-      if (getUIState().equals(UIState.PAYMENT_CONFIRMATION)){
+    if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+      if (getUIState().equals(UIState.PAYMENT_CONFIRMATION)) {
         setUIState(UIState.SCANNER);
         qrScannerFragement.resumeScanning();
-      }else if (getUIState().equals(UIState.SCANNER)){
+        // reset the transaction just in case
+        realmTransaction = null;
+      } else if (getUIState().equals(UIState.SCANNER)) {
         finish();
       }
     }
     return true;
   }
 
+  /**
+   * Not using onResume to subscribe as the Fragment with the scanner does that
+   *
+   */
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+    mPresenter.unsubscribe();
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    if (unbinder != null) {
+      unbinder.unbind();
+    }
+  }
 
   //  @Inject ZBarScannerView mScannerView;
 //
@@ -191,7 +232,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
 //  public void handleResult(me.dm7.barcodescanner.zbar.Result result) {
 //
 ////    try {
-////      mPresenter.createPaymentDetails(new JSONObject(result.getContents()));
+////      mPresenter.getTransactionConfirmationDetails(new JSONObject(result.getContents()));
 ////    } catch (JSONException e) {
 ////      e.printStackTrace();
 ////    }
@@ -213,12 +254,12 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
 //  }
 //
 //  @Override
-//  public void showPaymentConfirmationScreen(RealmTransaction realmTransaction) {
+//  public void showTransactionConfirmationScreen(RealmTransaction realmTransaction) {
 //    AlertDialog alertDialog =  new AlertDialog.Builder(this)
 //        .setTitle(R.string.qr_scanner_dialog_title)
 //        .setMessage(realmTransaction.getMerchantName() + " " + realmTransaction.getAmount())
 //        .setPositiveButton(R.string.alert_dialog_create, (dialogInterface, i) -> {
-//         mPresenter.createPayment(realmTransaction.getTransactionToken());
+//         mPresenter.createTransaction(realmTransaction.getTransactionToken());
 //        })
 //        .setNegativeButton(R.string.alert_dialog_cancel, (dialogInterface, i) -> {
 //          mScannerView.resumeCameraPreview(this);

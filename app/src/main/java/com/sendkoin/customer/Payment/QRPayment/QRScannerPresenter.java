@@ -15,7 +15,6 @@ import java.util.Date;
 
 import javax.inject.Inject;
 
-import io.realm.Realm;
 import rx.Subscription;
 
 /**
@@ -53,7 +52,7 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
    * @param transactionToken - provided from the QR
    */
   @Override
-  public void createPayment(String transactionToken) {
+  public void createTransaction(String transactionToken) {
 
     //1. create the transaction object
     long timeStamp = System.currentTimeMillis() / 1000L;
@@ -72,6 +71,11 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
 
 
   @Override
+  public void subscribe() {
+    // happens when the scan is captured so dont need here
+  }
+
+  @Override
   public void unsubscribe() {
     if (subscription != null) {
       subscription.unsubscribe();
@@ -79,15 +83,17 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
 
   }
 
+  @Override
+  public void closeRealm() {
+    if (localPaymentDataStore != null) {
+      localPaymentDataStore.close();
+    }
+  }
+
   public static String getFormattedDate(Date date) {
 
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, MMMM dd");
     return simpleDateFormat.format(date);
-  }
-
-  @Override
-  public void close() {
-    localPaymentDataStore.close();
   }
 
   /**
@@ -97,7 +103,7 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
    * @throws JSONException
    */
   @Override
-  public void createPaymentDetails(JSONObject paymentJson) throws JSONException {
+  public void getTransactionConfirmationDetails(JSONObject paymentJson) throws JSONException {
     String merchant_name = paymentJson.has(MERCHANT_NAME) ? paymentJson.getString(MERCHANT_NAME) : "";
     String sale_amount = paymentJson.has(SALE_AMOUNT) ? paymentJson.getString(SALE_AMOUNT) : "";
     Date currentDate = new Date();
@@ -110,8 +116,6 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
         .setMerchantType("Restaurant");
 
     // will show the dialog
-    view.showPaymentConfirmationScreen(realmTransaction);
+    view.showTransactionConfirmationScreen(realmTransaction);
   }
-
-  // http request
 }

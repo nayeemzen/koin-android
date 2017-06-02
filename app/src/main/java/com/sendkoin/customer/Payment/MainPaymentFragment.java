@@ -62,6 +62,7 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment impleme
     setupRecyclerView();
     listenForListScroll();
     dummyDataforMerChantPost();
+    mPresenter.subscribeToRemoteDB();
     Log.d(TAG, "ON ACTIVITY CREATED!");
 
 //        mPresenter.deleteAll();
@@ -87,16 +88,22 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment impleme
   }
 
   @Override
-  public void onDestroy() {
-    super.onDestroy();
+  public void onDestroyView() {
+    super.onDestroyView();
     unbinder.unbind();
+    mPresenter.closeRealm();
+  }
 
+  @Override
+  public void onPause() {
+    super.onPause();
+    mPresenter.unsubscribe();
   }
 
   @Override
   public void onResume() {
     super.onResume();
-    mPresenter.loadItemsFromDatabase();
+    mPresenter.subscribe();
     Log.d(TAG, "ON RESUME!");
 
   }
@@ -147,6 +154,7 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment impleme
       }
     });
   }
+
 
 
 }

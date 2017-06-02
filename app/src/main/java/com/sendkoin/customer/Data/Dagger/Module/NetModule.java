@@ -77,19 +77,16 @@ public class NetModule {
 
 
     @Provides
-    @Singleton
     LocalPaymentDataStore providesLocalPaymentDataStore(Realm realm) {
         return new LocalPaymentDataStore(realm);
     }
 
     @Provides
-    @Singleton
     Realm providesRealm() {
         return Realm.getDefaultInstance();
     }
 
     @Provides
-    @Singleton
     PaymentRepository providesPaymentRepository(LocalPaymentDataStore localPaymentDataStore) {
         return new PaymentRepository(localPaymentDataStore);
     }

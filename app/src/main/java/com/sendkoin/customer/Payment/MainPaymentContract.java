@@ -1,5 +1,6 @@
 package com.sendkoin.customer.Payment;
 
+import com.sendkoin.customer.BasePresenter;
 import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 
 import java.util.HashMap;
@@ -15,8 +16,8 @@ public interface MainPaymentContract {
        void showPaymentItems(HashMap<String, List<RealmTransaction>> payments);
     }
 
-     interface Presenter {
-       void loadItemsFromDatabase();
+     interface Presenter extends BasePresenter{
+       void subscribeToRemoteDB();
        void deleteAll();
 
     }
