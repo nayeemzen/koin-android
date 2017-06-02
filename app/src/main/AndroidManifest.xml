@@ -24,7 +24,7 @@
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"/>
         <activity
             android:name="com.sendkoin.customer.Payment.QRPayment.PaymentConfirmationActivity"
-            android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar.Fullscreen"/>
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen"/>
 
 
         <!--FACEBOOK STARTS HERE -->

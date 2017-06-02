@@ -44,7 +44,7 @@ public class PaymentConfirmationActivity extends Activity{
     payButton.setBackgroundColor(Color.parseColor("#008489"));
     payButton.setFocusBackgroundColor(Color.parseColor("#37B3B8"));
     payButton.setTextSize(20);
-    payButton.setRadius(17);
+    payButton.setRadius(50);
     payButton.setPadding(10,20,10,20);
     payButton.setCustomTextFont("Nunito-Bold.ttf");
   }
