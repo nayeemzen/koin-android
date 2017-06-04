@@ -21,12 +21,12 @@ public class PaymentRepository implements PaymentDataStore{
     }
 
     @Override
-    public Observable<RealmAsyncTask> createPayment(RealmTransaction realmTransaction) {
+    public Observable<Boolean> createPayment(RealmTransaction realmTransaction) {
         return localPaymentDataStore.createPayment(realmTransaction);
     }
 
     @Override
-    public Observable<ListTransactionsResponse> getAllPayments(PaymentService paymentService, String authToken) {
-        return paymentService.getAllPayments(authToken);
+    public Observable<ListTransactionsResponse> getAllPayments(PaymentService paymentService, String authToken, long lastSeen) {
+        return paymentService.getAllPayments(authToken, lastSeen);
     }
 }

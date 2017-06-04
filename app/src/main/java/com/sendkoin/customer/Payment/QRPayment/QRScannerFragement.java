@@ -38,16 +38,19 @@ public class QRScannerFragement extends android.app.Fragment implements ZBarScan
 
     if (rawResult.getContents().contains(QRScannerPresenter.MERCHANT_NAME)) {
       QRCodeScannerActivity qrCodeScannerActivity = (QRCodeScannerActivity) getActivity();
-      try {
-        qrCodeScannerActivity.getTransactionConfirmationDetails(new JSONObject(rawResult.getContents()));
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }
+      qrCodeScannerActivity.showTransactionConfirmationScreen(rawResult.getContents());
     }
+
+    resumeScanning();
+
   }
 
-  public void resumeScanning(){
+  public void resumeScanning() {
     mScannerView.resumeCameraPreview(this);
+  }
+
+  public void stopScanning() {
+    mScannerView.stopCamera();
   }
 
   @Override

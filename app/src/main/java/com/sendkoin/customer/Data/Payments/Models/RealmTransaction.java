@@ -1,13 +1,20 @@
 package com.sendkoin.customer.Data.Payments.Models;
 
+import android.text.format.DateFormat;
+
+import com.sendkoin.api.Merchant;
 import com.sendkoin.api.Transaction;
 import com.sendkoin.customer.Payment.QRPayment.QRScannerPresenter;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -17,15 +24,15 @@ import io.realm.annotations.PrimaryKey;
 
 public class RealmTransaction extends RealmObject {
 
+
+  public int id;
   @PrimaryKey
-  public Integer id;
   private String transactionToken;
   private Long merchantId;
   private Long createdAt;
-  private Integer amount;
+  private int amount;
   private String merchantName;
   private String merchantType;
-  private String date;
   private String state;
 
   public String getState() {
@@ -46,8 +53,11 @@ public class RealmTransaction extends RealmObject {
     return this;
   }
 
-  public Long getCreatedAt() {
-    return createdAt;
+  public String getCreatedAt() {
+    Calendar cal = Calendar.getInstance(Locale.ENGLISH);
+    cal.setTimeInMillis(createdAt);
+    String date = DateFormat.format("EEEE, MMMM dd", cal).toString();
+    return date;
   }
 
   public RealmTransaction setCreatedAt(Long createdAt) {
@@ -66,17 +76,6 @@ public class RealmTransaction extends RealmObject {
   }
 
 
-  public String getDate() {
-    return date;
-  }
-
-
-  public RealmTransaction setDate(String date) {
-    this.date = date;
-    return this;
-  }
-
-
   public RealmTransaction() {
   }
 
@@ -86,7 +85,7 @@ public class RealmTransaction extends RealmObject {
     return this;
   }
 
-  public RealmTransaction setAmount(Integer amount) {
+  public RealmTransaction setAmount(int amount) {
     this.amount = amount;
     return this;
   }
@@ -122,19 +121,14 @@ public class RealmTransaction extends RealmObject {
 
   public static RealmTransaction transactionToRealmTransaction(Transaction transaction) {
 
-    RealmTransaction realmTransaction = new RealmTransaction()
-        // TODO: 5/31/17 (WAREF) ask zen to save Type on the server
-        .setMerchantType("Restaurant")
-        .setMerchantName(transaction.merchant_name)
+    Merchant merchant = transaction.merchant;
+    return new RealmTransaction()
+        .setMerchantType(merchant.store_type)
+        .setMerchantName(merchant.store_name)
         .setAmount(transaction.amount)
         .setCreatedAt(transaction.created_at)
         .setTransactionToken(transaction.token)
-        .setMerchantId(transaction.merchant_id)
-        .setState(transaction.state)
-        // TODO: 5/31/17 (WAREF) ask zen to save date on the server
-        .setDate(QRScannerPresenter.getFormattedDate(new Date()));
-
-    return realmTransaction;
+        .setState(transaction.state);
 
   }
 

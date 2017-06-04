@@ -1,8 +1,10 @@
 package com.sendkoin.customer.Payment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.sendkoin.api.SaleItem;
@@ -40,12 +44,17 @@ import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
 public class MainPaymentFragment extends android.support.v4.app.Fragment implements MainPaymentContract.View {
 
   private static final String TAG = "MainPaymentFragment";
+  public static final String FIRST_TIME = "first_time";
   @Inject
   MainPaymentContract.Presenter mPresenter;
   @BindView(R.id.create_payment)
   FloatingActionButton createPayment;
   @BindView(R.id.payment_history)
   RecyclerView recyclerViewPaymentHistory;
+  @BindView(R.id.main_payment_content)
+  CoordinatorLayout mainPaymentContent;
+  @BindView(R.id.no_transactions_text)
+  TextView noTransactionsText;
   @Inject
   Gson gson;
 
@@ -55,27 +64,44 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment impleme
   @Inject
   LocalPaymentDataStore localPaymentDataStore;
 
+  enum UIState{
+    PAYMENTS,
+    NO_PAYMENTS
+  }
+
+  public void setUiState(UIState uiState){
+    switch (uiState){
+      case PAYMENTS:
+        noTransactionsText.setVisibility(View.GONE);
+        recyclerViewPaymentHistory.setVisibility(View.VISIBLE);
+        break;
+      case NO_PAYMENTS:
+//        recyclerViewPaymentHistory.setVisibility(View.INVISIBLE);
+        noTransactionsText.setText("You currently have no transactions.");
+        noTransactionsText.setVisibility(View.VISIBLE);
+        break;
+
+    }
+  }
   @Override
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
     setUpDagger();
     setupRecyclerView();
     listenForListScroll();
-    dummyDataforMerChantPost();
-    mPresenter.subscribeToRemoteDB();
+//    dummyDataforMerChantPost();
     Log.d(TAG, "ON ACTIVITY CREATED!");
 
-//        mPresenter.deleteAll();
   }
 
-  private void dummyDataforMerChantPost() {
-    Log.i(TAG, "Idempotence Token: " + ByteToken.generate());
-    Log.i(TAG, "Created at: " + Long.toString(new Date().getTime()));
-    long id = 1233456782;
-    SaleItem saleItem = new SaleItem(id, "Vanilla Latte", 345, SaleItem.SaleType.INVENTORY);
-    Log.i(TAG, gson.toJson(saleItem));
-
-  }
+//  private void dummyDataforMerChantPost() {
+//    Log.i(TAG, "Idempotence Token: " + ByteToken.generate());
+//    Log.i(TAG, "Created at: " + Long.toString(new Date().getTime()));
+//    long id = 1233456782;
+//    SaleItem saleItem = new SaleItem(id, "Vanilla Latte", 345, SaleItem.SaleType.INVENTORY);
+//    Log.i(TAG, gson.toJson(saleItem));
+//
+//  }
 
 
   private void setUpDagger() {
@@ -135,9 +161,15 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment impleme
 
   @Override
   public void showPaymentItems(HashMap<String, List<RealmTransaction>> payments) {
-
+    UIState uiState = (payments.size() == 0) ? UIState.NO_PAYMENTS : UIState.PAYMENTS;
+    setUiState(uiState);
     mMainPaymentHistoryAdapter.setGroupedList(payments);
     mMainPaymentHistoryAdapter.notifyDataSetChanged();
+  }
+
+  @Override
+  public Context getApplicationContext() {
+    return getActivity().getApplicationContext();
   }
 
 
@@ -154,6 +186,7 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment impleme
       }
     });
   }
+
 
 
 

@@ -17,16 +17,15 @@ public interface QRScannerContract {
   interface View {
     Context getContext();
 
-    void showTransactionConfirmationScreen(RealmTransaction realmTransaction);
-
     void showTransactionComplete();
+
+    void showTransactionError();
   }
 
   interface Presenter extends BasePresenter {
 
     void createTransaction(String transactionToken);
 
-    void getTransactionConfirmationDetails(JSONObject payment) throws JSONException;
   }
 
 

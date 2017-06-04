@@ -7,4 +7,6 @@ package com.sendkoin.customer.Data.Authentication;
 public interface SessionManager {
   String getSessionToken();
   void putSessionToken(String sessionToken);
+  void putFbAccessToken(String fbAccessToken);
+  String getFbAccessToken();
 }

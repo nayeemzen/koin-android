@@ -12,6 +12,8 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.sendkoin.api.QrCode;
 import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 import com.sendkoin.customer.KoinApplication;
 import com.sendkoin.customer.R;
@@ -25,6 +27,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import mehdi.sakout.fancybuttons.FancyButton;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -37,6 +40,9 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
 
   @Inject
   QRScannerContract.Presenter mPresenter;
+
+  @Inject
+  Gson mGson;
 
   @BindView(R.id.scanner_fragment_layout)
   FrameLayout scannerFrameLayout;
@@ -54,8 +60,9 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   TextView saleAmount;
 
   QRScannerFragement qrScannerFragement;
-  private RealmTransaction realmTransaction;
+  private String mTransactionToken;
   private Unbinder unbinder;
+  private SweetAlertDialog pDialog;
 
   private enum UIState {
     SCANNER,
@@ -85,8 +92,8 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
 
   private void setupPayButton() {
     payButton.setText("Pay");
-    payButton.setBackgroundColor(Color.parseColor("#008489"));
-    payButton.setFocusBackgroundColor(Color.parseColor("#37B3B8"));
+    payButton.setBackgroundColor(Color.parseColor("#37B3B8"));
+    payButton.setFocusBackgroundColor(Color.parseColor("#008489"));
     payButton.setTextSize(20);
     payButton.setRadius(50);
     payButton.setPadding(10, 20, 10, 20);
@@ -108,38 +115,69 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     return getApplicationContext();
   }
 
-  public void getTransactionConfirmationDetails(JSONObject jsonPaymentDetails) throws JSONException {
-    mPresenter.getTransactionConfirmationDetails(jsonPaymentDetails);
-  }
-
-  @Override
-  public void showTransactionConfirmationScreen(RealmTransaction realmTransaction) {
-    this.realmTransaction = realmTransaction;
+  public void showTransactionConfirmationScreen(String qrContent) {
+    QrCode qrCode = mGson.fromJson(qrContent, QrCode.class);
+    this.mTransactionToken = qrCode.transaction_token;
     setUIState(UIState.PAYMENT_CONFIRMATION);
-    merchantName.setText(realmTransaction.getMerchantName());
-    saleAmount.setText(realmTransaction.getAmount());
+    merchantName.setText(qrCode.merchant_name);
+    saleAmount.setText("$" + qrCode.sale_amount.toString());
     setupPayButton();
   }
 
   @Override
   public void showTransactionComplete() {
     //loading indicator off and show check mark
+    showLoadingComplete();
+  }
+
+  @Override
+  public void showTransactionError() {
+    showLoadingError();
+  }
+
+  private void showLoadingError() {
+    pDialog
+        .setTitleText("Declined. Please try again")
+        .changeAlertType(SweetAlertDialog.ERROR_TYPE);
+
+  }
+
+  private void showLoadingComplete() {
+    pDialog.setTitleText("Payment Successful!")
+        .setConfirmText("OK")
+        .setOnDismissListener(dialog -> {
+          setUIState(UIState.SCANNER);
+          dialog.dismiss();
+        });
+    pDialog.changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
   }
 
   @OnClick(R.id.pay_button)
   void processPayment() {
-    if (realmTransaction != null) {
+    if (mTransactionToken != null) {
       //loading indicator ON
-      mPresenter.createTransaction(realmTransaction.getTransactionToken());
-      realmTransaction = null;
+      showLoadingIndicator();
+      mPresenter.createTransaction(mTransactionToken);
+      mTransactionToken = null;
     }
   }
+
+  private void showLoadingIndicator() {
+    pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+    pDialog.getProgressHelper().setBarColor(Color.parseColor("#37B3B8"));
+    pDialog.setTitleText("Processing Payment...");
+    pDialog.setCancelable(false);
+    pDialog.show();
+  }
+
 
   public void setUIState(UIState uiState) {
     switch (uiState) {
       case SCANNER:
         scannerFrameLayout.setVisibility(View.VISIBLE);
         paymentConfirmationLayout.setVisibility(View.GONE);
+        qrScannerFragement.resumeScanning();
+        mTransactionToken = null;
         break;
       case PAYMENT_CONFIRMATION:
         scannerFrameLayout.setVisibility(View.GONE);
@@ -163,9 +201,6 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
       if (getUIState().equals(UIState.PAYMENT_CONFIRMATION)) {
         setUIState(UIState.SCANNER);
-        qrScannerFragement.resumeScanning();
-        // reset the transaction just in case
-        realmTransaction = null;
       } else if (getUIState().equals(UIState.SCANNER)) {
         finish();
       }
@@ -175,7 +210,6 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
 
   /**
    * Not using onResume to subscribe as the Fragment with the scanner does that
-   *
    */
 
   @Override

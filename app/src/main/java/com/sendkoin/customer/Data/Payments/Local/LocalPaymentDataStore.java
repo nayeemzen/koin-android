@@ -15,37 +15,61 @@ import rx.Observable;
  * Created by warefhaque on 5/20/17.
  */
 
-public class LocalPaymentDataStore{
+public class LocalPaymentDataStore {
 
-    private Realm realm;
+  private Realm realm;
 
-    @Inject
-    public LocalPaymentDataStore(Realm realm) {
+  @Inject
+  public LocalPaymentDataStore(Realm realm) {
 
-        this.realm = realm;
-    }
+    this.realm = realm;
+  }
 
-    public Observable<RealmAsyncTask> createPayment(RealmTransaction realmTransaction) {
-        return Observable.fromCallable(() -> realm.executeTransactionAsync(realm1 -> realm1.insert(realmTransaction)));
-    }
+  public Observable<Boolean> createPayment(RealmTransaction realmTransaction) {
+    return Observable.fromCallable(() -> {
+      realm.executeTransaction(realm1 -> realm1.insert(realmTransaction));
+      return true;
+    });
+  }
 
 
-    public Observable<RealmResults<RealmTransaction>> getAllTransactions() {
-       return realm.where(RealmTransaction.class).findAllAsync().asObservable();
-    }
+  public Observable<RealmResults<RealmTransaction>> getAllTransactions() {
+    return realm.where(RealmTransaction.class).findAll().asObservable();
+  }
 
-    public Observable<RealmAsyncTask> saveAllTransactions(List<RealmTransaction> realmTransactions){
-        return Observable.fromCallable(() -> realm.executeTransactionAsync(realm1 -> realm1.insert(realmTransactions)));
-    }
+  public Observable<Boolean> saveAllTransactions(List<RealmTransaction> realmTransactions) {
+    return Observable.fromCallable(() -> {
+      realm.executeTransaction(realm1 -> realm1.copyToRealmOrUpdate(realmTransactions));
+      return true;
+    });
+  }
 
-    /**
-     * Debugging purposes
-     */
-    public void deleteAllTranscations(){
-        realm.executeTransaction(realm1 -> realm1.delete(RealmTransaction.class));
-    }
+  public long getLastSeenTransaction() {
+    Number lastSeen = realm.where(RealmTransaction.class).max("createdAt");
+    return (lastSeen == null) ? 0 : lastSeen.longValue();
+  }
 
-    public void close(){
-      realm.close();
-    }
+
+  /**
+   * Debugging purposes
+   */
+  public void deleteAllTranscations() {
+    realm.executeTransaction(realm1 -> realm1.delete(RealmTransaction.class));
+  }
+
+  public void close() {
+    realm.close();
+  }
 }
+
+
+//      for (RealmTransaction realmTransaction : realmTransactions) {
+//        RealmTransaction existingTransaction = realm.where(RealmTransaction.class)
+//            .equalTo("transactionToken", realmTransaction.getTransactionToken())
+//            .findFirst();
+//
+//        if (existingTransaction == null) {
+//          // no existing transactions
+//          realm.executeTransaction(realm1 -> realm1.insert(realmTransaction));
+//        }
+//      }

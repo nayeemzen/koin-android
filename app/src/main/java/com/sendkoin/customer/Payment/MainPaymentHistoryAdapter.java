@@ -104,7 +104,7 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
         PaymentHistoryViewHolder paymentHistoryViewHolder = (PaymentHistoryViewHolder) holder;
         paymentHistoryViewHolder.paymentPlaceName.setText(paymentItem.placeName);
         paymentHistoryViewHolder.paymentPlaceType.setText(paymentItem.placeType);
-        paymentHistoryViewHolder.paymentAmount.setText(paymentItem.paidAmount);
+        paymentHistoryViewHolder.paymentAmount.setText("$" + paymentItem.paidAmount);
         break;
       case ListItem.TYPE_DATE:
         DateItem dateItem  = (DateItem) groupedList.get(position);

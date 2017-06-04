@@ -1,5 +1,7 @@
 package com.sendkoin.customer.Payment;
 
+import android.content.Context;
+
 import com.sendkoin.customer.BasePresenter;
 import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 
@@ -14,10 +16,11 @@ public interface MainPaymentContract {
 
      interface View {
        void showPaymentItems(HashMap<String, List<RealmTransaction>> payments);
+       Context getApplicationContext();
     }
 
      interface Presenter extends BasePresenter{
-       void subscribeToRemoteDB();
+       void loadTranactionsFromDBAndSave();
        void deleteAll();
 
     }

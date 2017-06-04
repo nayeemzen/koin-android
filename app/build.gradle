@@ -128,6 +128,9 @@ dependencies {
 
     // Wire
     compile 'com.squareup.wire:wire-runtime:2.2.0'
+
+    // SweetAlert
+    compile 'cn.pedant.sweetalert:library:1.3'
 }
 
 // This handles the protocol buffer generation with wire

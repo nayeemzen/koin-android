@@ -70,6 +70,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
+                        android:textAlignment="center"
                         android:paddingBottom="25dp"
                         android:text="Gloria Jeans Coffees"
                         android:textColor="#616161"
@@ -85,6 +86,7 @@
                         android:layout_below="@+id/merchant_name"
                         android:layout_centerHorizontal="true"
                         android:text="$1400"
+                        android:textAlignment="center"
                         android:textColor="#9E9E9E"
                         android:textSize="30sp"
                         />
@@ -96,7 +98,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="60dp">
+                    android:layout_marginBottom="60dp"
+                    android:paddingRight="20dp"
+                    android:paddingLeft="20dp">
 
                     <mehdi.sakout.fancybuttons.FancyButton
                         android:id="@+id/pay_button"
@@ -106,6 +110,30 @@
                         android:background="@color/colorPrimary"
                         android:text="Pay"
                         android:textColor="@color/colorWhiteText"/>
+
+                    <!--<RelativeLayout-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_centerInParent="true"-->
+                        <!--android:padding="10dp">-->
+                        <!--<Button-->
+                            <!--android:id="@+id/confirm_pay_button"-->
+                            <!--android:layout_width="70dp"-->
+                            <!--android:layout_height="70dp"-->
+                            <!--android:background="@drawable/confirm_pay_button"-->
+                            <!--android:src="@drawable/confirm_pay_icon"-->
+                            <!--android:layout_alignParentRight="true"-->
+                            <!--android:textColor="#fff" />-->
+                        <!--<Button-->
+                            <!--android:layout_width="70dp"-->
+                            <!--android:layout_height="70dp"-->
+                            <!--android:background="@drawable/cancel_pay_button"-->
+                            <!--android:src="@drawable/cancel_pay_icon"-->
+                            <!--android:paddingTop="20dp"-->
+                            <!--android:layout_toLeftOf="@+id/confirm_pay_button"-->
+                            <!--android:textColor="#fff" />-->
+
+                    <!--</RelativeLayout>-->
 
                 </RelativeLayout>
 

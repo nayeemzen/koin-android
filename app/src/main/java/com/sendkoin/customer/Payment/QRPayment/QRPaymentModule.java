@@ -1,5 +1,6 @@
 package com.sendkoin.customer.Payment.QRPayment;
 
+import com.google.gson.Gson;
 import com.sendkoin.customer.Data.Authentication.RealSessionManager;
 import com.sendkoin.customer.Data.Dagger.CustomScope;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;

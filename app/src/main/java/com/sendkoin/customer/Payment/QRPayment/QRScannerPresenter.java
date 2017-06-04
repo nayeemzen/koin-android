@@ -1,7 +1,13 @@
 package com.sendkoin.customer.Payment.QRPayment;
 
 
+import android.util.Log;
+
+import com.google.gson.Gson;
 import com.sendkoin.api.AcceptTransactionRequest;
+import com.sendkoin.api.AcceptTransactionResponse;
+import com.sendkoin.api.QrCode;
+import com.sendkoin.api.Transaction;
 import com.sendkoin.customer.Data.Authentication.RealSessionManager;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
@@ -10,12 +16,16 @@ import com.sendkoin.customer.Data.Payments.PaymentService;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.awt.font.TextAttribute;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.inject.Inject;
 
+import rx.Subscriber;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by warefhaque on 5/23/17.
@@ -23,6 +33,7 @@ import rx.Subscription;
 
 public class QRScannerPresenter implements QRScannerContract.Presenter {
 
+  private static final String TAG = "QRScannerPresenter";
   private QRScannerContract.View view;
   private LocalPaymentDataStore localPaymentDataStore;
   private PaymentService paymentService;
@@ -35,7 +46,8 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
   public QRScannerPresenter(QRScannerContract.View view,
                             LocalPaymentDataStore localPaymentDataStore,
                             PaymentService paymentService,
-                            RealSessionManager realSessionManager) {
+                            RealSessionManager realSessionManager
+                            ) {
 
     this.view = view;
     this.localPaymentDataStore = localPaymentDataStore;
@@ -53,20 +65,43 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
    */
   @Override
   public void createTransaction(String transactionToken) {
-
     //1. create the transaction object
     long timeStamp = System.currentTimeMillis() / 1000L;
 
-    AcceptTransactionRequest acceptTransactionRequest = new AcceptTransactionRequest(
-        timeStamp,
-        "waref",
-        transactionToken);
+    AcceptTransactionRequest acceptTransactionRequest = new AcceptTransactionRequest.Builder()
+        .created_at(timeStamp)
+        .transaction_token(transactionToken)
+        .idempotence_token("waref")
+        .build();
+
     //2. save the transaction in the DB
     subscription = paymentService
-        .acceptCurrentTransaction(realSessionManager.getSessionToken(), acceptTransactionRequest)
-    //3. save the transaction in realm
-        .subscribe(transaction -> localPaymentDataStore.createPayment(RealmTransaction.
-            transactionToRealmTransaction(transaction)));
+        .acceptCurrentTransaction("Bearer " + realSessionManager.getSessionToken(), acceptTransactionRequest)
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Subscriber<AcceptTransactionResponse>() {
+          @Override
+          public void onCompleted() {
+            Log.d(TAG, "on Completed!");
+          }
+
+          @Override
+          public void onError(Throwable e) {
+            view.showTransactionError();
+            Log.e(TAG, e.getMessage());
+          }
+
+          @Override
+          public void onNext(AcceptTransactionResponse acceptTransactionResponse) {
+            localPaymentDataStore
+                .createPayment(RealmTransaction
+                    .transactionToRealmTransaction(acceptTransactionResponse.transaction));
+
+
+            view.showTransactionComplete();
+          }
+        });
+
   }
 
 
@@ -90,32 +125,4 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
     }
   }
 
-  public static String getFormattedDate(Date date) {
-
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, MMMM dd");
-    return simpleDateFormat.format(date);
-  }
-
-  /**
-   * Create object to populate the payment confirmation screen
-   *
-   * @param paymentJson result from the scan
-   * @throws JSONException
-   */
-  @Override
-  public void getTransactionConfirmationDetails(JSONObject paymentJson) throws JSONException {
-    String merchant_name = paymentJson.has(MERCHANT_NAME) ? paymentJson.getString(MERCHANT_NAME) : "";
-    String sale_amount = paymentJson.has(SALE_AMOUNT) ? paymentJson.getString(SALE_AMOUNT) : "";
-    Date currentDate = new Date();
-    String date = getFormattedDate(currentDate);
-    RealmTransaction realmTransaction = new RealmTransaction()
-        .setAmount(Integer.valueOf(sale_amount))
-        .setMerchantName(merchant_name)
-        .setDate(date)
-        .setTransactionToken("waref")
-        .setMerchantType("Restaurant");
-
-    // will show the dialog
-    view.showTransactionConfirmationScreen(realmTransaction);
-  }
 }

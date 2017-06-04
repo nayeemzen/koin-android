@@ -18,7 +18,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 public class KoinApplication extends Application{
 
     public static final String DEFAULT_FONT = "fonts/Nunito-Bold.ttf";
-    public static final String KOIN_SERVERURL = "http://sendkoin.herokuapp.com/api/v1/";
+    public static final String KOIN_SERVERURL = "http://custom-env-1.2tfxydg93p.us-west-2.elasticbeanstalk.com/api/v1/";
     private NetComponent netComponent;
 
 

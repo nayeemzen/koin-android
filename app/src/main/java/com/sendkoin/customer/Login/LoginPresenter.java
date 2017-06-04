@@ -28,21 +28,21 @@ public class LoginPresenter implements LoginContract.Presenter {
   private Subscription subscription;
 
   @Inject
-  LoginPresenter(LoginContract.View view, AuthenticationService authenticationService, RealSessionManager realSessionManager){
+  LoginPresenter(LoginContract.View view, AuthenticationService authenticationService, RealSessionManager realSessionManager) {
     this.view = view;
     this.authenticationService = authenticationService;
     this.realSessionManager = realSessionManager;
   }
 
 
-
   @Override
   public void loginWithFacebook(String accessToken) {
+    realSessionManager.putFbAccessToken(accessToken);
     Log.d(TAG, "FB Access Token: " + accessToken);
     subscription = authenticationService.authenticateWithFacebook(
         new FacebookAuthenticationRequest.Builder()
-        .access_token(accessToken)
-        .build())
+            .access_token(accessToken)
+            .build())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribeOn(Schedulers.io())
         .subscribe(new Observer<AuthenticationResponse>() {
@@ -58,9 +58,9 @@ public class LoginPresenter implements LoginContract.Presenter {
 
           @Override
           public void onNext(AuthenticationResponse authenticationResponse) {
+            realSessionManager.putSessionToken(authenticationResponse.session_token);
             Log.d(TAG, "Authenticated: " + authenticationResponse.customer.full_name + " through facebook!");
             Log.d(TAG, "Session Token: " + authenticationResponse.session_token);
-            realSessionManager.putSessionToken(authenticationResponse.session_token);
             view.loginWithFbSuccess(formatName(authenticationResponse.customer.full_name));
           }
         });
@@ -68,14 +68,13 @@ public class LoginPresenter implements LoginContract.Presenter {
 
   @Override
   public void unsubscribe() {
-    if (subscription != null){
+    if (subscription != null) {
       subscription.unsubscribe();
     }
   }
 
 
-
-  public String formatName(String name){
+  public String formatName(String name) {
     return name.split(" ")[0];
   }
 }

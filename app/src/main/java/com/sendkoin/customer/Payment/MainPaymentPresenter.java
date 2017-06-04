@@ -1,6 +1,7 @@
 package com.sendkoin.customer.Payment;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
@@ -23,6 +24,7 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by warefhaque on 5/20/17.
@@ -36,6 +38,7 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
   private PaymentService paymentService;
   private RealSessionManager realSessionManager;
   private Subscription subscription;
+  private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
   // need local and payment repo for calls
   @Inject
@@ -53,9 +56,10 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
   }
 
   @Override
-  public void subscribeToRemoteDB() {
-    subscription = paymentRepository
-        .getAllPayments(paymentService, "Bearer " + realSessionManager.getSessionToken())
+  public void loadTranactionsFromDBAndSave() {
+    long lastSeen = localPaymentDataStore.getLastSeenTransaction();
+    Subscription subscription = paymentRepository
+        .getAllPayments(paymentService, "Bearer " + realSessionManager.getSessionToken(), lastSeen)
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(new Subscriber<ListTransactionsResponse>() {
@@ -66,14 +70,17 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
 
           @Override
           public void onError(Throwable e) {
-            Log.e(TAG, "ERROR - " + e.getMessage());
+            if (e != null) {
+              Toast.makeText(view.getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT)
+                  .show();
+              Log.e(TAG, "ERROR - " + e.getMessage());
+            }
           }
 
           @Override
           public void onNext(ListTransactionsResponse listTransactionsResponse) {
 
             List<Transaction> transactions = listTransactionsResponse.transactions;
-
             // you save the items here, on resume calls the realm db  and updates the view
             localPaymentDataStore.saveAllTransactions(RealmTransaction
                 .transactionListToRealmTranscationList(transactions))
@@ -82,7 +89,10 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
 
         });
 
+    compositeSubscription.add(subscription);
+
   }
+
 
   /**
    * Debugging purposes
@@ -94,23 +104,24 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
   }
 
 
-  public HashMap<String, List<RealmTransaction>> groupTransactionsIntoHashMap(List<RealmTransaction> realmTransactions) {
+  public HashMap<String,
+      List<RealmTransaction>> groupTransactionsIntoHashMap(List<RealmTransaction> realmTransactions) {
     HashMap<String, List<RealmTransaction>> groupedResult = new HashMap<>();
 
     for (RealmTransaction realmTransaction : realmTransactions) {
-      if (groupedResult.containsKey(realmTransaction.getDate())) {
-        groupedResult.get(realmTransaction.getDate()).add(realmTransaction);
+      if (groupedResult.containsKey(realmTransaction.getCreatedAt())) {
+        groupedResult.get(realmTransaction.getCreatedAt()).add(realmTransaction);
       } else {
         List<RealmTransaction> realmTransactionList = new ArrayList<>();
         realmTransactionList.add(realmTransaction);
-        groupedResult.put(realmTransaction.getDate(), realmTransactionList);
+        groupedResult.put(realmTransaction.getCreatedAt(), realmTransactionList);
       }
     }
     return groupedResult;
   }
 
   private void loadTransactionsFromRealm() {
-    subscription = localPaymentDataStore.getAllTransactions()
+   Subscription subscription = localPaymentDataStore.getAllTransactions()
         .subscribe(new Subscriber<RealmResults<RealmTransaction>>() {
           @Override
           public void onCompleted() {
@@ -128,23 +139,27 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
             view.showPaymentItems(groupTransactionsIntoHashMap(items));
           }
         });
+
+    compositeSubscription.add(subscription);
   }
 
   @Override
   public void subscribe() {
     loadTransactionsFromRealm();
+    // RX will automatically update the view again when changes are saved in the background
+    loadTranactionsFromDBAndSave();
   }
 
   @Override
   public void unsubscribe() {
-    if (subscription != null){
-      subscription.unsubscribe();
+    if (compositeSubscription != null) {
+      compositeSubscription.clear();
     }
   }
 
   @Override
   public void closeRealm() {
-    if(localPaymentDataStore != null) {
+    if (localPaymentDataStore != null) {
       localPaymentDataStore.close();
     }
   }

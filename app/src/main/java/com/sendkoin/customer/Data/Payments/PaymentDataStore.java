@@ -13,7 +13,7 @@ import rx.Observable;
 
 public interface PaymentDataStore {
 
-    Observable<RealmAsyncTask> createPayment(RealmTransaction realmTransaction);
+    Observable<Boolean> createPayment(RealmTransaction realmTransaction);
 
-    Observable<ListTransactionsResponse> getAllPayments(PaymentService paymentService, String authToken);
+    Observable<ListTransactionsResponse> getAllPayments(PaymentService paymentService, String authToken, long lastSeen);
 }
