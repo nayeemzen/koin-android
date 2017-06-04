@@ -34,6 +34,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
 
@@ -55,6 +56,7 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment impleme
   CoordinatorLayout mainPaymentContent;
   @BindView(R.id.no_transactions_text)
   TextView noTransactionsText;
+  SweetAlertDialog pDialog;
   @Inject
   Gson gson;
 
@@ -89,20 +91,8 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment impleme
     setUpDagger();
     setupRecyclerView();
     listenForListScroll();
-//    dummyDataforMerChantPost();
-    Log.d(TAG, "ON ACTIVITY CREATED!");
 
   }
-
-//  private void dummyDataforMerChantPost() {
-//    Log.i(TAG, "Idempotence Token: " + ByteToken.generate());
-//    Log.i(TAG, "Created at: " + Long.toString(new Date().getTime()));
-//    long id = 1233456782;
-//    SaleItem saleItem = new SaleItem(id, "Vanilla Latte", 345, SaleItem.SaleType.INVENTORY);
-//    Log.i(TAG, gson.toJson(saleItem));
-//
-//  }
-
 
   private void setUpDagger() {
     DaggerMainPaymentComponent.builder().netComponent(((KoinApplication) getActivity()
@@ -130,7 +120,6 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment impleme
   public void onResume() {
     super.onResume();
     mPresenter.subscribe();
-    Log.d(TAG, "ON RESUME!");
 
   }
 
@@ -139,7 +128,6 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment impleme
   public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_main_payment, container, false);
     unbinder = ButterKnife.bind(this, view);
-    Log.d(TAG, "ON CREATE VIEW!");
 
     return view;
   }
@@ -188,6 +176,11 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment impleme
   }
 
 
+  public void showDialogLayout(){
+    pDialog = new SweetAlertDialog(getActivity());
+    pDialog.setContentView(R.layout.dialog_view);
+    pDialog.show();
+  }
 
 
 }

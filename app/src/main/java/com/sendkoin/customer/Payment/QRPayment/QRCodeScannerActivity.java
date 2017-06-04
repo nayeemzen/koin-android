@@ -146,7 +146,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     pDialog.setTitleText("Payment Successful!")
         .setConfirmText("OK")
         .setOnDismissListener(dialog -> {
-          setUIState(UIState.SCANNER);
+          finish();
           dialog.dismiss();
         });
     pDialog.changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
