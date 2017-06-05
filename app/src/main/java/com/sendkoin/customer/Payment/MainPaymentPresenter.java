@@ -62,10 +62,11 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
   public void loadTransactionsFromDBAndSave(boolean fetchWithLastSeen) {
     // if fetchWithLastSeen then fetch recent ones otherwise everything
     long lastSeen = (fetchWithLastSeen) ? localPaymentDataStore.getLastSeenTransaction() : 0;
+    int localPageNumber = (fetchWithLastSeen) ? 0 : pageNumber;
     Subscription subscription = paymentRepository
         .getAllPayments(paymentService, "Bearer " + realSessionManager.getSessionToken(),
             lastSeen,
-            pageNumber)
+            localPageNumber)
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(new Subscriber<ListTransactionsResponse>() {

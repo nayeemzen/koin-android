@@ -57,8 +57,22 @@ public class RealmTransaction extends RealmObject {
   public String getCreatedAt() {
     Calendar cal = Calendar.getInstance(Locale.ENGLISH);
     cal.setTimeInMillis(createdAt);
-    String date = DateFormat.format("EEEE, MMMM dd", cal).toString();
-    return date;
+    String dateString = DateFormat.format("EEEE, MMMM d", cal).toString();
+    int day = cal.get(Calendar.DAY_OF_MONTH);
+    return dateString + getDateSuffix(day);
+  }
+
+  private String getDateSuffix(int day) {
+    switch (day){
+      case 1:
+        return "st";
+      case 2:
+        return "nd";
+      case 3:
+        return "rd";
+      default:
+        return "th";
+    }
   }
 
   public RealmTransaction setCreatedAt(Long createdAt) {
