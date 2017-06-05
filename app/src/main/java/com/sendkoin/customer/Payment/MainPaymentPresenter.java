@@ -15,6 +15,7 @@ import com.sendkoin.customer.Data.Payments.PaymentService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -39,6 +40,8 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
   private RealSessionManager realSessionManager;
   private Subscription subscription;
   private CompositeSubscription compositeSubscription = new CompositeSubscription();
+  private Boolean hasNextPage;
+  private int pageNumber = 1;
 
   // need local and payment repo for calls
   @Inject
@@ -56,10 +59,13 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
   }
 
   @Override
-  public void loadTranactionsFromDBAndSave() {
-    long lastSeen = localPaymentDataStore.getLastSeenTransaction();
+  public void loadTransactionsFromDBAndSave(boolean fetchWithLastSeen) {
+    // if fetchWithLastSeen then fetch recent ones otherwise everything
+    long lastSeen = (fetchWithLastSeen) ? localPaymentDataStore.getLastSeenTransaction() : 0;
     Subscription subscription = paymentRepository
-        .getAllPayments(paymentService, "Bearer " + realSessionManager.getSessionToken(), lastSeen)
+        .getAllPayments(paymentService, "Bearer " + realSessionManager.getSessionToken(),
+            lastSeen,
+            pageNumber)
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(new Subscriber<ListTransactionsResponse>() {
@@ -81,6 +87,10 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
           public void onNext(ListTransactionsResponse listTransactionsResponse) {
 
             List<Transaction> transactions = listTransactionsResponse.transactions;
+            hasNextPage = listTransactionsResponse.has_next_page;
+            if(hasNextPage){
+              pageNumber = pageNumber + 1;
+            }
             // you save the items here, on resume calls the realm db  and updates the view
             localPaymentDataStore.saveAllTransactions(RealmTransaction
                 .transactionListToRealmTranscationList(transactions))
@@ -103,10 +113,21 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
     localPaymentDataStore.deleteAllTranscations();
   }
 
+  @Override
+  public void fetchHistory() {
+    loadTransactionsFromDBAndSave(false);
+  }
 
-  public HashMap<String,
-      List<RealmTransaction>> groupTransactionsIntoHashMap(List<RealmTransaction> realmTransactions) {
-    HashMap<String, List<RealmTransaction>> groupedResult = new HashMap<>();
+  @Override
+  public boolean hasNextPage() {
+    return hasNextPage;
+  }
+
+
+
+  public LinkedHashMap<String,
+        List<RealmTransaction>> groupTransactionsIntoHashMap(List<RealmTransaction> realmTransactions) {
+    LinkedHashMap<String, List<RealmTransaction>> groupedResult = new LinkedHashMap<>();
 
     for (RealmTransaction realmTransaction : realmTransactions) {
       if (groupedResult.containsKey(realmTransaction.getCreatedAt())) {
@@ -122,6 +143,7 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
 
   private void loadTransactionsFromRealm() {
    Subscription subscription = localPaymentDataStore.getAllTransactions()
+        .filter(RealmResults::isLoaded)
         .subscribe(new Subscriber<RealmResults<RealmTransaction>>() {
           @Override
           public void onCompleted() {
@@ -147,7 +169,8 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
   public void subscribe() {
     loadTransactionsFromRealm();
     // RX will automatically update the view again when changes are saved in the background
-    loadTranactionsFromDBAndSave();
+    //fetching with last seen = last seen payment
+    loadTransactionsFromDBAndSave(true);
   }
 
   @Override
@@ -163,4 +186,5 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
       localPaymentDataStore.close();
     }
   }
+
 }

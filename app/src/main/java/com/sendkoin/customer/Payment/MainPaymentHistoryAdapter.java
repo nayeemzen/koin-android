@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
@@ -12,6 +13,7 @@ import com.sendkoin.customer.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -30,21 +32,21 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
     groupedList = new ArrayList<>();
   }
 
-  public void setGroupedList(HashMap<String, List<RealmTransaction>> payments) {
+  public void setGroupedList(LinkedHashMap<String, List<RealmTransaction>> payments) {
     groupedList = groupPaymentsByDate(payments);
     Log.d(TAG, groupedList.toString());
   }
 
-  public List<ListItem> groupPaymentsByDate(HashMap<String, List<RealmTransaction>> groupedHashMap){
+  public List<ListItem> groupPaymentsByDate(LinkedHashMap<String, List<RealmTransaction>> groupedHashMap) {
 
     List<ListItem> result = new ArrayList<>();
 
-    for (String date : groupedHashMap.keySet()){
+    for (String date : groupedHashMap.keySet()) {
       DateItem dateItem = new DateItem();
       dateItem.date = date;
       result.add(dateItem);
 
-      for (RealmTransaction realmTransaction : groupedHashMap.get(date)){
+      for (RealmTransaction realmTransaction : groupedHashMap.get(date)) {
         PaymentItem paymentItem = new PaymentItem()
             .setPlaceName(realmTransaction.getMerchantName())
             .setPlaceType(realmTransaction.getMerchantType())
@@ -59,11 +61,14 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
 
   @Override
   public int getItemViewType(int position) {
-    return groupedList.get(position).getType();
+
+    return (groupedList.get(position) == null) ? ListItem.TYPE_LOADING :
+        groupedList.get(position).getType();
   }
 
   /**
    * Infates the view and assigns the variables in the viewholder to the right items
+   *
    * @param parent
    * @param viewType
    * @return
@@ -73,7 +78,7 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
 
     RecyclerView.ViewHolder viewHolder = null;
 
-    switch (viewType){
+    switch (viewType) {
 
       case ListItem.TYPE_PAYMENT:
         LayoutInflater paymentLayoutInflater = LayoutInflater.from(parent.getContext());
@@ -85,12 +90,17 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
         View dateView = dateLayoutInflater.inflate(R.layout.main_payment_date_item, parent, false);
         viewHolder = new DateViewHolder(dateView);
         break;
+      case ListItem.TYPE_LOADING:
+        LayoutInflater loadingLayoutInflater = LayoutInflater.from(parent.getContext());
+        View loadingView = loadingLayoutInflater.inflate(R.layout.payment_loading_item, parent, false);
+        viewHolder = new LoadingViewHolder(loadingView);
     }
     return viewHolder;
   }
 
   /**
    * For every position in the cell sets the text and/or images in the viewholder
+   *
    * @param holder
    * @param position
    */
@@ -98,7 +108,7 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
   public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
     int viewType = groupedList.get(position).getType();
 
-    switch (viewType){
+    switch (viewType) {
       case ListItem.TYPE_PAYMENT:
         PaymentItem paymentItem = (PaymentItem) groupedList.get(position);
         PaymentHistoryViewHolder paymentHistoryViewHolder = (PaymentHistoryViewHolder) holder;
@@ -107,11 +117,14 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
         paymentHistoryViewHolder.paymentAmount.setText("$" + paymentItem.paidAmount);
         break;
       case ListItem.TYPE_DATE:
-        DateItem dateItem  = (DateItem) groupedList.get(position);
+        DateItem dateItem = (DateItem) groupedList.get(position);
         DateViewHolder dateViewHolder = (DateViewHolder) holder;
         dateViewHolder.paymentDate.setText(dateItem.date);
         break;
-
+      case ListItem.TYPE_LOADING:
+        LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
+        loadingViewHolder.progressBar.setIndeterminate(true);
+        break;
     }
   }
 
@@ -120,7 +133,7 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
     return groupedList.size();
   }
 
-  public class PaymentHistoryViewHolder extends RecyclerView.ViewHolder{
+  public class PaymentHistoryViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.payment_place_name)
     TextView paymentPlaceName;
@@ -131,30 +144,50 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
 
     public PaymentHistoryViewHolder(View itemView) {
       super(itemView);
-      ButterKnife.bind(this,itemView);
+      ButterKnife.bind(this, itemView);
     }
   }
 
-  public class DateViewHolder extends RecyclerView.ViewHolder{
+  public class DateViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.payment_date)
     TextView paymentDate;
 
     public DateViewHolder(View itemView) {
       super(itemView);
-      ButterKnife.bind(this,itemView);
+      ButterKnife.bind(this, itemView);
     }
   }
 
-  public abstract class ListItem{
+  public class LoadingViewHolder extends RecyclerView.ViewHolder {
+
+    // TODO: 6/4/17 change to ButterKnife later as it wasn't recognizing it now
+    public ProgressBar progressBar;
+    public LoadingViewHolder(View itemView) {
+      super(itemView);
+      progressBar = (ProgressBar) itemView.findViewById(R.id.payment_progress_bar);
+
+    }
+  }
+
+  public abstract class ListItem {
 
     public static final int TYPE_DATE = 0;
     public static final int TYPE_PAYMENT = 1;
+    public static final int TYPE_LOADING = 2;
 
     public abstract int getType();
   }
 
-  public class PaymentItem extends ListItem{
+  public class LoadingItem extends ListItem {
+
+    @Override
+    public int getType() {
+      return TYPE_LOADING;
+    }
+  }
+
+  public class PaymentItem extends ListItem {
 
     public String placeName;
     public String placeType;
@@ -166,7 +199,7 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     public PaymentItem setPlaceType(String placeType) {
-      this.placeType = "#"+placeType;
+      this.placeType = "#" + placeType;
       return this;
     }
 
@@ -182,7 +215,7 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
     }
   }
 
-  public class DateItem extends ListItem{
+  public class DateItem extends ListItem {
 
     String date;
 

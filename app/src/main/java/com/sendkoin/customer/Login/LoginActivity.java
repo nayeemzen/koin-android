@@ -62,7 +62,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     smsLoginBtn.setFocusBackgroundColor(Color.parseColor("#37B3B8"));
     smsLoginBtn.setTextSize(17);
     smsLoginBtn.setRadius(15);
-    smsLoginBtn.setIconResource(R.drawable.login_sms);
+    smsLoginBtn.setIconResource("\uf0e6");
     smsLoginBtn.setIconPosition(FancyButton.POSITION_LEFT);
     smsLoginBtn.setFontIconSize(26);
     smsLoginBtn.setIconPadding(10,10,15,13);

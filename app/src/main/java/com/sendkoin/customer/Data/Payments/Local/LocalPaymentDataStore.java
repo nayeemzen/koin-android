@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import io.realm.Realm;
 import io.realm.RealmAsyncTask;
 import io.realm.RealmResults;
+import io.realm.Sort;
 import rx.Observable;
 
 /**
@@ -34,12 +35,15 @@ public class LocalPaymentDataStore {
 
 
   public Observable<RealmResults<RealmTransaction>> getAllTransactions() {
-    return realm.where(RealmTransaction.class).findAll().asObservable();
+    return realm.where(RealmTransaction.class)
+        .findAllSorted("createdAt", Sort.DESCENDING)
+        .asObservable();
   }
 
   public Observable<Boolean> saveAllTransactions(List<RealmTransaction> realmTransactions) {
     return Observable.fromCallable(() -> {
-      realm.executeTransaction(realm1 -> realm1.copyToRealmOrUpdate(realmTransactions));
+      realm.executeTransaction(realm1 ->
+          realm1.copyToRealmOrUpdate(realmTransactions));
       return true;
     });
   }

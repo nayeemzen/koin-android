@@ -131,13 +131,13 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   }
 
   @Override
-  public void showTransactionError() {
-    showLoadingError();
+  public void showTransactionError(String error) {
+    showLoadingError(error);
   }
 
-  private void showLoadingError() {
+  private void showLoadingError(String error) {
     pDialog
-        .setTitleText("Declined. Please try again")
+        .setTitleText(error)
         .changeAlertType(SweetAlertDialog.ERROR_TYPE);
 
   }

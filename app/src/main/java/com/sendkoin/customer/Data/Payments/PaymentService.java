@@ -23,7 +23,8 @@ public interface PaymentService {
   @GET("transactions/customer/list/")
   Observable<ListTransactionsResponse>
   getAllPayments(@Header("Authorization") String token,
-                 @Query("updatesSince") long lastSeen);
+                 @Query("updatesSince") long lastSeen,
+                 @Query("page") int pageNumber);
 
   @POST("transactions/customer/accept/")
   Observable<AcceptTransactionResponse>

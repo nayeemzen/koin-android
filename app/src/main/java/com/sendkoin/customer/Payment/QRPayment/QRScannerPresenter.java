@@ -42,6 +42,10 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
   public static final String SALE_AMOUNT = "sale_amount";
   private Subscription subscription;
 
+  // TODO: 6/4/17 need to fill in with proper error messages and codes
+  public static final String INTERNAL_SERVER_ERROR = "HTTP 500 Internal Server Error";
+  public static final String UNAUTHORIZED = "401";
+
   @Inject
   public QRScannerPresenter(QRScannerContract.View view,
                             LocalPaymentDataStore localPaymentDataStore,
@@ -71,7 +75,7 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
     AcceptTransactionRequest acceptTransactionRequest = new AcceptTransactionRequest.Builder()
         .created_at(timeStamp)
         .transaction_token(transactionToken)
-        .idempotence_token("waref")
+        .idempotence_token("random_string")
         .build();
 
     //2. save the transaction in the DB
@@ -87,15 +91,15 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
 
           @Override
           public void onError(Throwable e) {
-            view.showTransactionError();
+            view.showTransactionError(getErrorMessage(e));
             Log.e(TAG, e.getMessage());
           }
 
           @Override
           public void onNext(AcceptTransactionResponse acceptTransactionResponse) {
-            localPaymentDataStore
-                .createPayment(RealmTransaction
-                    .transactionToRealmTransaction(acceptTransactionResponse.transaction));
+//            localPaymentDataStore
+//                .createPayment(RealmTransaction
+//                    .transactionToRealmTransaction(acceptTransactionResponse.transaction));
 
 
             view.showTransactionComplete();
@@ -125,4 +129,11 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
     }
   }
 
+  public String getErrorMessage(Throwable error) {
+    if (error.getMessage().contains(INTERNAL_SERVER_ERROR)){
+      return "Declined. Internal Error.";
+    }else{
+      return "Declined. Please try again.";
+    }
+  }
 }

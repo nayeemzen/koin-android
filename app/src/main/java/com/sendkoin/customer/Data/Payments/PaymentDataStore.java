@@ -15,5 +15,5 @@ public interface PaymentDataStore {
 
     Observable<Boolean> createPayment(RealmTransaction realmTransaction);
 
-    Observable<ListTransactionsResponse> getAllPayments(PaymentService paymentService, String authToken, long lastSeen);
+    Observable<ListTransactionsResponse> getAllPayments(PaymentService paymentService, String authToken, long lastSeen, int pageNumber);
 }

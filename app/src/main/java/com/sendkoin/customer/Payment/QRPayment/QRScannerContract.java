@@ -19,7 +19,7 @@ public interface QRScannerContract {
 
     void showTransactionComplete();
 
-    void showTransactionError();
+    void showTransactionError(String errorMessage);
   }
 
   interface Presenter extends BasePresenter {

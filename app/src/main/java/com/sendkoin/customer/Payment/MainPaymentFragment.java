@@ -26,6 +26,7 @@ import com.sendkoin.customer.Utility.ByteToken;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -59,20 +60,23 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment impleme
   SweetAlertDialog pDialog;
   @Inject
   Gson gson;
+  private int lastVisibleItem, totalItemCount;
+  private boolean isLoading;
 
   public Unbinder unbinder;
 
   MainPaymentHistoryAdapter mMainPaymentHistoryAdapter;
   @Inject
   LocalPaymentDataStore localPaymentDataStore;
+  private int visibleThreshold = 1;
 
-  enum UIState{
+  enum UIState {
     PAYMENTS,
     NO_PAYMENTS
   }
 
-  public void setUiState(UIState uiState){
-    switch (uiState){
+  public void setUiState(UIState uiState) {
+    switch (uiState) {
       case PAYMENTS:
         noTransactionsText.setVisibility(View.GONE);
         recyclerViewPaymentHistory.setVisibility(View.VISIBLE);
@@ -85,13 +89,13 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment impleme
 
     }
   }
+
   @Override
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
     setUpDagger();
     setupRecyclerView();
     listenForListScroll();
-
   }
 
   private void setUpDagger() {
@@ -148,11 +152,12 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment impleme
   }
 
   @Override
-  public void showPaymentItems(HashMap<String, List<RealmTransaction>> payments) {
+  public void showPaymentItems(LinkedHashMap<String, List<RealmTransaction>> payments) {
     UIState uiState = (payments.size() == 0) ? UIState.NO_PAYMENTS : UIState.PAYMENTS;
     setUiState(uiState);
     mMainPaymentHistoryAdapter.setGroupedList(payments);
     mMainPaymentHistoryAdapter.notifyDataSetChanged();
+    isLoading = false;
   }
 
   @Override
@@ -162,24 +167,35 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment impleme
 
 
   private void listenForListScroll() {
+    LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerViewPaymentHistory.getLayoutManager();
     recyclerViewPaymentHistory.addOnScrollListener(new RecyclerView.OnScrollListener() {
       @Override
       public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         super.onScrolled(recyclerView, dx, dy);
+        totalItemCount = linearLayoutManager.getItemCount();
+        lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
         if (dy > 0 && createPayment.getVisibility() == View.VISIBLE) {
+          // hide the FAB when scrolling down
           createPayment.hide();
         } else if (dy < 0 && createPayment.getVisibility() != View.VISIBLE) {
           createPayment.show();
         }
+
+        if (dy > 0){
+          if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+            if (mPresenter != null) {
+              if (mPresenter.hasNextPage()){
+                Log.d(TAG, "Has Next page " + mPresenter.hasNextPage());
+                Log.d(TAG, "Calling db...");
+                mPresenter.fetchHistory();
+              }
+            }
+            isLoading = true;
+
+          }
+        }
       }
     });
-  }
-
-
-  public void showDialogLayout(){
-    pDialog = new SweetAlertDialog(getActivity());
-    pDialog.setContentView(R.layout.dialog_view);
-    pDialog.show();
   }
 
 

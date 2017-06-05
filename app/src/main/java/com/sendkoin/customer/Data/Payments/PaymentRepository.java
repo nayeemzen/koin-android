@@ -26,7 +26,7 @@ public class PaymentRepository implements PaymentDataStore{
     }
 
     @Override
-    public Observable<ListTransactionsResponse> getAllPayments(PaymentService paymentService, String authToken, long lastSeen) {
-        return paymentService.getAllPayments(authToken, lastSeen);
+    public Observable<ListTransactionsResponse> getAllPayments(PaymentService paymentService, String authToken, long lastSeen, int pageNumber) {
+        return paymentService.getAllPayments(authToken, lastSeen, pageNumber);
     }
 }

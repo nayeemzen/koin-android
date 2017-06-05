@@ -29,6 +29,7 @@ public class RealmTransaction extends RealmObject {
   @PrimaryKey
   private String transactionToken;
   private Long merchantId;
+  @Index
   private Long createdAt;
   private int amount;
   private String merchantName;
@@ -128,7 +129,7 @@ public class RealmTransaction extends RealmObject {
         .setAmount(transaction.amount)
         .setCreatedAt(transaction.created_at)
         .setTransactionToken(transaction.token)
-        .setState(transaction.state);
+        .setState(transaction.state.name());
 
   }
 

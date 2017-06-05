@@ -75,7 +75,16 @@ message Transaction {
     optional uint64 created_at = 2;
     optional Merchant merchant = 3;
     optional uint32 amount = 5;
-    optional string state = 6;
+    optional State state = 6;
+
+    enum State {
+        WAITING_ON_MERCHANT = 1;
+        WAITING_ON_CUSTOMER = 2;
+        WAITING_ON_RISK = 3;
+        PROCESSING = 4;
+        COMPLETE = 5;
+        FAILED = 6;
+    }
 }
 
 message SaleItem {
