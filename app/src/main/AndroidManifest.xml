@@ -62,6 +62,11 @@
             </intent-filter>
 
         </activity>
+        <activity
+            android:name=".Payment.TransactionDetails.TransactionDetailsActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+
+        </activity>
     </application>
 
 </manifest>

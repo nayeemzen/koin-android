@@ -1,5 +1,6 @@
 package com.sendkoin.customer.Payment;
 
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,7 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.sendkoin.api.Transaction;
 import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
+import com.sendkoin.customer.MainActivity;
+import com.sendkoin.customer.Payment.TransactionDetails.TransactionDetailsActivity;
 import com.sendkoin.customer.R;
 
 import java.util.ArrayList;
@@ -18,6 +22,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by warefhaque on 5/26/17.
@@ -27,8 +32,10 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
 
   private static final String TAG = "MPaymentHistoryAdapter";
   public List<ListItem> groupedList;
+  private MainActivity mainActivity;
 
-  public MainPaymentHistoryAdapter() {
+  public MainPaymentHistoryAdapter(MainActivity mainActivity) {
+    this.mainActivity = mainActivity;
     groupedList = new ArrayList<>();
   }
 
@@ -50,6 +57,7 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
         PaymentItem paymentItem = new PaymentItem()
             .setPlaceName(realmTransaction.getMerchantName())
             .setPlaceType(realmTransaction.getMerchantType())
+            .setTransactionToken(realmTransaction.getTransactionToken())
             .setPaidAmount(Integer.toString(realmTransaction.getAmount()));
 
         result.add(paymentItem);
@@ -133,7 +141,7 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
     return groupedList.size();
   }
 
-  public class PaymentHistoryViewHolder extends RecyclerView.ViewHolder {
+  public class PaymentHistoryViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
     @BindView(R.id.payment_place_name)
     TextView paymentPlaceName;
@@ -145,6 +153,19 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
     public PaymentHistoryViewHolder(View itemView) {
       super(itemView);
       ButterKnife.bind(this, itemView);
+      itemView.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View view) {
+      ListItem clickedItem = groupedList.get(getAdapterPosition());
+      if (clickedItem.getType() == ListItem.TYPE_PAYMENT){
+        PaymentItem paymentItem = (PaymentItem) clickedItem;
+
+        Intent intent = new Intent(mainActivity, TransactionDetailsActivity.class);
+        intent.putExtra("transaction_token", paymentItem.getTransactionToken());
+        mainActivity.startActivity(intent);
+      }
     }
   }
 
@@ -192,6 +213,16 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
     public String placeName;
     public String placeType;
     public String paidAmount;
+    public String transactionToken;
+
+    public String getTransactionToken() {
+      return transactionToken;
+    }
+
+    public PaymentItem setTransactionToken(String transactionToken) {
+      this.transactionToken = transactionToken;
+      return this;
+    }
 
     public PaymentItem setPlaceName(String placeName) {
       this.placeName = placeName;

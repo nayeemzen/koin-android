@@ -1,11 +1,13 @@
 package com.sendkoin.customer.Payment;
 
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.sendkoin.api.ListTransactionsResponse;
+import com.sendkoin.api.QueryParameters;
 import com.sendkoin.api.Transaction;
 import com.sendkoin.customer.Data.Authentication.RealSessionManager;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
@@ -33,11 +35,13 @@ import rx.subscriptions.CompositeSubscription;
 
 public class MainPaymentPresenter implements MainPaymentContract.Presenter {
   private static final String TAG = "MainPaymentPresenter";
+  public static final String PAGE_NUM = "page_num";
   private MainPaymentContract.View view;
   private LocalPaymentDataStore localPaymentDataStore;
   private PaymentRepository paymentRepository;
   private PaymentService paymentService;
   private RealSessionManager realSessionManager;
+  private SharedPreferences sharedPreferences;
   private Subscription subscription;
   private CompositeSubscription compositeSubscription = new CompositeSubscription();
   private Boolean hasNextPage;
@@ -49,24 +53,36 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
                               LocalPaymentDataStore localPaymentDataStore,
                               PaymentRepository paymentRepository,
                               PaymentService paymentService,
-                              RealSessionManager realSessionManager) {
+                              RealSessionManager realSessionManager,
+                              SharedPreferences sharedPreferences) {
 
     this.view = view;
     this.localPaymentDataStore = localPaymentDataStore;
     this.paymentRepository = paymentRepository;
     this.paymentService = paymentService;
     this.realSessionManager = realSessionManager;
+    this.sharedPreferences = sharedPreferences;
   }
 
   @Override
   public void loadTransactionsFromDBAndSave(boolean fetchWithLastSeen) {
     // if fetchWithLastSeen then fetch recent ones otherwise everything
-    long lastSeen = (fetchWithLastSeen) ? localPaymentDataStore.getLastSeenTransaction() : 0;
-    int localPageNumber = (fetchWithLastSeen) ? 0 : pageNumber;
+    QueryParameters.Builder queryParametersBuilder = new QueryParameters.Builder();
+
+    if (fetchWithLastSeen) {
+      queryParametersBuilder.updates_after(localPaymentDataStore.getLastSeenTransaction());
+      queryParametersBuilder.order(QueryParameters.Order.ASCENDING);
+    }
+    else {
+      queryParametersBuilder.updates_before(localPaymentDataStore.getEarliestSeenTransaction());
+      queryParametersBuilder.order(QueryParameters.Order.DESCENDING);
+    }
+
     Subscription subscription = paymentRepository
-        .getAllPayments(paymentService, "Bearer " + realSessionManager.getSessionToken(),
-            lastSeen,
-            localPageNumber)
+        .getAllPayments(paymentService,
+            "Bearer " + realSessionManager.getSessionToken(),
+            queryParametersBuilder.build(),
+            sharedPreferences.getInt(PAGE_NUM,1))
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(new Subscriber<ListTransactionsResponse>() {
@@ -87,21 +103,31 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
           @Override
           public void onNext(ListTransactionsResponse listTransactionsResponse) {
 
+            //1. get the transactions
             List<Transaction> transactions = listTransactionsResponse.transactions;
-            hasNextPage = listTransactionsResponse.has_next_page;
-            if(hasNextPage){
-              pageNumber = pageNumber + 1;
-            }
-            // you save the items here, on resume calls the realm db  and updates the view
+
+            //2. set the page number for the next query
+            setPageNumber(listTransactionsResponse);
+
+            //3. save the items in realm
             localPaymentDataStore.saveAllTransactions(RealmTransaction
                 .transactionListToRealmTranscationList(transactions))
                 .subscribe(realmAsyncTask -> Log.d(TAG, "Saved from DB to realm!"));
+            //4. wait for RX to update the view in loadTransactionsFromRealm!
           }
 
         });
 
     compositeSubscription.add(subscription);
 
+  }
+
+  private void setPageNumber(ListTransactionsResponse listTransactionsResponse) {
+    // see if you have more pages and increment the page number
+    hasNextPage = listTransactionsResponse.has_next_page;
+    pageNumber = sharedPreferences.getInt(PAGE_NUM, 1);
+    pageNumber = (hasNextPage) ? pageNumber + 1 : pageNumber;
+    sharedPreferences.edit().putInt("page_num", pageNumber).apply();
   }
 
 
@@ -125,9 +151,8 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
   }
 
 
-
   public LinkedHashMap<String,
-        List<RealmTransaction>> groupTransactionsIntoHashMap(List<RealmTransaction> realmTransactions) {
+      List<RealmTransaction>> groupTransactionsIntoHashMap(List<RealmTransaction> realmTransactions) {
     LinkedHashMap<String, List<RealmTransaction>> groupedResult = new LinkedHashMap<>();
 
     for (RealmTransaction realmTransaction : realmTransactions) {
@@ -143,7 +168,7 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
   }
 
   private void loadTransactionsFromRealm() {
-   Subscription subscription = localPaymentDataStore.getAllTransactions()
+    Subscription subscription = localPaymentDataStore.getAllTransactions()
         .filter(RealmResults::isLoaded)
         .subscribe(new Subscriber<RealmResults<RealmTransaction>>() {
           @Override

@@ -14,12 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.sendkoin.api.SaleItem;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 import com.sendkoin.customer.KoinApplication;
+import com.sendkoin.customer.MainActivity;
 import com.sendkoin.customer.Payment.QRPayment.QRCodeScannerActivity;
 import com.sendkoin.customer.R;
 import com.sendkoin.customer.Utility.ByteToken;
@@ -34,6 +36,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnItemClick;
 import butterknife.Unbinder;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
@@ -43,7 +46,8 @@ import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
  * Created by warefhaque on 5/20/17.
  */
 
-public class MainPaymentFragment extends android.support.v4.app.Fragment implements MainPaymentContract.View {
+public class MainPaymentFragment extends android.support.v4.app.Fragment
+    implements MainPaymentContract.View {
 
   private static final String TAG = "MainPaymentFragment";
   public static final String FIRST_TIME = "first_time";
@@ -96,6 +100,7 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment impleme
     setUpDagger();
     setupRecyclerView();
     listenForListScroll();
+    mPresenter.deleteAll();
   }
 
   private void setUpDagger() {
@@ -143,12 +148,15 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment impleme
 
   }
 
+
   public void setupRecyclerView() {
     recyclerViewPaymentHistory.addItemDecoration(new DividerItemDecoration(getActivity()));
     recyclerViewPaymentHistory.setLayoutManager(new LinearLayoutManager(getActivity(), VERTICAL, false));
     recyclerViewPaymentHistory.setHasFixedSize(true);
-    mMainPaymentHistoryAdapter = new MainPaymentHistoryAdapter();
+    mMainPaymentHistoryAdapter = new MainPaymentHistoryAdapter((MainActivity) getActivity());
     recyclerViewPaymentHistory.setAdapter(mMainPaymentHistoryAdapter);
+
+
   }
 
   @Override
@@ -181,10 +189,10 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment impleme
           createPayment.show();
         }
 
-        if (dy > 0){
+        if (dy > 0) {
           if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
             if (mPresenter != null) {
-              if (mPresenter.hasNextPage()){
+              if (mPresenter.hasNextPage()) {
                 Log.d(TAG, "Has Next page " + mPresenter.hasNextPage());
                 Log.d(TAG, "Calling db...");
                 mPresenter.fetchHistory();

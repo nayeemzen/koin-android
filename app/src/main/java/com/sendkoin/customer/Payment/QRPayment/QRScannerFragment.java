@@ -16,7 +16,7 @@ import me.dm7.barcodescanner.zbar.ZBarScannerView;
  * Created by warefhaque on 6/1/17.
  */
 
-public class QRScannerFragement extends android.app.Fragment implements ZBarScannerView.ResultHandler {
+public class QRScannerFragment extends android.app.Fragment implements ZBarScannerView.ResultHandler {
   private ZBarScannerView mScannerView;
 
   @Nullable
@@ -40,9 +40,9 @@ public class QRScannerFragement extends android.app.Fragment implements ZBarScan
       QRCodeScannerActivity qrCodeScannerActivity = (QRCodeScannerActivity) getActivity();
       qrCodeScannerActivity.showTransactionConfirmationScreen(rawResult.getContents());
     }
-
-    resumeScanning();
-
+    else{
+      resumeScanning();
+    }
   }
 
   public void resumeScanning() {

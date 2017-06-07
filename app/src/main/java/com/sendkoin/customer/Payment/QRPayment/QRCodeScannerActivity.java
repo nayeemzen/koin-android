@@ -14,12 +14,8 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.sendkoin.api.QrCode;
-import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 import com.sendkoin.customer.KoinApplication;
 import com.sendkoin.customer.R;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import javax.inject.Inject;
 
@@ -59,7 +55,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   @BindView(R.id.sale_amount)
   TextView saleAmount;
 
-  QRScannerFragement qrScannerFragement;
+  QRScannerFragment qrScannerFragement;
   private String mTransactionToken;
   private Unbinder unbinder;
   private SweetAlertDialog pDialog;
@@ -75,7 +71,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     setContentView(R.layout.activity_qrscanner);
     setUpDagger();
     unbinder = ButterKnife.bind(this);
-    qrScannerFragement = new QRScannerFragement();
+    qrScannerFragement = new QRScannerFragment();
     FragmentTransaction transaction = getFragmentManager().beginTransaction();
     transaction.add(R.id.scanner_fragment_layout, qrScannerFragement);
     transaction.commit();
@@ -226,80 +222,4 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     }
   }
 
-  //  @Inject ZBarScannerView mScannerView;
-//
-//  @Inject
-//  Gson gson;
-//  private String TAG = "QRScannerActivity";
-//
-//  @Override
-//  protected void onCreate(Bundle savedInstanceState) {
-//    super.onCreate(savedInstanceState);
-//    setUpDagger();
-//    setContentView(mScannerView);
-//  }
-//
-//
-//
-//  @Override
-//  protected void onResume() {
-//    super.onResume();
-//    mScannerView.setResultHandler(this); // Register ourselves as a handler for scan results.
-//    mScannerView.startCamera();          // Start camera on resume
-//  }
-//
-//
-//  @Override
-//  public void onPause() {
-//    super.onPause();
-//    mScannerView.stopCamera();// Stop camera on pause
-//    mPresenter.unsubscribe();
-//  }
-//
-//  @Override
-//  protected void onDestroy() {
-//    super.onDestroy();
-//    mPresenter.close();
-//  }
-//
-//  @Override
-//  public void handleResult(me.dm7.barcodescanner.zbar.Result result) {
-//
-////    try {
-////      mPresenter.getTransactionConfirmationDetails(new JSONObject(result.getContents()));
-////    } catch (JSONException e) {
-////      e.printStackTrace();
-////    }
-//
-//    // other wise on high def cameras it keeps scanning
-//    if (result.getContents().contains(QRScannerPresenter.MERCHANT_NAME)){
-//      Log.d(TAG, result.getContents());
-//      Intent intent = new Intent(QRCodeScannerActivity.this, PaymentConfirmationActivity.class);
-//      startActivity(intent);
-//    }
-//    else{
-//      mScannerView.resumeCameraPreview(this);
-//    }
-//  }
-//
-//  @Override
-//  public Context getContext() {
-//    return getApplicationContext();
-//  }
-//
-//  @Override
-//  public void showTransactionConfirmationScreen(RealmTransaction realmTransaction) {
-//    AlertDialog alertDialog =  new AlertDialog.Builder(this)
-//        .setTitle(R.string.qr_scanner_dialog_title)
-//        .setMessage(realmTransaction.getMerchantName() + " " + realmTransaction.getAmount())
-//        .setPositiveButton(R.string.alert_dialog_create, (dialogInterface, i) -> {
-//         mPresenter.createTransaction(realmTransaction.getTransactionToken());
-//        })
-//        .setNegativeButton(R.string.alert_dialog_cancel, (dialogInterface, i) -> {
-//          mScannerView.resumeCameraPreview(this);
-//        })
-//        .create();
-//
-//    alertDialog.show();
-//  }
 }

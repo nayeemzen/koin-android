@@ -53,6 +53,11 @@ public class LocalPaymentDataStore {
     return (lastSeen == null) ? 0 : lastSeen.longValue();
   }
 
+  public long getEarliestSeenTransaction(){
+    Number earliestSeen = realm.where(RealmTransaction.class).min("createdAt");
+    return (earliestSeen == null) ? 0 : earliestSeen.longValue();
+  }
+
 
   /**
    * Debugging purposes

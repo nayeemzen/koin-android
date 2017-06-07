@@ -54,6 +54,10 @@ message AcceptTransactionResponse {
     optional Status status = 2;
 }
 
+message ListTransactionsRequest {
+    optional QueryParameters query_parameters = 1;
+}
+
 message ListTransactionsResponse {
     repeated Transaction transactions = 1;
     optional bool has_next_page = 2;
@@ -84,6 +88,23 @@ message Transaction {
         PROCESSING = 4;
         COMPLETE = 5;
         FAILED = 6;
+    }
+}
+
+message TransactionDetail {
+    optional Transaction transaction = 1;
+    repeated SaleItem sale_items = 2;
+}
+
+message QueryParameters {
+    optional uint64 updates_before = 1;
+    optional uint64 updates_after = 2;
+    optional Order order = 3;
+    optional uint32 page_size  = 4;
+
+    enum Order {
+        ASCENDING = 1;
+        DESCENDING = 2;
     }
 }
 

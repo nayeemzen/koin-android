@@ -3,14 +3,20 @@ package com.sendkoin.customer.Data.Payments;
 import com.sendkoin.api.AcceptTransactionRequest;
 import com.sendkoin.api.AcceptTransactionResponse;
 import com.sendkoin.api.ListTransactionsResponse;
+import com.sendkoin.api.QueryParameters;
+import com.sendkoin.api.SaleItem;
 import com.sendkoin.api.Transaction;
+import com.sendkoin.api.TransactionDetail;
 import com.sendkoin.customer.Data.Authentication.RealSessionManager;
+
+import java.util.List;
 
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
 
@@ -20,10 +26,10 @@ import rx.Observable;
 
 
 public interface PaymentService {
-  @GET("transactions/customer/list/")
+  @POST("transactions/customer/list/")
   Observable<ListTransactionsResponse>
   getAllPayments(@Header("Authorization") String token,
-                 @Query("updatesSince") long lastSeen,
+                 @Body QueryParameters queryParameters,
                  @Query("page") int pageNumber);
 
   @POST("transactions/customer/accept/")
@@ -31,4 +37,8 @@ public interface PaymentService {
   acceptCurrentTransaction(@Header("Authorization") String token,
                            @Body AcceptTransactionRequest acceptTransactionRequest);
 
+  @GET("transactions/customer/{token}/")
+  Observable<TransactionDetail>
+  getAllItems(@Header("Authorization") String authToken,
+              @Path("token") String transactionToken);
 }
