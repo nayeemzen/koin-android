@@ -8,26 +8,19 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.sendkoin.api.SaleItem;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 import com.sendkoin.customer.KoinApplication;
 import com.sendkoin.customer.MainActivity;
 import com.sendkoin.customer.Payment.QRPayment.QRCodeScannerActivity;
 import com.sendkoin.customer.R;
-import com.sendkoin.customer.Utility.ByteToken;
 
-import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -36,7 +29,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.OnItemClick;
 import butterknife.Unbinder;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
@@ -51,19 +43,15 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment
 
   private static final String TAG = "MainPaymentFragment";
   public static final String FIRST_TIME = "first_time";
-  @Inject
-  MainPaymentContract.Presenter mPresenter;
-  @BindView(R.id.create_payment)
-  FloatingActionButton createPayment;
-  @BindView(R.id.payment_history)
-  RecyclerView recyclerViewPaymentHistory;
-  @BindView(R.id.main_payment_content)
-  CoordinatorLayout mainPaymentContent;
-  @BindView(R.id.no_transactions_text)
-  TextView noTransactionsText;
-  SweetAlertDialog pDialog;
-  @Inject
-  Gson gson;
+  @Inject MainPaymentContract.Presenter mPresenter;
+  @Inject Gson gson;
+
+  @BindView(R.id.create_payment) FloatingActionButton createPayment;
+  @BindView(R.id.payment_history) RecyclerView recyclerViewPaymentHistory;
+  @BindView(R.id.main_payment_content) CoordinatorLayout mainPaymentContent;
+  @BindView(R.id.no_transactions_text) TextView noTransactionsText;
+
+  private SweetAlertDialog pDialog;
   private int lastVisibleItem, totalItemCount;
   private boolean isLoading;
 
@@ -100,7 +88,6 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment
     setUpDagger();
     setupRecyclerView();
     listenForListScroll();
-    mPresenter.deleteAll();
   }
 
   private void setUpDagger() {
@@ -192,14 +179,10 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment
         if (dy > 0) {
           if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
             if (mPresenter != null) {
-              if (mPresenter.hasNextPage()) {
-                Log.d(TAG, "Has Next page " + mPresenter.hasNextPage());
-                Log.d(TAG, "Calling db...");
-                mPresenter.fetchHistory();
-              }
+                mPresenter.loadTransactionsFromServer(false);
             }
-            isLoading = true;
 
+            isLoading = true;
           }
         }
       }

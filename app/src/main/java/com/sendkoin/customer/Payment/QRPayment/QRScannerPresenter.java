@@ -3,22 +3,12 @@ package com.sendkoin.customer.Payment.QRPayment;
 
 import android.util.Log;
 
-import com.google.gson.Gson;
 import com.sendkoin.api.AcceptTransactionRequest;
 import com.sendkoin.api.AcceptTransactionResponse;
-import com.sendkoin.api.QrCode;
-import com.sendkoin.api.Transaction;
 import com.sendkoin.customer.Data.Authentication.RealSessionManager;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 import com.sendkoin.customer.Data.Payments.PaymentService;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.awt.font.TextAttribute;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import javax.inject.Inject;
 
@@ -97,10 +87,8 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
 
           @Override
           public void onNext(AcceptTransactionResponse acceptTransactionResponse) {
-            localPaymentDataStore
-                .createPayment(RealmTransaction
-                    .transactionToRealmTransaction(acceptTransactionResponse.transaction));
-
+            localPaymentDataStore.createPayment(
+                RealmTransaction.toRealmTransaction(acceptTransactionResponse.transaction));
             view.showTransactionComplete();
           }
         });
