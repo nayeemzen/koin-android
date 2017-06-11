@@ -12,6 +12,7 @@ import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
 
+import static com.sendkoin.customer.Data.Payments.Models.RealmTransaction.toRealmTransaction;
 import static com.sendkoin.customer.Data.Payments.Models.RealmTransaction.toRealmTransactions;
 
 /**
@@ -28,10 +29,12 @@ public class LocalPaymentDataStore {
     this.realm = realm;
   }
 
-  public Observable<Boolean> createPayment(RealmTransaction realmTransaction) {
+  public Observable<Transaction> createPayment(Transaction transaction) {
     return Observable.fromCallable(() -> {
-      realm.executeTransaction(realm1 -> realm1.insert(realmTransaction));
-      return true;
+      Realm defaultRealm = Realm.getDefaultInstance();
+      defaultRealm.executeTransaction(realm -> realm.insert(toRealmTransaction(transaction)));
+      defaultRealm.close();
+      return transaction;
     });
   }
 

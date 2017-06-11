@@ -1,7 +1,6 @@
 package com.sendkoin.customer.Payment.QRPayment;
 
-import com.google.gson.Gson;
-import com.sendkoin.customer.Data.Authentication.RealSessionManager;
+import com.sendkoin.customer.Data.Authentication.SessionManager;
 import com.sendkoin.customer.Data.Dagger.CustomScope;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.Data.Payments.PaymentService;
@@ -33,11 +32,8 @@ public class QRPaymentModule {
   @CustomScope
   public QRScannerContract.Presenter providesPresenter(LocalPaymentDataStore localPaymentDataStore,
                                                        PaymentService paymentService,
-                                                       RealSessionManager realSessionManager){
-    return new QRScannerPresenter(view,
-        localPaymentDataStore,
-        paymentService,
-        realSessionManager);
+                                                       SessionManager sessionManager){
+    return new QRScannerPresenter(view, localPaymentDataStore, paymentService, sessionManager);
   }
 
   @Provides
