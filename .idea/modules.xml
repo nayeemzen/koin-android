@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/KoinCustomer.iml" filepath="$PROJECT_DIR$/KoinCustomer.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/koin-android.iml" filepath="$PROJECT_DIR$/koin-android.iml" />
     </modules>
   </component>
 </project>

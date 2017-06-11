@@ -10,8 +10,11 @@ import javax.inject.Inject;
 
 public class RealSessionManager implements SessionManager {
 
+
   public static final String SESSION_TOKEN_KEY = "session_token";
   public static final String FACEBOOK_ACCESS_TOKEN = "fb_access_token";
+  public static final String AUTHORIZATION_ATTEMPTS = "authorization_attempts";
+  public static final int MAX_AUTHORIZATION_ATTEMPTS = 3;
   private SharedPreferences sharedPreferences;
 
   @Inject
@@ -37,5 +40,15 @@ public class RealSessionManager implements SessionManager {
   @Override
   public String getFbAccessToken() {
     return sharedPreferences.getString(FACEBOOK_ACCESS_TOKEN, null);
+  }
+
+  @Override
+  public int getAuthAttempts() {
+    return sharedPreferences.getInt(AUTHORIZATION_ATTEMPTS, 0);
+  }
+
+  @Override
+  public void putAuthAttempts(int numAttempts) {
+    sharedPreferences.edit().putInt(AUTHORIZATION_ATTEMPTS, numAttempts).apply();
   }
 }

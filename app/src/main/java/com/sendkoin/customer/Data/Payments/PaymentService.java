@@ -21,17 +21,14 @@ import rx.Observable;
 public interface PaymentService {
   @POST("transactions/customer/list/")
   Observable<ListTransactionsResponse>
-  getAllPayments(@Header("Authorization") String token,
-                 @Body ListTransactionsRequest listTransactionsRequest,
+  getAllPayments(@Body ListTransactionsRequest listTransactionsRequest,
                  @Query("page") int pageNumber);
 
   @POST("transactions/customer/accept/")
   Observable<AcceptTransactionResponse>
-  acceptCurrentTransaction(@Header("Authorization") String token,
-                           @Body AcceptTransactionRequest acceptTransactionRequest);
+  acceptCurrentTransaction(@Body AcceptTransactionRequest acceptTransactionRequest);
 
   @GET("transactions/customer/{token}/")
   Observable<TransactionDetail>
-  getAllItems(@Header("Authorization") String authToken,
-              @Path("token") String transactionToken);
+  getAllItems(@Path("token") String transactionToken);
 }

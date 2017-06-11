@@ -59,7 +59,7 @@ public class TransactionDetailsPresenter implements TransactionDetailsContract.P
   public void fetchTransactionDetails(String transactionToken) {
 
     subscription = paymentService
-        .getAllItems("Bearer "+realSessionManager.getSessionToken(),transactionToken)
+        .getAllItems(transactionToken)
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(new Subscriber<TransactionDetail>() {

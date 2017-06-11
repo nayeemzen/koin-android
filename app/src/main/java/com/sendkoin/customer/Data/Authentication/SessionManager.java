@@ -9,4 +9,6 @@ public interface SessionManager {
   void putSessionToken(String sessionToken);
   void putFbAccessToken(String fbAccessToken);
   String getFbAccessToken();
+  int getAuthAttempts();
+  void putAuthAttempts(int numAttempts);
 }

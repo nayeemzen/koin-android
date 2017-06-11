@@ -16,7 +16,6 @@ public interface PaymentDataStore {
   Observable<Transaction> createPayment(Transaction transaction);
 
   Observable<ListTransactionsResponse> getAllPayments(PaymentService paymentService,
-                                                      String authToken,
                                                       QueryParameters queryParameters,
                                                       int pageNumber);
 }

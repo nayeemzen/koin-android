@@ -28,12 +28,11 @@ public class PaymentRepository implements PaymentDataStore {
 
   @Override
   public Observable<ListTransactionsResponse> getAllPayments(PaymentService paymentService,
-                                                             String authToken,
                                                              QueryParameters queryParameters,
                                                              int pageNumber) {
     ListTransactionsRequest listTransactionsRequest = new ListTransactionsRequest.Builder()
         .query_parameters(queryParameters)
         .build();
-    return paymentService.getAllPayments(authToken, listTransactionsRequest, pageNumber);
+    return paymentService.getAllPayments(listTransactionsRequest, pageNumber);
   }
 }

@@ -131,6 +131,9 @@ dependencies {
 
     // SweetAlert
     compile 'cn.pedant.sweetalert:library:1.3'
+
+    //green robot
+    compile 'org.greenrobot:eventbus:3.0.0'
 }
 
 // This handles the protocol buffer generation with wire

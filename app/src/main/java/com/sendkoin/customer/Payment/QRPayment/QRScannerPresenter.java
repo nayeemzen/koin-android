@@ -68,7 +68,7 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
 
     // 2. save the transaction in the DB
     subscription = paymentService
-        .acceptCurrentTransaction("Bearer " + sessionManager.getSessionToken(), acceptTransactionRequest)
+        .acceptCurrentTransaction(acceptTransactionRequest)
         .subscribeOn(Schedulers.io())
         .flatMap(acceptTransactionResponse ->
             localPaymentDataStore.createPayment(acceptTransactionResponse.transaction))

@@ -140,7 +140,7 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
     // directly in retrofit.
     String authToken = "Bearer " + sessionManager.getSessionToken();
     return paymentRepository
-        .getAllPayments(paymentService, authToken, queryParameters, pageNumber)
+        .getAllPayments(paymentService, queryParameters, pageNumber)
         .subscribeOn(Schedulers.io())
         .concatMap(listTransactionsResponse -> {
           if (listTransactionsResponse.has_next_page) {
