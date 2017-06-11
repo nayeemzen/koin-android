@@ -1,6 +1,5 @@
 package com.sendkoin.customer.Payment;
 
-import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -8,7 +7,7 @@ import com.annimon.stream.Stream;
 import com.sendkoin.api.ListTransactionsResponse;
 import com.sendkoin.api.QueryParameters;
 import com.sendkoin.api.Transaction;
-import com.sendkoin.customer.Data.Authentication.RealSessionManager;
+import com.sendkoin.customer.Data.Authentication.SessionManager;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 import com.sendkoin.customer.Data.Payments.PaymentRepository;
@@ -36,12 +35,11 @@ import static com.annimon.stream.Collectors.toList;
 
 public class MainPaymentPresenter implements MainPaymentContract.Presenter {
   private static final String TAG = "MainPaymentPresenter";
-  public static final String PAGE_NUM = "page_num";
   private MainPaymentContract.View view;
   private LocalPaymentDataStore localPaymentDataStore;
   private PaymentRepository paymentRepository;
   private PaymentService paymentService;
-  private RealSessionManager realSessionManager;
+  private SessionManager sessionManager;
   private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
   // need local and payment repo for calls
@@ -50,14 +48,13 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
                               LocalPaymentDataStore localPaymentDataStore,
                               PaymentRepository paymentRepository,
                               PaymentService paymentService,
-                              RealSessionManager realSessionManager,
-                              SharedPreferences sharedPreferences) {
+                              SessionManager sessionManager) {
 
     this.view = view;
     this.localPaymentDataStore = localPaymentDataStore;
     this.paymentRepository = paymentRepository;
     this.paymentService = paymentService;
-    this.realSessionManager = realSessionManager;
+    this.sessionManager = sessionManager;
   }
 
   /**
@@ -141,7 +138,7 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
                                                                  int pageNumber) {
     // TODO(waref): Use authenticator and interceptor in OkHttp. Don't pass authentication header
     // directly in retrofit.
-    String authToken = "Bearer " + realSessionManager.getSessionToken();
+    String authToken = "Bearer " + sessionManager.getSessionToken();
     return paymentRepository
         .getAllPayments(paymentService, authToken, queryParameters, pageNumber)
         .subscribeOn(Schedulers.io())
@@ -175,7 +172,6 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
         .subscribe(new Subscriber<RealmResults<RealmTransaction>>() {
           @Override
           public void onCompleted() {
-//            Log.e(TAG, "Completed the load!");
           }
 
           @Override

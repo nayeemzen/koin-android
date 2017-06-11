@@ -3,6 +3,7 @@ package com.sendkoin.customer.Data.Dagger.Component;
 import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
+import com.sendkoin.customer.Data.Authentication.SessionManager;
 import com.sendkoin.customer.Data.Dagger.Module.AppModule;
 import com.sendkoin.customer.Data.Dagger.Module.NetModule;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
@@ -30,4 +31,6 @@ public interface NetComponent {
     Gson gson();
 
     SharedPreferences sharedPreferences();
+
+    SessionManager sessionManager();
 }
