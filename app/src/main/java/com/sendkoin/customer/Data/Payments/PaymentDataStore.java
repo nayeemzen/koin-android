@@ -2,9 +2,8 @@ package com.sendkoin.customer.Data.Payments;
 
 import com.sendkoin.api.ListTransactionsResponse;
 import com.sendkoin.api.QueryParameters;
-import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
+import com.sendkoin.api.Transaction;
 
-import io.realm.RealmAsyncTask;
 import rx.Observable;
 
 /**
@@ -14,7 +13,7 @@ import rx.Observable;
 
 public interface PaymentDataStore {
 
-  Observable<Boolean> createPayment(RealmTransaction realmTransaction);
+  Observable<Transaction> createPayment(Transaction transaction);
 
   Observable<ListTransactionsResponse> getAllPayments(PaymentService paymentService,
                                                       String authToken,

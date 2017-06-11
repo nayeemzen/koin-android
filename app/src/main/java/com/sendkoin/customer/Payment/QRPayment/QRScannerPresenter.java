@@ -4,10 +4,9 @@ package com.sendkoin.customer.Payment.QRPayment;
 import android.util.Log;
 
 import com.sendkoin.api.AcceptTransactionRequest;
-import com.sendkoin.api.AcceptTransactionResponse;
-import com.sendkoin.customer.Data.Authentication.RealSessionManager;
+import com.sendkoin.api.Transaction;
+import com.sendkoin.customer.Data.Authentication.SessionManager;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
-import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 import com.sendkoin.customer.Data.Payments.PaymentService;
 
 import javax.inject.Inject;
@@ -27,7 +26,7 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
   private QRScannerContract.View view;
   private LocalPaymentDataStore localPaymentDataStore;
   private PaymentService paymentService;
-  private RealSessionManager realSessionManager;
+  private SessionManager sessionManager;
   public static final String MERCHANT_NAME = "merchant_name";
   public static final String SALE_AMOUNT = "sale_amount";
   private Subscription subscription;
@@ -40,13 +39,12 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
   public QRScannerPresenter(QRScannerContract.View view,
                             LocalPaymentDataStore localPaymentDataStore,
                             PaymentService paymentService,
-                            RealSessionManager realSessionManager
-                            ) {
+                            SessionManager sessionManager) {
 
     this.view = view;
     this.localPaymentDataStore = localPaymentDataStore;
     this.paymentService = paymentService;
-    this.realSessionManager = realSessionManager;
+    this.sessionManager = sessionManager;
   }
 
   /**
@@ -59,7 +57,7 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
    */
   @Override
   public void createTransaction(String transactionToken) {
-    //1. create the transaction object
+    // 1. create the transaction object
     long timeStamp = System.currentTimeMillis() / 1000L;
 
     AcceptTransactionRequest acceptTransactionRequest = new AcceptTransactionRequest.Builder()
@@ -68,12 +66,14 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
         .idempotence_token("random_string")
         .build();
 
-    //2. save the transaction in the DB
+    // 2. save the transaction in the DB
     subscription = paymentService
-        .acceptCurrentTransaction("Bearer " + realSessionManager.getSessionToken(), acceptTransactionRequest)
+        .acceptCurrentTransaction("Bearer " + sessionManager.getSessionToken(), acceptTransactionRequest)
         .subscribeOn(Schedulers.io())
+        .flatMap(acceptTransactionResponse ->
+            localPaymentDataStore.createPayment(acceptTransactionResponse.transaction))
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Subscriber<AcceptTransactionResponse>() {
+        .subscribe(new Subscriber<Transaction>() {
           @Override
           public void onCompleted() {
             Log.d(TAG, "on Completed!");
@@ -86,9 +86,7 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
           }
 
           @Override
-          public void onNext(AcceptTransactionResponse acceptTransactionResponse) {
-            localPaymentDataStore.createPayment(
-                RealmTransaction.toRealmTransaction(acceptTransactionResponse.transaction));
+          public void onNext(Transaction transaction) {
             view.showTransactionComplete();
           }
         });
