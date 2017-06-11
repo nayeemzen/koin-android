@@ -1,11 +1,11 @@
 package com.sendkoin.customer.Data.Payments;
 
+import com.sendkoin.api.ListTransactionsRequest;
 import com.sendkoin.api.ListTransactionsResponse;
 import com.sendkoin.api.QueryParameters;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 
-import io.realm.RealmAsyncTask;
 import rx.Observable;
 
 /**
@@ -31,6 +31,9 @@ public class PaymentRepository implements PaymentDataStore {
                                                              String authToken,
                                                              QueryParameters queryParameters,
                                                              int pageNumber) {
-    return paymentService.getAllPayments(authToken, queryParameters, pageNumber);
+    ListTransactionsRequest listTransactionsRequest = new ListTransactionsRequest.Builder()
+        .query_parameters(queryParameters)
+        .build();
+    return paymentService.getAllPayments(authToken, listTransactionsRequest, pageNumber);
   }
 }

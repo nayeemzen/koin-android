@@ -1,8 +1,6 @@
 package com.sendkoin.customer.Payment;
 
-import android.content.SharedPreferences;
-
-import com.sendkoin.customer.Data.Authentication.RealSessionManager;
+import com.sendkoin.customer.Data.Authentication.SessionManager;
 import com.sendkoin.customer.Data.Dagger.CustomScope;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.Data.Payments.PaymentRepository;
@@ -44,14 +42,9 @@ public class MainPaymentModule {
                                                              LocalPaymentDataStore localPaymentDataStore,
                                                              PaymentRepository paymentRepository,
                                                              PaymentService paymentService,
-                                                             RealSessionManager realSessionManager,
-                                                             SharedPreferences sharedPreferences) {
-    return new MainPaymentPresenter(view,
-        localPaymentDataStore,
-        paymentRepository,
-        paymentService,
-        realSessionManager,
-        sharedPreferences);
+                                                             SessionManager sessionManager) {
+    return new MainPaymentPresenter(view, localPaymentDataStore, paymentRepository, paymentService,
+        sessionManager);
   }
 }
 

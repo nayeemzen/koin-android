@@ -6,22 +6,13 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.sendkoin.api.SaleItem;
 import com.sendkoin.api.Transaction;
 import com.sendkoin.api.TransactionDetail;
 import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 import com.sendkoin.customer.KoinApplication;
-import com.sendkoin.customer.Payment.DaggerMainPaymentComponent;
-import com.sendkoin.customer.Payment.MainPaymentModule;
 import com.sendkoin.customer.R;
-
-import org.w3c.dom.Text;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -99,7 +90,7 @@ public class TransactionDetailsActivity
   }
 
   private void setupHeader(Transaction transaction) {
-    RealmTransaction realmTransaction = RealmTransaction.transactionToRealmTransaction(transaction);
+    RealmTransaction realmTransaction = RealmTransaction.toRealmTransaction(transaction);
     transactionDate.setText(realmTransaction.getCreatedAt());
     merchantName.setText(realmTransaction.getMerchantName());
     String salesAmountString = "$"+realmTransaction.getAmount().toString();

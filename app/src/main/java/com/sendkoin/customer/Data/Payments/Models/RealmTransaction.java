@@ -2,14 +2,11 @@ package com.sendkoin.customer.Data.Payments.Models;
 
 import android.text.format.DateFormat;
 
+import com.annimon.stream.Stream;
 import com.sendkoin.api.Merchant;
 import com.sendkoin.api.Transaction;
-import com.sendkoin.customer.Payment.QRPayment.QRScannerPresenter;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -136,7 +133,7 @@ public class RealmTransaction extends RealmObject {
     return this;
   }
 
-  public static RealmTransaction transactionToRealmTransaction(Transaction transaction) {
+  public static RealmTransaction toRealmTransaction(Transaction transaction) {
 
     Merchant merchant = transaction.merchant;
     return new RealmTransaction()
@@ -149,13 +146,7 @@ public class RealmTransaction extends RealmObject {
 
   }
 
-  public static List<RealmTransaction> transactionListToRealmTranscationList(List<Transaction> transactions) {
-    List<RealmTransaction> realmTransactions = new ArrayList<>();
-    for (Transaction transaction : transactions) {
-      realmTransactions.add(transactionToRealmTransaction(transaction));
-    }
-
-    return realmTransactions;
+  public static List<RealmTransaction> toRealmTransactions(List<Transaction> transactions) {
+    return Stream.of(transactions).map(RealmTransaction::toRealmTransaction).toList();
   }
-
 }

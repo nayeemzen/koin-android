@@ -1,33 +1,33 @@
 package com.sendkoin.customer.Payment;
 
-import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.sendkoin.api.ListTransactionsResponse;
 import com.sendkoin.api.QueryParameters;
 import com.sendkoin.api.Transaction;
-import com.sendkoin.customer.Data.Authentication.RealSessionManager;
+import com.sendkoin.customer.Data.Authentication.SessionManager;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 import com.sendkoin.customer.Data.Payments.PaymentRepository;
 import com.sendkoin.customer.Data.Payments.PaymentService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import io.realm.RealmResults;
+import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
+
+import static com.annimon.stream.Collectors.groupingBy;
+import static com.annimon.stream.Collectors.toList;
 
 /**
  * Created by warefhaque on 5/20/17.
@@ -35,17 +35,12 @@ import rx.subscriptions.CompositeSubscription;
 
 public class MainPaymentPresenter implements MainPaymentContract.Presenter {
   private static final String TAG = "MainPaymentPresenter";
-  public static final String PAGE_NUM = "page_num";
   private MainPaymentContract.View view;
   private LocalPaymentDataStore localPaymentDataStore;
   private PaymentRepository paymentRepository;
   private PaymentService paymentService;
-  private RealSessionManager realSessionManager;
-  private SharedPreferences sharedPreferences;
-  private Subscription subscription;
+  private SessionManager sessionManager;
   private CompositeSubscription compositeSubscription = new CompositeSubscription();
-  private Boolean hasNextPage;
-  private int pageNumber = 1;
 
   // need local and payment repo for calls
   @Inject
@@ -53,118 +48,122 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
                               LocalPaymentDataStore localPaymentDataStore,
                               PaymentRepository paymentRepository,
                               PaymentService paymentService,
-                              RealSessionManager realSessionManager,
-                              SharedPreferences sharedPreferences) {
+                              SessionManager sessionManager) {
 
     this.view = view;
     this.localPaymentDataStore = localPaymentDataStore;
     this.paymentRepository = paymentRepository;
     this.paymentService = paymentService;
-    this.realSessionManager = realSessionManager;
-    this.sharedPreferences = sharedPreferences;
+    this.sessionManager = sessionManager;
   }
 
+  /**
+   * Fetches latest transactions in ASCENDING order so that new transactions are always appended
+   * on top as they come in. (e.g. pull-to-refresh)
+   * <p>
+   * Fetches the historical transactions in DESCENDING order so that old transactions are always
+   * appended to the bottom as they come in. (e.g. load-on-scroll-down)
+   * <p>
+   * Currently loads all the pages eagerly, in page-sized chunks. This should be sufficient for
+   * the customer application and Koin v1.
+   *
+   * @param fetchLatest If true, fetch transactions after the latest transaction in Realm.
+   *                    If false, fetch the transactions before the earliest transaction in Realm.
+   */
   @Override
-  public void loadTransactionsFromDBAndSave(boolean fetchWithLastSeen) {
-    // if fetchWithLastSeen then fetch recent ones otherwise everything
+  public void loadTransactionsFromServer(boolean fetchLatest) {
     QueryParameters.Builder queryParametersBuilder = new QueryParameters.Builder();
+    long lastSeenTransaction = localPaymentDataStore.getLastSeenTransaction();
 
-    if (fetchWithLastSeen) {
-      queryParametersBuilder.updates_after(localPaymentDataStore.getLastSeenTransaction());
+    if (fetchLatest && lastSeenTransaction > 0) {
+      queryParametersBuilder.updates_after(lastSeenTransaction);
       queryParametersBuilder.order(QueryParameters.Order.ASCENDING);
-    }
-    else {
-      queryParametersBuilder.updates_before(localPaymentDataStore.getEarliestSeenTransaction());
+    } else {
+      long earliestSeenTransaction = localPaymentDataStore.getEarliestSeenTransaction();
+      if (earliestSeenTransaction > 0) {
+        queryParametersBuilder.updates_before(earliestSeenTransaction);
+      }
       queryParametersBuilder.order(QueryParameters.Order.DESCENDING);
     }
 
-    Subscription subscription = paymentRepository
-        .getAllPayments(paymentService,
-            "Bearer " + realSessionManager.getSessionToken(),
-            queryParametersBuilder.build(),
-            sharedPreferences.getInt(PAGE_NUM,1))
-        .subscribeOn(Schedulers.io())
+    QueryParameters queryParameters = queryParametersBuilder.build();
+    Subscription subscription = fetchTransactions(queryParameters, 1)
+        .flatMap(listTransactionsResponse -> {
+          List<Transaction> transactions = listTransactionsResponse.transactions;
+          return localPaymentDataStore.saveAllTransactions(transactions);
+        })
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Subscriber<ListTransactionsResponse>() {
+        .subscribe(new Subscriber<List<Transaction>>() {
           @Override
           public void onCompleted() {
-//                     Log.d(TAG, "Completed DB Call!");
+            Log.d(TAG, "Completed DB Call!");
           }
 
           @Override
           public void onError(Throwable e) {
             if (e != null) {
-              Toast.makeText(view.getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT)
-                  .show();
+              // TODO(waref): Move this into a method in the view: e.g void showError();
+              Toast.makeText(
+                  view.getApplicationContext(),
+                  e.getLocalizedMessage(),
+                  Toast.LENGTH_SHORT).show();
               Log.e(TAG, "ERROR - " + e.getMessage());
             }
           }
 
           @Override
-          public void onNext(ListTransactionsResponse listTransactionsResponse) {
-
-            //1. get the transactions
-            List<Transaction> transactions = listTransactionsResponse.transactions;
-
-            //2. set the page number for the next query
-            setPageNumber(listTransactionsResponse);
-
-            //3. save the items in realm
-            localPaymentDataStore.saveAllTransactions(RealmTransaction
-                .transactionListToRealmTranscationList(transactions))
-                .subscribe();
-            //4. wait for RX to update the view in loadTransactionsFromRealm!
+          public void onNext(List<Transaction> transactions) {
+            Log.d(TAG, String.format("Saved %d transactions to realm", transactions.size()));
           }
-
         });
 
     compositeSubscription.add(subscription);
-
   }
-
-  private void setPageNumber(ListTransactionsResponse listTransactionsResponse) {
-    // see if you have more pages and increment the page number
-    hasNextPage = listTransactionsResponse.has_next_page;
-    pageNumber = sharedPreferences.getInt(PAGE_NUM, 1);
-    pageNumber = (hasNextPage) ? pageNumber + 1 : pageNumber;
-    sharedPreferences.edit().putInt("page_num", pageNumber).apply();
-  }
-
 
   /**
-   * Debugging purposes
+   * Fetches the transactions from the server and if `has_next_page` is true, recursively is called
+   * again until `has_next_page` is false.
+   * <p>
+   * Using `concatWith` to combine all the results of the
+   * recursive calls into one observable.
+   * <p>
+   * ConcatMap ensures that there is no interleaving between mutliple observables from the multiple
+   * recursive calls.
+   *
+   * @param queryParameters The parameters and predicates to define our query.
+   * @param pageNumber      The pageNumber of the query associated with the above queryParameters.
+   * @return An observable consisting of the combined transactions from the pages.
    */
+  private Observable<ListTransactionsResponse> fetchTransactions(QueryParameters queryParameters,
+                                                                 int pageNumber) {
+    // TODO(waref): Use authenticator and interceptor in OkHttp. Don't pass authentication header
+    // directly in retrofit.
+    String authToken = "Bearer " + sessionManager.getSessionToken();
+    return paymentRepository
+        .getAllPayments(paymentService, authToken, queryParameters, pageNumber)
+        .subscribeOn(Schedulers.io())
+        .concatMap(listTransactionsResponse -> {
+          if (listTransactionsResponse.has_next_page) {
+            return Observable.just(listTransactionsResponse)
+                .concatWith(fetchTransactions(queryParameters, pageNumber + 1));
+          } else {
+            return Observable.just(listTransactionsResponse);
+          }
+        });
+  }
 
+  /**
+   * Debugging purposes.
+   */
   @Override
-  public void deleteAll() {
+  public void deleteAllTransactions() {
     localPaymentDataStore.deleteAllTranscations();
   }
 
-  @Override
-  public void fetchHistory() {
-    loadTransactionsFromDBAndSave(false);
-  }
-
-  @Override
-  public boolean hasNextPage() {
-    return hasNextPage;
-  }
-
-
-  public LinkedHashMap<String,
-      List<RealmTransaction>> groupTransactionsIntoHashMap(List<RealmTransaction> realmTransactions) {
-    LinkedHashMap<String, List<RealmTransaction>> groupedResult = new LinkedHashMap<>();
-
-    for (RealmTransaction realmTransaction : realmTransactions) {
-      if (groupedResult.containsKey(realmTransaction.getCreatedAt())) {
-        groupedResult.get(realmTransaction.getCreatedAt()).add(realmTransaction);
-      } else {
-        List<RealmTransaction> realmTransactionList = new ArrayList<>();
-        realmTransactionList.add(realmTransaction);
-        groupedResult.put(realmTransaction.getCreatedAt(), realmTransactionList);
-      }
-    }
-    return groupedResult;
+  private LinkedHashMap<String, List<RealmTransaction>> groupTransactionsByCreatedAt(
+      List<RealmTransaction> realmTransactions) {
+    return Stream.of(realmTransactions).collect(
+        groupingBy(RealmTransaction::getCreatedAt, LinkedHashMap::new, toList()));
   }
 
   private void loadTransactionsFromRealm() {
@@ -173,7 +172,6 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
         .subscribe(new Subscriber<RealmResults<RealmTransaction>>() {
           @Override
           public void onCompleted() {
-//            Log.e(TAG, "Completed the load!");
           }
 
           @Override
@@ -183,20 +181,23 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
 
           @Override
           public void onNext(RealmResults<RealmTransaction> realmTransactions) {
-            List<RealmTransaction> items = Stream.of(realmTransactions).collect(Collectors.toList());
-            view.showPaymentItems(groupTransactionsIntoHashMap(items));
+            List<RealmTransaction> items = Stream.of(realmTransactions).collect(toList());
+            view.showPaymentItems(groupTransactionsByCreatedAt(items));
           }
         });
 
     compositeSubscription.add(subscription);
   }
 
+  /**
+   * Kick-off the realm loading while the server fetch happens on the background. The server will
+   * fetch the new transactions/old missing transactions and insert them to Realm. Since we're using
+   * an observable query on Realm, any new insertions should update the UI automatically.
+   */
   @Override
   public void subscribe() {
     loadTransactionsFromRealm();
-    // RX will automatically update the view again when changes are saved in the background
-    //fetching with last seen = last seen payment
-    loadTransactionsFromDBAndSave(true);
+    loadTransactionsFromServer(true);
   }
 
   @Override
@@ -212,5 +213,4 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
       localPaymentDataStore.close();
     }
   }
-
 }
