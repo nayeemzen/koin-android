@@ -21,27 +21,32 @@ import static org.mockito.Mockito.mock;
 @Module
 public class SaveTransactionTestModule {
 
-
   @Provides
   @Singleton
-  PaymentService providesPaymentService(Retrofit retrofit){
-    return retrofit.create(PaymentService.class);
+  FakeTransactionService providesFakeTransactionService(){
+    return new FakeTransactionService();
   }
 
   @Provides
   @Singleton
-  QRScannerContract.View providesTransactionScreenView(){
-    return mock(QRCodeScannerActivity.class);
+  PaymentService providesPaymentService() {
+    return new FakeTransactionService();
   }
 
   @Provides
   @Singleton
-  QRScannerPresenter providesTransactionScreenPresenter(QRScannerContract.View view,
-                                                        LocalPaymentDataStore localPaymentDataStore,
-                                                        PaymentService paymentService,
-                                                        RealSessionManager realSessionManager){
+  QRScannerContract.View providesTransactionScreenView() {
+    return mock(QRScannerContract.View.class);
+  }
 
-    return new QRScannerPresenter(view, localPaymentDataStore,paymentService, realSessionManager);
+  @Provides
+  @Singleton
+  QRScannerContract.Presenter providesTransactionScreenPresenter(QRScannerContract.View view,
+                                                                 FakeTransactionService fakeTransactionService,
+                                                                 LocalPaymentDataStore localPaymentDataStore,
+                                                                 RealSessionManager realSessionManager) {
+
+    return new QRScannerPresenter(view, localPaymentDataStore, fakeTransactionService, realSessionManager);
 
   }
 }

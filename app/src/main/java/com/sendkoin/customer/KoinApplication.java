@@ -15,35 +15,35 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
  * Created by warefhaque on 5/20/17.
  */
 
-public class KoinApplication extends Application{
+public class KoinApplication extends Application {
 
-    public static final String DEFAULT_FONT = "fonts/Nunito-Bold.ttf";
-    public static final String KOIN_SERVERURL = "http://custom-env-1.2tfxydg93p.us-west-2.elasticbeanstalk.com/api/v1/";
-    private NetComponent netComponent;
-
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        this.netComponent = DaggerNetComponent.builder()
-            .appModule(new AppModule(this))
-            .netModule(new NetModule(KOIN_SERVERURL))
-            .build();
+  public static final String DEFAULT_FONT = "fonts/Nunito-Bold.ttf";
+  public static final String KOIN_SERVERURL = "http://custom-env-1.2tfxydg93p.us-west-2.elasticbeanstalk.com/api/v1/";
+  private NetComponent netComponent;
 
 
-        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath(DEFAULT_FONT)
-                .setFontAttrId(R.attr.fontPath)
-                .build());
+  @Override
+  public void onCreate() {
+    super.onCreate();
+
+    this.netComponent = DaggerNetComponent.builder()
+        .appModule(new AppModule(this))
+        .netModule(new NetModule(KOIN_SERVERURL))
+        .build();
 
 
-        Realm.init(getApplicationContext());
-        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();
-        Realm.setDefaultConfiguration(realmConfiguration);
-    }
+    CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+        .setDefaultFontPath(DEFAULT_FONT)
+        .setFontAttrId(R.attr.fontPath)
+        .build());
 
-    public NetComponent getNetComponent() {
-        return netComponent;
-    }
+
+    Realm.init(getApplicationContext());
+    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();
+    Realm.setDefaultConfiguration(realmConfiguration);
+  }
+
+  public NetComponent getNetComponent() {
+    return netComponent;
+  }
 }

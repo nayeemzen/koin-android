@@ -97,10 +97,9 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
 
           @Override
           public void onNext(AcceptTransactionResponse acceptTransactionResponse) {
-//            localPaymentDataStore
-//                .createPayment(RealmTransaction
-//                    .transactionToRealmTransaction(acceptTransactionResponse.transaction));
-
+            localPaymentDataStore
+                .createPayment(RealmTransaction
+                    .transactionToRealmTransaction(acceptTransactionResponse.transaction));
 
             view.showTransactionComplete();
           }

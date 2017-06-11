@@ -8,4 +8,7 @@
     <color name="colorBlack">#141414</color>
     <color name="colorRed">#e74c3c</color>
     <color name="colorFbBlue">#4267b2</color>
+    <color name="blue_btn_bg_color">@color/colorPrimary</color>
+    <color name="blue_btn_bg_pressed_color">@color/colorPrimaryDark</color>
+    <color name="gray_btn_bg_color">@color/colorGrey</color>
 </resources>

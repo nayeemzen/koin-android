@@ -65,7 +65,7 @@ public class TransactionDetailsPresenter implements TransactionDetailsContract.P
         .subscribe(new Subscriber<TransactionDetail>() {
           @Override
           public void onCompleted() {
-            Log.d(TAG, "loaded trans details");
+//            Log.d(TAG, "loaded trans details");
           }
 
           @Override

@@ -19,6 +19,8 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import io.realm.internal.RealmCore;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -31,76 +33,52 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class BaseTestModule {
-    private String mBaseUrl = "http://custom-env-1.2tfxydg93p.us-west-2.elasticbeanstalk.com/api/v1/";
 
-    @Provides
-    @Singleton
-    Application providesApplication() {
-        return RuntimeEnvironment.application;
-    }
+  @Provides
+  @Singleton
+  Application providesApplication() {
+    return RuntimeEnvironment.application;
+  }
 
-    @Provides
-    @Singleton
-    Cache providesHttpCache(Application application) {
-        int cacheSize = 10 * 1024 * 1024;
-        Cache cache = new Cache(application.getCacheDir(), cacheSize);
-        return cache;
-    }
+  @Provides
+  @Singleton
+  Cache providesHttpCache(Application application) {
+    int cacheSize = 10 * 1024 * 1024;
+    Cache cache = new Cache(application.getCacheDir(), cacheSize);
+    return cache;
+  }
 
-    @Provides
-    @Singleton
-    Gson providesGson() {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);
-        return gsonBuilder.create();
-    }
-
-    @Provides
-    @Singleton
-    OkHttpClient providesOkHttpClient(Cache cache) {
-        OkHttpClient.Builder client = new OkHttpClient.Builder();
-        client.cache(cache);
-        return client.build();
-    }
-
-    @Provides
-    @Singleton
-    Retrofit providesRetrofit(Gson gson, OkHttpClient okHttpClient) {
-        return new Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-            .baseUrl(mBaseUrl)
-            .client(okHttpClient)
-            .build();
-    }
-
-    @Provides
-    @Singleton
-    SharedPreferences providesSharedPreferences(Application application) {
-        return PreferenceManager.getDefaultSharedPreferences(application);
-    }
+  @Provides
+  @Singleton
+  SharedPreferences providesSharedPreferences(Application application) {
+    return PreferenceManager.getDefaultSharedPreferences(application);
+  }
 
 
-    @Provides
-    LocalPaymentDataStore providesLocalPaymentDataStore(Realm realm) {
-        return new LocalPaymentDataStore(realm);
-    }
+  @Provides
+  LocalPaymentDataStore providesLocalPaymentDataStore(Realm realm) {
+    return new LocalPaymentDataStore(realm);
+  }
 
-    @Provides
-    Realm providesRealm() {
-        return Realm.getDefaultInstance();
-    }
+  @Provides
+  Realm providesRealm(Application application) {
+    RealmConfiguration testConfig =
+        new RealmConfiguration.Builder().
+            inMemory().
+            name("test-realm").build();
+    return Realm.getInstance(testConfig);
+  }
 
-    @Provides
-    PaymentRepository providesPaymentRepository(LocalPaymentDataStore localPaymentDataStore) {
-        return new PaymentRepository(localPaymentDataStore);
-    }
+  @Provides
+  PaymentRepository providesPaymentRepository(LocalPaymentDataStore localPaymentDataStore) {
+    return new PaymentRepository(localPaymentDataStore);
+  }
 
 
-    @Provides
-    @Singleton
-    SessionManager providesSessionManager(SharedPreferences sharedPreferences) {
-        return new RealSessionManager(sharedPreferences);
-    }
+  @Provides
+  @Singleton
+  SessionManager providesSessionManager(SharedPreferences sharedPreferences) {
+    return new RealSessionManager(sharedPreferences);
+  }
 
 }

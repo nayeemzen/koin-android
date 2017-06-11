@@ -112,7 +112,7 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
             //3. save the items in realm
             localPaymentDataStore.saveAllTransactions(RealmTransaction
                 .transactionListToRealmTranscationList(transactions))
-                .subscribe(realmAsyncTask -> Log.d(TAG, "Saved from DB to realm!"));
+                .subscribe();
             //4. wait for RX to update the view in loadTransactionsFromRealm!
           }
 
@@ -173,7 +173,7 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
         .subscribe(new Subscriber<RealmResults<RealmTransaction>>() {
           @Override
           public void onCompleted() {
-            Log.e(TAG, "Completed the load!");
+//            Log.e(TAG, "Completed the load!");
           }
 
           @Override

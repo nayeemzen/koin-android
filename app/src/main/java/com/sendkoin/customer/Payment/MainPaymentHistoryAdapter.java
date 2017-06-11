@@ -41,7 +41,7 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
 
   public void setGroupedList(LinkedHashMap<String, List<RealmTransaction>> payments) {
     groupedList = groupPaymentsByDate(payments);
-    Log.d(TAG, groupedList.toString());
+//    Log.d(TAG, groupedList.toString());
   }
 
   public List<ListItem> groupPaymentsByDate(LinkedHashMap<String, List<RealmTransaction>> groupedHashMap) {
