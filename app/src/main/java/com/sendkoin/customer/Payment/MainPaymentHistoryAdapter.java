@@ -2,27 +2,23 @@ package com.sendkoin.customer.Payment;
 
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.sendkoin.api.Transaction;
-import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 import com.sendkoin.customer.MainActivity;
 import com.sendkoin.customer.Payment.TransactionDetails.TransactionDetailsActivity;
 import com.sendkoin.customer.R;
+import com.sendkoin.sql.entities.PaymentEntity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * Created by warefhaque on 5/26/17.
@@ -39,12 +35,12 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
     groupedList = new ArrayList<>();
   }
 
-  public void setGroupedList(LinkedHashMap<String, List<RealmTransaction>> payments) {
+  public void setGroupedList(LinkedHashMap<String, List<PaymentEntity>> payments) {
     groupedList = groupPaymentsByDate(payments);
 //    Log.d(TAG, groupedList.toString());
   }
 
-  public List<ListItem> groupPaymentsByDate(LinkedHashMap<String, List<RealmTransaction>> groupedHashMap) {
+  public List<ListItem> groupPaymentsByDate(LinkedHashMap<String, List<PaymentEntity>> groupedHashMap) {
 
     List<ListItem> result = new ArrayList<>();
 
@@ -53,12 +49,12 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
       dateItem.date = date;
       result.add(dateItem);
 
-      for (RealmTransaction realmTransaction : groupedHashMap.get(date)) {
+      for (PaymentEntity paymentEntity : groupedHashMap.get(date)) {
         PaymentItem paymentItem = new PaymentItem()
-            .setPlaceName(realmTransaction.getMerchantName())
-            .setPlaceType(realmTransaction.getMerchantType())
-            .setTransactionToken(realmTransaction.getTransactionToken())
-            .setPaidAmount(Integer.toString(realmTransaction.getAmount()));
+            .setPlaceName(paymentEntity.getMerchantName())
+            .setPlaceType(paymentEntity.getMerchantType())
+            .setTransactionToken(paymentEntity.getTransactionToken())
+            .setPaidAmount(Integer.toString(paymentEntity.getAmount().intValue()));
 
         result.add(paymentItem);
       }

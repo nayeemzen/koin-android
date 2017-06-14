@@ -3,6 +3,7 @@ package com.sendkoin.customer.Payment.QRPayment;
 
 import android.util.Log;
 
+import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
 import com.sendkoin.api.AcceptTransactionRequest;
 import com.sendkoin.api.Transaction;
 import com.sendkoin.customer.Data.Authentication.SessionManager;
@@ -26,7 +27,6 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
   private QRScannerContract.View view;
   private LocalPaymentDataStore localPaymentDataStore;
   private PaymentService paymentService;
-  private SessionManager sessionManager;
   public static final String MERCHANT_NAME = "merchant_name";
   public static final String SALE_AMOUNT = "sale_amount";
   private Subscription subscription;
@@ -38,13 +38,11 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
   @Inject
   public QRScannerPresenter(QRScannerContract.View view,
                             LocalPaymentDataStore localPaymentDataStore,
-                            PaymentService paymentService,
-                            SessionManager sessionManager) {
+                            PaymentService paymentService) {
 
     this.view = view;
     this.localPaymentDataStore = localPaymentDataStore;
     this.paymentService = paymentService;
-    this.sessionManager = sessionManager;
   }
 
   /**
@@ -71,9 +69,9 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
         .acceptCurrentTransaction(acceptTransactionRequest)
         .subscribeOn(Schedulers.io())
         .flatMap(acceptTransactionResponse ->
-            localPaymentDataStore.createPayment(acceptTransactionResponse.transaction))
+            localPaymentDataStore.createTransaction(acceptTransactionResponse.transaction))
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Subscriber<Transaction>() {
+        .subscribe(new Subscriber<PutResult>() {
           @Override
           public void onCompleted() {
             Log.d(TAG, "on Completed!");
@@ -86,7 +84,7 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
           }
 
           @Override
-          public void onNext(Transaction transaction) {
+          public void onNext(PutResult putResult) {
             view.showTransactionComplete();
           }
         });
@@ -109,9 +107,6 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
 
   @Override
   public void closeRealm() {
-    if (localPaymentDataStore != null) {
-      localPaymentDataStore.close();
-    }
   }
 
   public String getErrorMessage(Throwable error) {

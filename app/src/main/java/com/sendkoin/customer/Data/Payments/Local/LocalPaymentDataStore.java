@@ -1,19 +1,19 @@
 package com.sendkoin.customer.Data.Payments.Local;
 
+import com.annimon.stream.Stream;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
+import com.pushtorefresh.storio.sqlite.operations.put.PutResults;
+import com.pushtorefresh.storio.sqlite.queries.Query;
 import com.sendkoin.api.Transaction;
-import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
+import com.sendkoin.sql.entities.PaymentEntity;
+import com.sendkoin.sql.tables.PaymentTable;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-import io.realm.Realm;
-import io.realm.RealmResults;
-import io.realm.Sort;
 import rx.Observable;
-
-import static com.sendkoin.customer.Data.Payments.Models.RealmTransaction.toRealmTransaction;
-import static com.sendkoin.customer.Data.Payments.Models.RealmTransaction.toRealmTransactions;
 
 /**
  * Created by warefhaque on 5/20/17.
@@ -21,71 +21,71 @@ import static com.sendkoin.customer.Data.Payments.Models.RealmTransaction.toReal
 
 public class LocalPaymentDataStore {
 
-  private Realm realm;
+  private StorIOSQLite storIOSQLite;
 
   @Inject
-  public LocalPaymentDataStore(Realm realm) {
+  public LocalPaymentDataStore(StorIOSQLite storIOSQLite) {
 
-    this.realm = realm;
+    this.storIOSQLite = storIOSQLite;
   }
 
-  public Observable<Transaction> createPayment(Transaction transaction) {
-    return Observable.fromCallable(() -> {
-      Realm defaultRealm = Realm.getDefaultInstance();
-      defaultRealm.executeTransaction(realm -> realm.insert(toRealmTransaction(transaction)));
-      defaultRealm.close();
-      return transaction;
-    });
+  public Observable<PutResult> createTransaction(Transaction transaction) {
+    return storIOSQLite.put().object(fromWire(transaction)).prepare().asRxObservable();
   }
 
 
-  public Observable<RealmResults<RealmTransaction>> getAllTransactions() {
-    return realm.where(RealmTransaction.class)
-        .findAllSorted("createdAt", Sort.DESCENDING)
-        .asObservable();
+  public Observable<List<PaymentEntity>> getAllTransactions() {
+    return storIOSQLite.get()
+        .listOfObjects(PaymentEntity.class)
+        .withQuery(Query.builder()
+            .table(PaymentTable.TABLE)
+            .orderBy(PaymentTable.COLUMN_CREATED_AT + " DESC")
+            .build())
+        .prepare()
+        .asRxObservable();
   }
 
-  public Observable<List<Transaction>> saveAllTransactions(List<Transaction> transactions) {
-    return Observable.fromCallable(() -> {
-      Realm defaultRealm = Realm.getDefaultInstance();
-      defaultRealm.executeTransaction(realm ->
-          realm.insertOrUpdate(toRealmTransactions(transactions)));
-      defaultRealm.close();
-      return transactions;
-    });
+  public Observable<PutResults<PaymentEntity>> saveAllTransactions(List<Transaction> transactions) {
+    return storIOSQLite.put()
+        .objects(Stream.of(transactions)
+            .map(this::fromWire)
+            .toList())
+        .prepare()
+        .asRxObservable();
   }
+
+  private PaymentEntity fromWire(Transaction transaction) {
+    return new PaymentEntity(
+        transaction.token,
+        transaction.amount.longValue(),
+        transaction.created_at,
+        transaction.state.name(),
+        transaction.merchant.store_name,
+        transaction.merchant.store_type);
+  }
+
 
   public long getLastSeenTransaction() {
-    Number lastSeen = realm.where(RealmTransaction.class).max("createdAt");
-    return (lastSeen == null) ? 0 : lastSeen.longValue();
+    PaymentEntity lastSeen = storIOSQLite.get().object(PaymentEntity.class)
+        .withQuery(Query.builder()
+            .table(PaymentTable.TABLE)
+            .orderBy(PaymentTable.COLUMN_CREATED_AT + " DESC")
+            .limit(1)
+            .build())
+        .prepare()
+        .executeAsBlocking();
+    return (lastSeen == null) ? 0 : lastSeen.getCreatedAt();
   }
 
-  public long getEarliestSeenTransaction(){
-    Number earliestSeen = realm.where(RealmTransaction.class).min("createdAt");
-    return (earliestSeen == null) ? 0 : earliestSeen.longValue();
-  }
-
-
-  /**
-   * Debugging purposes
-   */
-  public void deleteAllTranscations() {
-    realm.executeTransaction(realm1 -> realm1.delete(RealmTransaction.class));
-  }
-
-  public void close() {
-    realm.close();
+  public long getEarliestSeenTransaction() {
+    PaymentEntity earliestSeen = storIOSQLite.get().object(PaymentEntity.class)
+        .withQuery(Query.builder()
+            .table(PaymentTable.TABLE)
+            .orderBy(PaymentTable.COLUMN_CREATED_AT + " ASC")
+            .limit(1)
+            .build())
+        .prepare()
+        .executeAsBlocking();
+    return (earliestSeen == null) ? 0 : earliestSeen.getCreatedAt();
   }
 }
-
-
-//      for (RealmTransaction realmTransaction : realmTransactions) {
-//        RealmTransaction existingTransaction = realm.where(RealmTransaction.class)
-//            .equalTo("transactionToken", realmTransaction.getTransactionToken())
-//            .findFirst();
-//
-//        if (existingTransaction == null) {
-//          // no existing transactions
-//          realm.executeTransaction(realm1 -> realm1.insert(realmTransaction));
-//        }
-//      }

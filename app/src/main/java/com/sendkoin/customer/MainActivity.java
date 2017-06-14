@@ -52,12 +52,10 @@ public class MainActivity extends AppCompatActivity {
     setContentView(R.layout.activity_main);
     ButterKnife.bind(this);
 
-    sessionManager().putFbAccessToken(null);
-    sessionManager().putSessionToken(null);
-//    String sessionToken = sessionManager().getSessionToken();
-//    if (sessionToken == null){
-//      startActivity(new Intent(MainActivity.this, LoginActivity.class));
-//    }
+    String sessionToken = sessionManager().getSessionToken();
+    if (sessionToken == null){
+      startActivity(new Intent(MainActivity.this, LoginActivity.class));
+    }
 
     if (getSupportActionBar() != null) {
       getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);

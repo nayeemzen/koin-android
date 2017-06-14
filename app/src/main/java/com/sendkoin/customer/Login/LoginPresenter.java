@@ -43,8 +43,8 @@ public class LoginPresenter implements LoginContract.Presenter {
         new FacebookAuthenticationRequest.Builder()
             .access_token(accessToken)
             .build())
-        .observeOn(AndroidSchedulers.mainThread())
         .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
         .subscribe(new Observer<AuthenticationResponse>() {
           @Override
           public void onCompleted() {

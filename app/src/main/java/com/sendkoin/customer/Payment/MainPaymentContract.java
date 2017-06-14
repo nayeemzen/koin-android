@@ -3,7 +3,7 @@ package com.sendkoin.customer.Payment;
 import android.content.Context;
 
 import com.sendkoin.customer.BasePresenter;
-import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
+import com.sendkoin.sql.entities.PaymentEntity;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.List;
 public interface MainPaymentContract {
 
   interface View {
-    void showPaymentItems(LinkedHashMap<String, List<RealmTransaction>> payments);
+    void showPaymentItems(LinkedHashMap<String, List<PaymentEntity>> payments);
 
     Context getApplicationContext();
   }

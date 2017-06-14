@@ -15,11 +15,11 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
-import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 import com.sendkoin.customer.KoinApplication;
 import com.sendkoin.customer.MainActivity;
 import com.sendkoin.customer.Payment.QRPayment.QRCodeScannerActivity;
 import com.sendkoin.customer.R;
+import com.sendkoin.sql.entities.PaymentEntity;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -146,8 +146,9 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment
 
   }
 
+
   @Override
-  public void showPaymentItems(LinkedHashMap<String, List<RealmTransaction>> payments) {
+  public void showPaymentItems(LinkedHashMap<String, List<PaymentEntity>> payments) {
     UIState uiState = (payments.size() == 0) ? UIState.NO_PAYMENTS : UIState.PAYMENTS;
     setUiState(uiState);
     mMainPaymentHistoryAdapter.setGroupedList(payments);

@@ -1,5 +1,7 @@
 package com.sendkoin.customer.Data.Payments;
 
+import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
+import com.pushtorefresh.storio.sqlite.operations.put.PutResults;
 import com.sendkoin.api.ListTransactionsRequest;
 import com.sendkoin.api.ListTransactionsResponse;
 import com.sendkoin.api.QueryParameters;
@@ -23,7 +25,7 @@ public class PaymentRepository implements PaymentDataStore {
 
   @Override
   public Observable<Transaction> createPayment(Transaction transaction) {
-    return localPaymentDataStore.createPayment(transaction);
+    return localPaymentDataStore.createTransaction(transaction).map(putResult -> transaction);
   }
 
   @Override

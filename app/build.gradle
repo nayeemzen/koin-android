@@ -5,6 +5,8 @@ apply plugin: 'realm-android'
 
 def protoPath = 'src/main/proto'
 def wireGeneratedPath = 'build/generated/source/wire'
+def sqlPath = 'src/main/sql'
+def sqlGeneratedPath = 'build/generated/source/sql/'
 
 buildscript {
     repositories {
@@ -26,6 +28,11 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
+        android.applicationVariants.all {
+            def aptOutputDir = new File(buildDir, "generated/source/apt/${it.unitTestVariant.dirName}")
+            it.unitTestVariant.addJavaSourceFoldersToModel(aptOutputDir)
+        }
     }
     buildTypes {
         release {
@@ -33,17 +40,32 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+
+    testOptions {
+        unitTests.all {
+            // All the usual Gradle options.
+            testLogging {
+                events "passed", "skipped", "failed", "standardOut", "standardError"
+                outputs.upToDateWhen { false }
+                showStandardStreams = true
+            }
+        }
+    }
     compileOptions {
         targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
     }
+
     sourceSets {
         main.java.srcDirs += wireGeneratedPath
+        main.java.srcDirs += sqlGeneratedPath
     }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -54,32 +76,34 @@ dependencies {
     compile 'com.android.support:gridlayout-v7:25.3.1'
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
-
     // JUnit 4
     testCompile 'junit:junit:4.12'
     // Mockito
     testCompile 'org.mockito:mockito-core:1.10.19'
+    androidTestCompile 'org.mockito:mockito-core:1.10.19'
+    androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
+    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
     // Roboelectric
-    testCompile "org.robolectric:robolectric:3.3.2"
+    testCompile 'org.robolectric:robolectric:3.3.2'
     // AssertJ
     testCompile 'org.assertj:assertj-core:3.6.2'
 
     // AndroidSwipeLayout
     compile "com.daimajia.swipelayout:library:1.2.0@aar"
 
-    // FAB
-    compile 'com.getbase:floatingactionbutton:1.9.1'
-
     // Dagger
-    compile "com.google.dagger:dagger:2.9"
+    compile 'com.google.dagger:dagger:2.9'
     annotationProcessor "com.google.dagger:dagger-compiler:2.9"
     provided 'javax.annotation:jsr250-api:1.0'
-
-    testCompile "com.google.dagger:dagger:2.9"
+    testCompile 'com.google.dagger:dagger:2.9'
     testAnnotationProcessor 'com.google.dagger:dagger-compiler:2.9'
+    androidTestAnnotationProcessor 'com.google.dagger:dagger-compiler:2.9'
 
     // Retrofit
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
+
+    // FAB
+    compile 'com.getbase:floatingactionbutton:1.9.1'
 
     // OkHttp
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
@@ -102,14 +126,6 @@ dependencies {
     compile 'io.reactivex:rxjava:1.2.9'
     compile 'io.reactivex:rxandroid:1.2.1'
     compile 'com.squareup.retrofit2:adapter-rxjava:2.2.0'
-
-    // StorIO
-    compile 'com.pushtorefresh.storio:sqlite:1.12.3'
-    compile 'com.pushtorefresh.storio:content-resolver:1.12.3'
-    compile 'com.pushtorefresh.storio:sqlite-annotations:1.12.3'
-    annotationProcessor 'com.pushtorefresh.storio:sqlite-annotations-processor:1.12.3'
-    compile 'com.pushtorefresh.storio:content-resolver-annotations:1.12.3'
-    annotationProcessor 'com.pushtorefresh.storio:content-resolver-annotations-processor:1.12.3'
 
     // Lightweight-Stream-API
     compile 'com.annimon:stream:1.1.7'
@@ -134,6 +150,11 @@ dependencies {
 
     //green robot
     compile 'org.greenrobot:eventbus:3.0.0'
+
+    // StorIO
+    compile 'com.pushtorefresh.storio:sqlite:1.13.0'
+    compile 'com.pushtorefresh.storio:sqlite-annotations:1.13.0'
+    annotationProcessor 'com.pushtorefresh.storio:sqlite-annotations-processor:1.13.0'
 }
 
 // This handles the protocol buffer generation with wire
@@ -151,4 +172,18 @@ task generateWireClasses {
     }
 }
 
+task generateSqlClasses {
+    description = 'Generate sqlite tables and storio entities'
+    fileTree(dir: sqlPath, include: '**/*.sql').each { File file ->
+        doLast {
+            javaexec {
+                main = "-jar";
+                classpath = buildscript.configurations.classpath
+                args = ["codegen/CodeGenUnderStorIO.jar", "${file}", "com.sendkoin.sql", "${sqlGeneratedPath}"]
+            }
+        }
+    }
+}
+
+preBuild.dependsOn generateSqlClasses
 preBuild.dependsOn generateWireClasses

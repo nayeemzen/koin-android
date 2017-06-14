@@ -1,31 +1,33 @@
-package com.sendkoin.customer.Payment.QRPayment;
+package com.sendkoin.customer.QRPayment;
 
-import com.sendkoin.customer.Data.Authentication.SessionManager;
 import com.sendkoin.customer.Data.Dagger.CustomScope;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.Data.Payments.PaymentService;
+import com.sendkoin.customer.Payment.QRPayment.QRScannerContract;
+import com.sendkoin.customer.Payment.QRPayment.QRScannerPresenter;
 
 import dagger.Module;
 import dagger.Provides;
-import me.dm7.barcodescanner.zbar.ZBarScannerView;
 import retrofit2.Retrofit;
 
+import static org.mockito.Mockito.mock;
+
 /**
- * Created by warefhaque on 5/23/17.
+ * Created by warefhaque on 6/14/17.
  */
 
 @Module
-public class QRPaymentModule {
+public class QRPaymentTestModule {
   private QRScannerContract.View view;
 
-  public QRPaymentModule(QRScannerContract.View view) {
+  public QRPaymentTestModule(QRScannerContract.View view) {
     this.view = view;
   }
 
   @Provides
   @CustomScope
-  public PaymentService providesPaymentService(Retrofit retrofit){
-    return  retrofit.create(PaymentService.class);
+  public PaymentService providesPaymentService(){
+    return new FakePaymentService();
   }
 
   @Provides
@@ -39,11 +41,5 @@ public class QRPaymentModule {
   @CustomScope
   public QRScannerContract.View providesView(){
     return view;
-  }
-
-  @Provides
-  @CustomScope
-  public ZBarScannerView providesZBarScannerView(){
-    return new ZBarScannerView(view.getContext());
   }
 }

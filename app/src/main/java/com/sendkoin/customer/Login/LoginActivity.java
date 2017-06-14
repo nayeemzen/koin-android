@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.test.mock.MockApplication;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -139,6 +140,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
   @Override
   public void loginWithFbSuccess(String name) {
     Toast.makeText(this, "Welcome " + name + "!", Toast.LENGTH_SHORT).show();
+    ((KoinApplication) getApplication()).getNetComponent().sessionManager().putAuthAttempts(0);
     Intent intent= new Intent(LoginActivity.this, MainActivity.class);
     startActivity(intent);
   }

@@ -1,24 +1,27 @@
 package com.sendkoin.customer.Payment;
 
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.annimon.stream.Stream;
+import com.pushtorefresh.storio.sqlite.operations.put.PutResults;
 import com.sendkoin.api.ListTransactionsResponse;
 import com.sendkoin.api.QueryParameters;
 import com.sendkoin.api.Transaction;
 import com.sendkoin.customer.Data.Authentication.SessionManager;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
-import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 import com.sendkoin.customer.Data.Payments.PaymentRepository;
 import com.sendkoin.customer.Data.Payments.PaymentService;
+import com.sendkoin.sql.entities.PaymentEntity;
 
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
-import io.realm.RealmResults;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -92,8 +95,9 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
           List<Transaction> transactions = listTransactionsResponse.transactions;
           return localPaymentDataStore.saveAllTransactions(transactions);
         })
+        .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Subscriber<List<Transaction>>() {
+        .subscribe(new Subscriber<PutResults>() {
           @Override
           public void onCompleted() {
             Log.d(TAG, "Completed DB Call!");
@@ -112,12 +116,16 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
           }
 
           @Override
-          public void onNext(List<Transaction> transactions) {
-            Log.d(TAG, String.format("Saved %d transactions to realm", transactions.size()));
+          public void onNext(PutResults transactions) {
           }
         });
 
     compositeSubscription.add(subscription);
+  }
+
+  @Override
+  public void deleteAllTransactions() {
+
   }
 
   /**
@@ -152,24 +160,41 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
         });
   }
 
-  /**
-   * Debugging purposes.
-   */
-  @Override
-  public void deleteAllTransactions() {
-    localPaymentDataStore.deleteAllTranscations();
+  private LinkedHashMap<String, List<PaymentEntity>> groupTransactionsByCreatedAt(
+      List<PaymentEntity> transactionEntities) {
+    return Stream.of(transactionEntities)
+        .collect(groupingBy(transactionEntity -> getCreatedAt(transactionEntity.getCreatedAt()),
+            LinkedHashMap::new, toList()));
   }
 
-  private LinkedHashMap<String, List<RealmTransaction>> groupTransactionsByCreatedAt(
-      List<RealmTransaction> realmTransactions) {
-    return Stream.of(realmTransactions).collect(
-        groupingBy(RealmTransaction::getCreatedAt, LinkedHashMap::new, toList()));
+  public String getCreatedAt(long createdAt) {
+    Calendar cal = Calendar.getInstance(Locale.ENGLISH);
+    cal.setTimeInMillis(createdAt);
+    String dateString = DateFormat.format("EEEE, MMMM d", cal).toString();
+    int day = cal.get(Calendar.DAY_OF_MONTH);
+    return dateString + getDateSuffix(day);
   }
 
-  private void loadTransactionsFromRealm() {
+  private String getDateSuffix(int day) {
+    switch (day) {
+      case 1:
+        return "st";
+      case 2:
+        return "nd";
+      case 3:
+        return "rd";
+      case 31:
+        return "st";
+      default:
+        return "th";
+    }
+  }
+
+  private void loadTransactionsFromStorIO() {
     Subscription subscription = localPaymentDataStore.getAllTransactions()
-        .filter(RealmResults::isLoaded)
-        .subscribe(new Subscriber<RealmResults<RealmTransaction>>() {
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Subscriber<List<PaymentEntity>>() {
           @Override
           public void onCompleted() {
           }
@@ -180,9 +205,8 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
           }
 
           @Override
-          public void onNext(RealmResults<RealmTransaction> realmTransactions) {
-            List<RealmTransaction> items = Stream.of(realmTransactions).collect(toList());
-            view.showPaymentItems(groupTransactionsByCreatedAt(items));
+          public void onNext(List<PaymentEntity> transactionEntities) {
+            view.showPaymentItems(groupTransactionsByCreatedAt(transactionEntities));
           }
         });
 
@@ -196,7 +220,7 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
    */
   @Override
   public void subscribe() {
-    loadTransactionsFromRealm();
+    loadTransactionsFromStorIO();
     loadTransactionsFromServer(true);
   }
 
@@ -209,8 +233,5 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
 
   @Override
   public void closeRealm() {
-    if (localPaymentDataStore != null) {
-      localPaymentDataStore.close();
-    }
   }
 }
