@@ -15,7 +15,7 @@ import java.util.List;
 public interface MainPaymentContract {
 
   interface View {
-    void showPaymentItems(LinkedHashMap<String, List<PaymentEntity>> payments);
+    void showPaymentItems(List<PaymentEntity> payments);
 
     Context getApplicationContext();
   }

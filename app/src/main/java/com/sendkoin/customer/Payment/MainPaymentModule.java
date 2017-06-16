@@ -5,6 +5,8 @@ import com.sendkoin.customer.Data.Dagger.CustomScope;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.Data.Payments.PaymentRepository;
 import com.sendkoin.customer.Data.Payments.PaymentService;
+import com.sendkoin.customer.Payment.QRPayment.QRScannerContract;
+import com.sendkoin.customer.Payment.QRPayment.QRScannerPresenter;
 
 import dagger.Module;
 import dagger.Provides;
@@ -41,10 +43,8 @@ public class MainPaymentModule {
   MainPaymentContract.Presenter providesMainPaymentPresenter(MainPaymentContract.View view,
                                                              LocalPaymentDataStore localPaymentDataStore,
                                                              PaymentRepository paymentRepository,
-                                                             PaymentService paymentService,
-                                                             SessionManager sessionManager) {
-    return new MainPaymentPresenter(view, localPaymentDataStore, paymentRepository, paymentService,
-        sessionManager);
+                                                             PaymentService paymentService) {
+    return new MainPaymentPresenter(view, localPaymentDataStore, paymentRepository, paymentService);
   }
 }
 

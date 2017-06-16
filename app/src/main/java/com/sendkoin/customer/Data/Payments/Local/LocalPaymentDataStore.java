@@ -4,6 +4,7 @@ import com.annimon.stream.Stream;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
 import com.pushtorefresh.storio.sqlite.operations.put.PutResults;
+import com.pushtorefresh.storio.sqlite.queries.DeleteQuery;
 import com.pushtorefresh.storio.sqlite.queries.Query;
 import com.sendkoin.api.Transaction;
 import com.sendkoin.sql.entities.PaymentEntity;
@@ -54,7 +55,7 @@ public class LocalPaymentDataStore {
         .asRxObservable();
   }
 
-  private PaymentEntity fromWire(Transaction transaction) {
+  public PaymentEntity fromWire(Transaction transaction) {
     return new PaymentEntity(
         transaction.token,
         transaction.amount.longValue(),
@@ -88,4 +89,23 @@ public class LocalPaymentDataStore {
         .executeAsBlocking();
     return (earliestSeen == null) ? 0 : earliestSeen.getCreatedAt();
   }
+
+  public List<PaymentEntity> getAllPayments(){
+    List<PaymentEntity> paymentEntities = storIOSQLite.get()
+        .listOfObjects(PaymentEntity.class)
+        .withQuery(Query.builder().table(PaymentTable.TABLE).build())
+        .prepare()
+        .executeAsBlocking();
+    return paymentEntities;
+
+  }
+
+
+  public void deleteAllPayments() {
+    storIOSQLite.delete()
+        .byQuery(DeleteQuery.builder().table(PaymentTable.TABLE).build())
+        .prepare()
+        .executeAsBlocking();
+  }
+
 }

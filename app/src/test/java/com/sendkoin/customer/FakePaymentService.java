@@ -1,4 +1,4 @@
-package com.sendkoin.customer.QRPayment;
+package com.sendkoin.customer;
 
 import com.sendkoin.api.AcceptTransactionRequest;
 import com.sendkoin.api.AcceptTransactionResponse;
@@ -8,6 +8,11 @@ import com.sendkoin.api.Merchant;
 import com.sendkoin.api.Transaction;
 import com.sendkoin.api.TransactionDetail;
 import com.sendkoin.customer.Data.Payments.PaymentService;
+import com.sendkoin.sql.entities.PaymentEntity;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import retrofit2.http.Body;
 import retrofit2.http.Path;
@@ -19,24 +24,25 @@ import rx.Observable;
  */
 
 public class FakePaymentService implements PaymentService {
+  public static LinkedHashMap<String,Transaction> paymentEntityLinkedHashMap = new LinkedHashMap<>();
   @Override
-  public Observable<ListTransactionsResponse> getAllPayments(@Body ListTransactionsRequest listTransactionsRequest, @Query("page") int pageNumber) {
-    return null;
+  public Observable<ListTransactionsResponse> getAllPayments(
+      @Body ListTransactionsRequest listTransactionsRequest,
+      @Query("page") int pageNumber) {
+
+    ListTransactionsResponse listTransactionsResponse = new ListTransactionsResponse.Builder()
+        .transactions(new ArrayList<>())
+        .has_next_page(false)
+        .build();
+
+    return Observable.just(listTransactionsResponse);
   }
 
   @Override
-  public Observable<AcceptTransactionResponse> acceptCurrentTransaction(@Body AcceptTransactionRequest acceptTransactionRequest) {
+  public Observable<AcceptTransactionResponse> acceptCurrentTransaction(
+      @Body AcceptTransactionRequest acceptTransactionRequest) {
     AcceptTransactionResponse acceptTransactionResponse = new AcceptTransactionResponse.Builder()
-        .transaction(new Transaction.Builder()
-            .token(acceptTransactionRequest.transaction_token)
-            .amount(20)
-            .merchant(new Merchant.Builder()
-                .store_type("rest")
-                .store_name("zen's shop")
-                .build())
-            .state(Transaction.State.COMPLETE)
-            .created_at(1223423523423L)
-            .build())
+        .transaction(paymentEntityLinkedHashMap.get(acceptTransactionRequest.transaction_token))
         .build();
     return Observable.just(acceptTransactionResponse);
   }
@@ -45,5 +51,4 @@ public class FakePaymentService implements PaymentService {
   public Observable<TransactionDetail> getAllItems(@Path("token") String transactionToken) {
     return null;
   }
-
 }

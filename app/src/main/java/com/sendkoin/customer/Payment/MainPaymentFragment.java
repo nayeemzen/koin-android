@@ -8,11 +8,13 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.annimon.stream.Stream;
 import com.google.gson.Gson;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.KoinApplication;
@@ -21,8 +23,10 @@ import com.sendkoin.customer.Payment.QRPayment.QRCodeScannerActivity;
 import com.sendkoin.customer.R;
 import com.sendkoin.sql.entities.PaymentEntity;
 
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -33,6 +37,8 @@ import butterknife.Unbinder;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
+import static com.annimon.stream.Collectors.groupingBy;
+import static com.annimon.stream.Collectors.toList;
 
 /**
  * Created by warefhaque on 5/20/17.
@@ -88,6 +94,7 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment
     setUpDagger();
     setupRecyclerView();
     listenForListScroll();
+//    localPaymentDataStore.deleteAllPayments();
   }
 
   private void setUpDagger() {
@@ -148,13 +155,45 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment
 
 
   @Override
-  public void showPaymentItems(LinkedHashMap<String, List<PaymentEntity>> payments) {
-    UIState uiState = (payments.size() == 0) ? UIState.NO_PAYMENTS : UIState.PAYMENTS;
+  public void showPaymentItems(List<PaymentEntity> paymentEntities) {
+    UIState uiState = (paymentEntities.size() == 0) ? UIState.NO_PAYMENTS : UIState.PAYMENTS;
     setUiState(uiState);
+    LinkedHashMap<String, List<PaymentEntity>> payments = groupTransactionsByCreatedAt(paymentEntities);
     mMainPaymentHistoryAdapter.setGroupedList(payments);
     mMainPaymentHistoryAdapter.notifyDataSetChanged();
     isLoading = false;
   }
+
+  public LinkedHashMap<String, List<PaymentEntity>> groupTransactionsByCreatedAt(
+      List<PaymentEntity> transactionEntities) {
+    return Stream.of(transactionEntities)
+        .collect(groupingBy(transactionEntity -> getCreatedAt(transactionEntity.getCreatedAt()),
+            LinkedHashMap::new, toList()));
+  }
+
+  public String getCreatedAt(long createdAt) {
+    Calendar cal = Calendar.getInstance(Locale.ENGLISH);
+    cal.setTimeInMillis(createdAt);
+    String dateString = DateFormat.format("EEEE, MMMM d", cal).toString();
+    int day = cal.get(Calendar.DAY_OF_MONTH);
+    return dateString + getDateSuffix(day);
+  }
+
+  private String getDateSuffix(int day) {
+    switch (day) {
+      case 1:
+        return "st";
+      case 2:
+        return "nd";
+      case 3:
+        return "rd";
+      case 31:
+        return "st";
+      default:
+        return "th";
+    }
+  }
+
 
   @Override
   public Context getApplicationContext() {

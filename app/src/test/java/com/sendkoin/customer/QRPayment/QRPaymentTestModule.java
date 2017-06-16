@@ -3,12 +3,12 @@ package com.sendkoin.customer.QRPayment;
 import com.sendkoin.customer.Data.Dagger.CustomScope;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.Data.Payments.PaymentService;
+import com.sendkoin.customer.FakePaymentService;
 import com.sendkoin.customer.Payment.QRPayment.QRScannerContract;
 import com.sendkoin.customer.Payment.QRPayment.QRScannerPresenter;
 
 import dagger.Module;
 import dagger.Provides;
-import retrofit2.Retrofit;
 
 import static org.mockito.Mockito.mock;
 
@@ -18,10 +18,10 @@ import static org.mockito.Mockito.mock;
 
 @Module
 public class QRPaymentTestModule {
-  private QRScannerContract.View view;
+  private QRScannerContract.View qrScannerView;
 
   public QRPaymentTestModule(QRScannerContract.View view) {
-    this.view = view;
+    this.qrScannerView = view;
   }
 
   @Provides
@@ -34,12 +34,14 @@ public class QRPaymentTestModule {
   @CustomScope
   public QRScannerContract.Presenter providesPresenter(LocalPaymentDataStore localPaymentDataStore,
                                                        PaymentService paymentService){
-    return new QRScannerPresenter(view, localPaymentDataStore, paymentService);
+    return new QRScannerPresenter(qrScannerView, localPaymentDataStore, paymentService);
   }
+
 
   @Provides
   @CustomScope
   public QRScannerContract.View providesView(){
-    return view;
+    return qrScannerView;
   }
+
 }

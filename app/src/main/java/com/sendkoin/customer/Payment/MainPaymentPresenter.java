@@ -9,7 +9,6 @@ import com.pushtorefresh.storio.sqlite.operations.put.PutResults;
 import com.sendkoin.api.ListTransactionsResponse;
 import com.sendkoin.api.QueryParameters;
 import com.sendkoin.api.Transaction;
-import com.sendkoin.customer.Data.Authentication.SessionManager;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.Data.Payments.PaymentRepository;
 import com.sendkoin.customer.Data.Payments.PaymentService;
@@ -42,7 +41,6 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
   private LocalPaymentDataStore localPaymentDataStore;
   private PaymentRepository paymentRepository;
   private PaymentService paymentService;
-  private SessionManager sessionManager;
   private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
   // need local and payment repo for calls
@@ -50,14 +48,12 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
   public MainPaymentPresenter(MainPaymentContract.View view,
                               LocalPaymentDataStore localPaymentDataStore,
                               PaymentRepository paymentRepository,
-                              PaymentService paymentService,
-                              SessionManager sessionManager) {
+                              PaymentService paymentService) {
 
     this.view = view;
     this.localPaymentDataStore = localPaymentDataStore;
     this.paymentRepository = paymentRepository;
     this.paymentService = paymentService;
-    this.sessionManager = sessionManager;
   }
 
   /**
@@ -146,7 +142,6 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
                                                                  int pageNumber) {
     // TODO(waref): Use authenticator and interceptor in OkHttp. Don't pass authentication header
     // directly in retrofit.
-    String authToken = "Bearer " + sessionManager.getSessionToken();
     return paymentRepository
         .getAllPayments(paymentService, queryParameters, pageNumber)
         .subscribeOn(Schedulers.io())
@@ -158,36 +153,6 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
             return Observable.just(listTransactionsResponse);
           }
         });
-  }
-
-  private LinkedHashMap<String, List<PaymentEntity>> groupTransactionsByCreatedAt(
-      List<PaymentEntity> transactionEntities) {
-    return Stream.of(transactionEntities)
-        .collect(groupingBy(transactionEntity -> getCreatedAt(transactionEntity.getCreatedAt()),
-            LinkedHashMap::new, toList()));
-  }
-
-  public String getCreatedAt(long createdAt) {
-    Calendar cal = Calendar.getInstance(Locale.ENGLISH);
-    cal.setTimeInMillis(createdAt);
-    String dateString = DateFormat.format("EEEE, MMMM d", cal).toString();
-    int day = cal.get(Calendar.DAY_OF_MONTH);
-    return dateString + getDateSuffix(day);
-  }
-
-  private String getDateSuffix(int day) {
-    switch (day) {
-      case 1:
-        return "st";
-      case 2:
-        return "nd";
-      case 3:
-        return "rd";
-      case 31:
-        return "st";
-      default:
-        return "th";
-    }
   }
 
   private void loadTransactionsFromStorIO() {
@@ -206,7 +171,7 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
 
           @Override
           public void onNext(List<PaymentEntity> transactionEntities) {
-            view.showPaymentItems(groupTransactionsByCreatedAt(transactionEntities));
+            view.showPaymentItems(transactionEntities);
           }
         });
 
