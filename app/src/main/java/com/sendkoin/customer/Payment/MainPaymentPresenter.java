@@ -25,6 +25,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
@@ -72,33 +73,30 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
   @Override
   public void loadTransactionsFromServer(boolean fetchLatest) {
     QueryParameters.Builder queryParametersBuilder = new QueryParameters.Builder();
-    long lastSeenTransaction = localPaymentDataStore.getLastSeenTransaction();
-
-    if (fetchLatest && lastSeenTransaction > 0) {
-      queryParametersBuilder.updates_after(lastSeenTransaction);
-      queryParametersBuilder.order(QueryParameters.Order.ASCENDING);
-    } else {
-      long earliestSeenTransaction = localPaymentDataStore.getEarliestSeenTransaction();
-      if (earliestSeenTransaction > 0) {
-        queryParametersBuilder.updates_before(earliestSeenTransaction);
-      }
-      queryParametersBuilder.order(QueryParameters.Order.DESCENDING);
-    }
-
-    QueryParameters queryParameters = queryParametersBuilder.build();
-    Subscription subscription = fetchTransactions(queryParameters, 1)
+    Subscription subscription = localPaymentDataStore.getTime(fetchLatest)
+        .flatMap(paymentEntity -> {
+          if (paymentEntity != null){
+            if (fetchLatest) {
+              queryParametersBuilder.updates_after(paymentEntity.getCreatedAt());
+              queryParametersBuilder.order(QueryParameters.Order.ASCENDING);
+            } else {
+              queryParametersBuilder.updates_after(paymentEntity.getCreatedAt());
+              queryParametersBuilder.order(QueryParameters.Order.DESCENDING);
+            }
+          }
+          return fetchTransactions(queryParametersBuilder.build(), 1);
+        })
         .flatMap(listTransactionsResponse -> {
           List<Transaction> transactions = listTransactionsResponse.transactions;
           return localPaymentDataStore.saveAllTransactions(transactions);
         })
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Subscriber<PutResults>() {
+        .subscribe(new Subscriber<PutResults<PaymentEntity>>() {
           @Override
           public void onCompleted() {
-            Log.d(TAG, "Completed DB Call!");
+            // complete
           }
-
           @Override
           public void onError(Throwable e) {
             if (e != null) {
@@ -112,10 +110,10 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
           }
 
           @Override
-          public void onNext(PutResults transactions) {
+          public void onNext(PutResults<PaymentEntity> paymentEntityPutResults) {
+            // success
           }
         });
-
     compositeSubscription.add(subscription);
   }
 

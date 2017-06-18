@@ -58,8 +58,6 @@ public class LoadPaymentTest {
   QRScannerContract.Presenter qrScannerPresenter;
   @Inject
   LocalPaymentDataStore localPaymentDataStore;
-  HashMap<String, PaymentEntity> tokenToPaymentEntity = new HashMap<>();
-
   @Before
   public void setup(){
     DaggerLoadPaymentTestComponent.builder()
@@ -91,7 +89,6 @@ public class LoadPaymentTest {
     qrScannerPresenter.createTransaction(transactionToken2);
 
     verify(view, times(3)).showPaymentItems(argumentCaptor.capture());
-
     List<PaymentEntity> paymentEntities = argumentCaptor.getValue();
 
     // this proves the descending order of getting the payments as "2" has a higher timestamp!
@@ -112,6 +109,13 @@ public class LoadPaymentTest {
             .merchant.store_name));
   }
 
+  @Test
+  public void detailsTest() throws Exception {
+  }
+
+  /************************************************************************************************
+   * Helper functions start here
+   ************************************************************************************************/
 
   public LinkedHashMap<String, List<PaymentEntity>> groupTransactionsByCreatedAt(
       List<PaymentEntity> transactionEntities) {

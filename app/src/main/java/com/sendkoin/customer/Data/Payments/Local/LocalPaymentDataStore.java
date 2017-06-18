@@ -6,6 +6,7 @@ import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
 import com.pushtorefresh.storio.sqlite.operations.put.PutResults;
 import com.pushtorefresh.storio.sqlite.queries.DeleteQuery;
 import com.pushtorefresh.storio.sqlite.queries.Query;
+import com.sendkoin.api.QueryParameters;
 import com.sendkoin.api.Transaction;
 import com.sendkoin.sql.entities.PaymentEntity;
 import com.sendkoin.sql.tables.PaymentTable;
@@ -65,32 +66,21 @@ public class LocalPaymentDataStore {
         transaction.merchant.store_type);
   }
 
+  public Observable<PaymentEntity> getTime(boolean fetchHistory){
+    String orderBy = (fetchHistory) ?
+        PaymentTable.COLUMN_CREATED_AT + " ASC" : PaymentTable.COLUMN_CREATED_AT + " DESC";
 
-  public long getLastSeenTransaction() {
-    PaymentEntity lastSeen = storIOSQLite.get().object(PaymentEntity.class)
+    return storIOSQLite.get().object(PaymentEntity.class)
         .withQuery(Query.builder()
             .table(PaymentTable.TABLE)
-            .orderBy(PaymentTable.COLUMN_CREATED_AT + " DESC")
+            .orderBy(orderBy)
             .limit(1)
             .build())
         .prepare()
-        .executeAsBlocking();
-    return (lastSeen == null) ? 0 : lastSeen.getCreatedAt();
+        .asRxObservable();
   }
 
-  public long getEarliestSeenTransaction() {
-    PaymentEntity earliestSeen = storIOSQLite.get().object(PaymentEntity.class)
-        .withQuery(Query.builder()
-            .table(PaymentTable.TABLE)
-            .orderBy(PaymentTable.COLUMN_CREATED_AT + " ASC")
-            .limit(1)
-            .build())
-        .prepare()
-        .executeAsBlocking();
-    return (earliestSeen == null) ? 0 : earliestSeen.getCreatedAt();
-  }
-
-  public List<PaymentEntity> getAllPayments(){
+  public List<PaymentEntity> getAllPayments() {
     List<PaymentEntity> paymentEntities = storIOSQLite.get()
         .listOfObjects(PaymentEntity.class)
         .withQuery(Query.builder().table(PaymentTable.TABLE).build())
@@ -106,6 +96,11 @@ public class LocalPaymentDataStore {
         .byQuery(DeleteQuery.builder().table(PaymentTable.TABLE).build())
         .prepare()
         .executeAsBlocking();
+  }
+
+  public class PaymentWithOrder{
+    QueryParameters queryParameters;
+
   }
 
 }
