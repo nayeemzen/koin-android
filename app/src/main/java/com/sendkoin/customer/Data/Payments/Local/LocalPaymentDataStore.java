@@ -98,9 +98,4 @@ public class LocalPaymentDataStore {
         .executeAsBlocking();
   }
 
-  public class PaymentWithOrder{
-    QueryParameters queryParameters;
-
-  }
-
 }

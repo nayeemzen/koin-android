@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.graphics.Color;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -39,21 +42,20 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
 
   @Inject
   Gson mGson;
-
   @BindView(R.id.scanner_fragment_layout)
   FrameLayout scannerFrameLayout;
-
   @BindView(R.id.payment_confirmation_layout)
   RelativeLayout paymentConfirmationLayout;
-
   @BindView(R.id.pay_button)
   FancyButton payButton;
-
   @BindView(R.id.merchant_name)
   TextView merchantName;
-
   @BindView(R.id.sale_amount)
   TextView saleAmount;
+  @BindView(R.id.enter_sales)
+  EditText enterSaleAmount;
+  @BindView(R.id.confirmation_bar_code)
+  ImageView barCode;
 
   QRScannerFragment qrScannerFragement;
   private String mTransactionToken;
@@ -62,7 +64,10 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
 
   private enum UIState {
     SCANNER,
-    PAYMENT_CONFIRMATION
+    DYNAMIC_QR_PAYMENT_CONFIRMATION,
+    STATIC_QR_GENERATE_PAYMENT,
+    STATIC_QR_PAYMENT_CONFIRMATION
+
   }
 
   @Override
@@ -114,7 +119,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   public void showTransactionConfirmationScreen(String qrContent) {
     QrCode qrCode = mGson.fromJson(qrContent, QrCode.class);
     this.mTransactionToken = qrCode.transaction_token;
-    setUIState(UIState.PAYMENT_CONFIRMATION);
+    setUIState(UIState.DYNAMIC_QR_PAYMENT_CONFIRMATION);
     merchantName.setText(qrCode.merchant_name);
     saleAmount.setText("$" + qrCode.sale_amount.toString());
     setupPayButton();
@@ -138,15 +143,6 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
 
   }
 
-  private void showLoadingComplete() {
-    pDialog.setTitleText("Payment Successful!")
-        .setConfirmText("OK")
-        .setOnDismissListener(dialog -> {
-          finish();
-          dialog.dismiss();
-        });
-    pDialog.changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
-  }
 
   @OnClick(R.id.pay_button)
   void processPayment() {
@@ -166,6 +162,15 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     pDialog.show();
   }
 
+  private void showLoadingComplete() {
+    pDialog.setTitleText("Payment Successful!")
+        .setConfirmText("OK")
+        .setOnDismissListener(dialog -> {
+          finish();
+          dialog.dismiss();
+        });
+    pDialog.changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+  }
 
   public void setUIState(UIState uiState) {
     switch (uiState) {
@@ -175,10 +180,29 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
         qrScannerFragement.resumeScanning();
         mTransactionToken = null;
         break;
-      case PAYMENT_CONFIRMATION:
+      case DYNAMIC_QR_PAYMENT_CONFIRMATION:
         scannerFrameLayout.setVisibility(View.GONE);
         paymentConfirmationLayout.setVisibility(View.VISIBLE);
+        enterSaleAmount.setVisibility(View.GONE);
+        saleAmount.setVisibility(View.VISIBLE);
+        payButton.setVisibility(View.VISIBLE);
+        barCode.setVisibility(View.GONE);
         break;
+      case STATIC_QR_GENERATE_PAYMENT:
+        scannerFrameLayout.setVisibility(View.GONE);
+        paymentConfirmationLayout.setVisibility(View.VISIBLE);
+        enterSaleAmount.setVisibility(View.VISIBLE);
+        saleAmount.setVisibility(View.GONE);
+        payButton.setVisibility(View.VISIBLE);
+        barCode.setVisibility(View.GONE);
+        break;
+      case STATIC_QR_PAYMENT_CONFIRMATION:
+        scannerFrameLayout.setVisibility(View.GONE);
+        paymentConfirmationLayout.setVisibility(View.VISIBLE);
+        enterSaleAmount.setVisibility(View.GONE);
+        saleAmount.setVisibility(View.VISIBLE);
+        payButton.setVisibility(View.GONE);
+        barCode.setVisibility(View.VISIBLE);
     }
 
   }
@@ -186,7 +210,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   public UIState getUIState() {
     switch (paymentConfirmationLayout.getVisibility()) {
       case View.VISIBLE:
-        return UIState.PAYMENT_CONFIRMATION;
+        return UIState.DYNAMIC_QR_PAYMENT_CONFIRMATION;
       default:
         return UIState.SCANNER;
     }
@@ -195,10 +219,10 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   @Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
     if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-      if (getUIState().equals(UIState.PAYMENT_CONFIRMATION)) {
-        setUIState(UIState.SCANNER);
-      } else if (getUIState().equals(UIState.SCANNER)) {
+      if (getUIState().equals(UIState.SCANNER)) {
         finish();
+      } else {
+        setUIState(UIState.SCANNER);
       }
     }
     return true;

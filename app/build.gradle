@@ -118,6 +118,7 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 
     // ZXing Barcode
+    compile 'com.google.zxing:core:3.2.1'
     compile 'me.dm7.barcodescanner:zxing:1.8.4'
     compile 'me.dm7.barcodescanner:zbar:1.9.2'
     compile 'com.journeyapps:zxing-android-embedded:3.5.0'
@@ -155,6 +156,13 @@ dependencies {
     compile 'com.pushtorefresh.storio:sqlite:1.13.0'
     compile 'com.pushtorefresh.storio:sqlite-annotations:1.13.0'
     annotationProcessor 'com.pushtorefresh.storio:sqlite-annotations-processor:1.13.0'
+
+    //Picasso + Tango Avatar View
+    compile 'agency.tango.android:avatar-view:0.0.2'
+
+    //if you want to use Picasso for loading images
+    compile 'agency.tango.android:avatar-view-picasso:0.0.2'
+
 }
 
 // This handles the protocol buffer generation with wire
