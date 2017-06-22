@@ -10,6 +10,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,6 +37,9 @@ import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MainActivity extends AppCompatActivity {
+  static {
+    AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+  }
 
   public static final String PAY = "Pay";
   public static final String TRANSFER = "Transfer";
@@ -110,15 +114,12 @@ public class MainActivity extends AppCompatActivity {
     // Declare the view pager fragments
     final MainPaymentFragment mainPaymentFragment = new MainPaymentFragment();
     final MainProfileFragment mainProfileFragment = new MainProfileFragment();
-    final MainTransferFragment mainTransferFragment = new MainTransferFragment();
 
     mMainViewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
       @Override
       public Fragment getItem(int position) {
         if (position == 0)
           return mainPaymentFragment;
-        else if (position == 1)
-          return mainTransferFragment;
         else
           return mainProfileFragment;
 
@@ -126,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
 
       @Override
       public int getCount() {
-        return 3;
+        return 2;
       }
 
     });
@@ -141,13 +142,9 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
           if (tab.getPosition() == 0)
             setupActionBar("Payments");
-          else if (tab.getPosition() == 1)
-            setupActionBar("Transfers");
           else
             setupActionBar("Profile");
         }
-
-
       }
 
       @Override
@@ -162,9 +159,8 @@ public class MainActivity extends AppCompatActivity {
     });
 
     mMainTabLayout.setupWithViewPager(mMainViewPager);
-    mMainTabLayout.getTabAt(0).setText(PAY);
-    mMainTabLayout.getTabAt(1).setText(TRANSFER);
-    mMainTabLayout.getTabAt(2).setText(PROFILE);
+    mMainTabLayout.getTabAt(0).setIcon(R.drawable.payments_selector);
+    mMainTabLayout.getTabAt(1).setIcon(R.drawable.profile_selector);
   }
 
   @Override
