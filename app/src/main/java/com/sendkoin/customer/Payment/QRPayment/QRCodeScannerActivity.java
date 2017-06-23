@@ -22,6 +22,9 @@ import com.sendkoin.customer.R;
 
 import javax.inject.Inject;
 
+import agency.tango.android.avatarview.IImageLoader;
+import agency.tango.android.avatarview.loader.PicassoLoader;
+import agency.tango.android.avatarview.views.AvatarView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -56,6 +59,9 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   EditText enterSaleAmount;
   @BindView(R.id.confirmation_bar_code)
   ImageView barCode;
+  @BindView(R.id.merchant_logo)
+  AvatarView merchantLogo;
+  IImageLoader imageLoader;
 
   QRScannerFragment qrScannerFragement;
   private String mTransactionToken;
@@ -80,6 +86,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     FragmentTransaction transaction = getFragmentManager().beginTransaction();
     transaction.add(R.id.scanner_fragment_layout, qrScannerFragement);
     transaction.commit();
+    imageLoader = new PicassoLoader();
   }
 
   private void setUpDagger() {
@@ -96,9 +103,9 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     payButton.setBackgroundColor(Color.parseColor("#37B3B8"));
     payButton.setFocusBackgroundColor(Color.parseColor("#008489"));
     payButton.setTextSize(20);
-    payButton.setRadius(50);
+    payButton.setRadius(20);
     payButton.setPadding(10, 20, 10, 20);
-    payButton.setCustomTextFont("Nunito-Bold.ttf");
+    payButton.setCustomTextFont("Nunito-Regular.ttf");
   }
 
   /**
@@ -121,6 +128,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     this.mTransactionToken = qrCode.transaction_token;
     setUIState(UIState.DYNAMIC_QR_PAYMENT_CONFIRMATION);
     merchantName.setText(qrCode.merchant_name);
+    imageLoader.loadImage(merchantLogo, (String) null , qrCode.merchant_name);
     saleAmount.setText("$" + qrCode.sale_amount.toString());
     setupPayButton();
   }

@@ -66,6 +66,7 @@
             android:theme="@style/AppTheme.NoActionBar">
 
         </activity>
+        <activity android:name=".Payment.SimpleScannerActivity"/>
     </application>
 
 </manifest>

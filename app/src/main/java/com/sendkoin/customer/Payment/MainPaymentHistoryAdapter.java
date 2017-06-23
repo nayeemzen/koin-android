@@ -66,8 +66,7 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
   @Override
   public int getItemViewType(int position) {
 
-    return (groupedList.get(position) == null) ? ListItem.TYPE_LOADING :
-        groupedList.get(position).getType();
+    return groupedList.get(position).getType();
   }
 
   /**
@@ -94,10 +93,6 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
         View dateView = dateLayoutInflater.inflate(R.layout.main_payment_date_item, parent, false);
         viewHolder = new DateViewHolder(dateView);
         break;
-      case ListItem.TYPE_LOADING:
-        LayoutInflater loadingLayoutInflater = LayoutInflater.from(parent.getContext());
-        View loadingView = loadingLayoutInflater.inflate(R.layout.payment_loading_item, parent, false);
-        viewHolder = new LoadingViewHolder(loadingView);
     }
     return viewHolder;
   }
@@ -124,10 +119,6 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
         DateItem dateItem = (DateItem) groupedList.get(position);
         DateViewHolder dateViewHolder = (DateViewHolder) holder;
         dateViewHolder.paymentDate.setText(dateItem.date);
-        break;
-      case ListItem.TYPE_LOADING:
-        LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
-        loadingViewHolder.progressBar.setIndeterminate(true);
         break;
     }
   }
@@ -176,34 +167,13 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
     }
   }
 
-  public class LoadingViewHolder extends RecyclerView.ViewHolder {
-
-    // TODO: 6/4/17 change to ButterKnife later as it wasn't recognizing it now
-    public ProgressBar progressBar;
-    public LoadingViewHolder(View itemView) {
-      super(itemView);
-      progressBar = (ProgressBar) itemView.findViewById(R.id.payment_progress_bar);
-
-    }
-  }
-
   public abstract class ListItem {
 
     public static final int TYPE_DATE = 0;
     public static final int TYPE_PAYMENT = 1;
-    public static final int TYPE_LOADING = 2;
 
     public abstract int getType();
   }
-
-  public class LoadingItem extends ListItem {
-
-    @Override
-    public int getType() {
-      return TYPE_LOADING;
-    }
-  }
-
   public class PaymentItem extends ListItem {
 
     public String placeName;

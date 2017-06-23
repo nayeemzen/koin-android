@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
-        android:background="@color/colorWhiteText"
+        app:cardBackgroundColor="@color/colorWhiteText"
         app:cardCornerRadius="25dp"
         app:cardElevation="5dp">
 
@@ -28,10 +28,9 @@
 
             <agency.tango.android.avatarview.views.AvatarView
                 android:id="@+id/merchant_logo"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
                 android:layout_centerHorizontal="true"
-                android:background="#e6e6e6"
                 app:av_text_size_percentage="35"/>
 
 
@@ -58,7 +57,7 @@
                 android:layout_centerInParent="true"
                 android:text="$1400"
                 android:visibility="gone"
-                android:textSize="36sp"
+                android:textSize="42sp"
                 />
 
             <EditText
