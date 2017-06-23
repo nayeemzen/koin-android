@@ -1,10 +1,8 @@
 package com.sendkoin.customer.Payment;
 
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.annimon.stream.Stream;
 import com.pushtorefresh.storio.sqlite.operations.put.PutResults;
 import com.sendkoin.api.ListTransactionsResponse;
 import com.sendkoin.api.QueryParameters;
@@ -14,10 +12,7 @@ import com.sendkoin.customer.Data.Payments.PaymentRepository;
 import com.sendkoin.customer.Data.Payments.PaymentService;
 import com.sendkoin.sql.entities.PaymentEntity;
 
-import java.util.Calendar;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -25,12 +20,8 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
-
-import static com.annimon.stream.Collectors.groupingBy;
-import static com.annimon.stream.Collectors.toList;
 
 /**
  * Created by warefhaque on 5/20/17.
@@ -74,6 +65,7 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
   public void loadTransactionsFromServer(boolean fetchLatest) {
     QueryParameters.Builder queryParametersBuilder = new QueryParameters.Builder();
     Subscription subscription = localPaymentDataStore.getTime(fetchLatest)
+        .take(1)
         .flatMap(paymentEntity -> {
           if (paymentEntity != null){
             if (fetchLatest) {
