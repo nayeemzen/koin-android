@@ -40,18 +40,26 @@ message InitiateTransactionRequest {
 message InitiateTransactionResponse {
     /* The QrCode uniquely identifying this tranasction. */
     optional QrCode qr_code = 1;
-    optional Status status = 2;
+    optional string transaction_token = 2;
+    optional Status status = 3;
 }
 
 message AcceptTransactionRequest {
-    optional uint64 created_at = 1;
-    optional string idempotence_token = 2;
-    optional string transaction_token = 3;
+    optional string qr_token = 1;
+    optional uint32 sale_amount = 2;
+    optional string idempotence_token = 3;
 }
 
 message AcceptTransactionResponse {
     optional Transaction transaction = 1;
     optional Status status = 2;
+}
+
+message GetQrDetailsResponse {
+    optional string qr_token = 1;
+    optional QrType qr_type = 2;
+    optional string merchant_name = 3;
+    optional uint32 amount = 4;
 }
 
 message ListTransactionsRequest {
@@ -72,6 +80,14 @@ message OnboardMerchantRequest {
 message OnboardMerchantResponse {
     optional Merchant merchant = 1;
     optional Status status = 2;
+}
+
+message RefreshFCMTokenRequest {
+    optional string token = 1;
+}
+
+message RefreshFCMTokenResponse {
+    optional Status status = 1;
 }
 
 message Transaction {
@@ -118,6 +134,7 @@ message SaleItem {
     enum SaleType {
         INVENTORY = 1;
         QUICK_SALE = 2;
+        STATIC_QR = 3;
     }
 }
 
@@ -132,7 +149,13 @@ message Status {
 }
 
 message QrCode {
-    optional string transaction_token = 1;
+    optional string qr_token = 1;
     optional string merchant_name = 2;
-    optional uint32 sale_amount = 3;
+    optional uint32 amount = 3;
+    optional QrType qr_type = 4;
+}
+
+enum QrType {
+    STATIC = 1;
+    DYNAMIC = 2;
 }

@@ -5,10 +5,10 @@ import android.util.Log;
 
 import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
 import com.sendkoin.api.AcceptTransactionRequest;
-import com.sendkoin.api.Transaction;
-import com.sendkoin.customer.Data.Authentication.SessionManager;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.Data.Payments.PaymentService;
+
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -48,20 +48,19 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
   /**
    * 1. Create the acceptTransactionObject and make call to api
    * to save payment
-   *
+   * <p>
    * 2. Save the transaction object to realm
    *
-   * @param transactionToken - provided from the QR
+   * @param qrToken - provided from the QR
    */
   @Override
-  public void createTransaction(String transactionToken) {
+  public void acceptTransaction(String qrToken) {
     // 1. create the transaction object
     long timeStamp = System.currentTimeMillis() / 1000L;
 
     AcceptTransactionRequest acceptTransactionRequest = new AcceptTransactionRequest.Builder()
-        .created_at(timeStamp)
-        .transaction_token(transactionToken)
-        .idempotence_token("random_string")
+        .idempotence_token(UUID.randomUUID().toString())
+        .qr_token(qrToken)
         .build();
 
     // 2. save the transaction in the DB
@@ -110,9 +109,9 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
   }
 
   public String getErrorMessage(Throwable error) {
-    if (error.getMessage().contains(INTERNAL_SERVER_ERROR)){
+    if (error.getMessage().contains(INTERNAL_SERVER_ERROR)) {
       return "Declined. Internal Error.";
-    }else{
+    } else {
       return "Declined. Please try again.";
     }
   }

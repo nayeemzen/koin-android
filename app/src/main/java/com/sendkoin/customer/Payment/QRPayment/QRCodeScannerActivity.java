@@ -64,7 +64,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   IImageLoader imageLoader;
 
   QRScannerFragment qrScannerFragement;
-  private String mTransactionToken;
+  private String qrToken;
   private Unbinder unbinder;
   private SweetAlertDialog pDialog;
 
@@ -125,11 +125,10 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
 
   public void showTransactionConfirmationScreen(String qrContent) {
     QrCode qrCode = mGson.fromJson(qrContent, QrCode.class);
-    this.mTransactionToken = qrCode.transaction_token;
-    setUIState(UIState.STATIC_QR_GENERATE_PAYMENT);
+    this.qrToken = qrCode.qr_token;
+    setUIState(UIState.PAYMENT_CONFIRMATION);
     merchantName.setText(qrCode.merchant_name);
-    imageLoader.loadImage(merchantLogo, (String) null , qrCode.merchant_name);
-    saleAmount.setText("$" + qrCode.sale_amount.toString());
+    saleAmount.setText("$" + qrCode.amount.toString());
     setupPayButton();
   }
 
@@ -154,11 +153,11 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
 
   @OnClick(R.id.pay_button)
   void processPayment() {
-    if (mTransactionToken != null) {
+    if (qrToken != null) {
       //loading indicator ON
       showLoadingIndicator();
-      mPresenter.createTransaction(mTransactionToken);
-      mTransactionToken = null;
+      mPresenter.acceptTransaction(qrToken);
+      qrToken = null;
     }
   }
 
@@ -186,7 +185,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
         scannerFrameLayout.setVisibility(View.VISIBLE);
         paymentConfirmationLayout.setVisibility(View.GONE);
         qrScannerFragement.resumeScanning();
-        mTransactionToken = null;
+        qrToken = null;
         break;
       case DYNAMIC_QR_PAYMENT_CONFIRMATION:
         scannerFrameLayout.setVisibility(View.GONE);

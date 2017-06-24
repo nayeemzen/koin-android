@@ -4,14 +4,11 @@ import com.sendkoin.api.AcceptTransactionRequest;
 import com.sendkoin.api.AcceptTransactionResponse;
 import com.sendkoin.api.ListTransactionsRequest;
 import com.sendkoin.api.ListTransactionsResponse;
-import com.sendkoin.api.Merchant;
 import com.sendkoin.api.Transaction;
 import com.sendkoin.api.TransactionDetail;
 import com.sendkoin.customer.Data.Payments.PaymentService;
-import com.sendkoin.sql.entities.PaymentEntity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import retrofit2.http.Body;
@@ -42,7 +39,7 @@ public class FakePaymentService implements PaymentService {
   public Observable<AcceptTransactionResponse> acceptCurrentTransaction(
       @Body AcceptTransactionRequest acceptTransactionRequest) {
     AcceptTransactionResponse acceptTransactionResponse = new AcceptTransactionResponse.Builder()
-        .transaction(paymentEntityLinkedHashMap.get(acceptTransactionRequest.transaction_token))
+        .transaction(paymentEntityLinkedHashMap.get(acceptTransactionRequest.qr_token))
         .build();
     return Observable.just(acceptTransactionResponse);
   }
