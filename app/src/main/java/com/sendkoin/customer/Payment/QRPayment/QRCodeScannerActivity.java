@@ -126,7 +126,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   public void showTransactionConfirmationScreen(String qrContent) {
     QrCode qrCode = mGson.fromJson(qrContent, QrCode.class);
     this.mTransactionToken = qrCode.transaction_token;
-    setUIState(UIState.DYNAMIC_QR_PAYMENT_CONFIRMATION);
+    setUIState(UIState.STATIC_QR_GENERATE_PAYMENT);
     merchantName.setText(qrCode.merchant_name);
     imageLoader.loadImage(merchantLogo, (String) null , qrCode.merchant_name);
     saleAmount.setText("$" + qrCode.sale_amount.toString());
@@ -200,6 +200,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
         scannerFrameLayout.setVisibility(View.GONE);
         paymentConfirmationLayout.setVisibility(View.VISIBLE);
         enterSaleAmount.setVisibility(View.VISIBLE);
+        enterSaleAmount.setEnabled(true);
         saleAmount.setVisibility(View.GONE);
         payButton.setVisibility(View.VISIBLE);
         barCode.setVisibility(View.GONE);

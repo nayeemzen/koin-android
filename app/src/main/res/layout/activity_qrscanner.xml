@@ -80,11 +80,15 @@
                 <EditText
                     android:id="@+id/enter_sales"
                     fontPath="fonts/Nunito-Regular.ttf"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:layout_centerInParent="true"
-                    android:text="$1400"
+                    android:text=""
+                    android:textColor="#757575"
+                    android:hint="$"
+                    android:textAlignment="center"
+                    android:inputType="number"
                     android:textSize="70sp"
                     />
 

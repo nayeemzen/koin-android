@@ -44,7 +44,7 @@
                 android:layout_below="@+id/tv_date"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
-                android:text="$1000"
+                android:text=""
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="100sp"
