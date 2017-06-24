@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.sendkoin.api.QrCode;
+import com.sendkoin.api.QrType;
 import com.sendkoin.customer.KoinApplication;
 import com.sendkoin.customer.R;
 
@@ -64,9 +65,10 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   IImageLoader imageLoader;
 
   QRScannerFragment qrScannerFragement;
-  private String qrToken;
   private Unbinder unbinder;
   private SweetAlertDialog pDialog;
+  private QrCode qrCode;
+  private UIState currentUiState;
 
   private enum UIState {
     SCANNER,
@@ -124,11 +126,17 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   }
 
   public void showTransactionConfirmationScreen(String qrContent) {
-    QrCode qrCode = mGson.fromJson(qrContent, QrCode.class);
-    this.qrToken = qrCode.qr_token;
-    setUIState(UIState.STATIC_QR_GENERATE_PAYMENT);
+    this.qrCode = mGson.fromJson(qrContent, QrCode.class);
+
+    UIState uiState = (qrCode.qr_type == QrType.DYNAMIC) ?
+        UIState.DYNAMIC_QR_PAYMENT_CONFIRMATION : UIState.STATIC_QR_GENERATE_PAYMENT;
+    setUIState(uiState);
+
+    if (currentUiState == UIState.DYNAMIC_QR_PAYMENT_CONFIRMATION){
+      saleAmount.setText("$" + qrCode.amount.toString());
+    }
     merchantName.setText(qrCode.merchant_name);
-    saleAmount.setText("$" + qrCode.amount.toString());
+    imageLoader.loadImage(merchantLogo, (String) null, qrCode.merchant_name);
     setupPayButton();
   }
 
@@ -153,11 +161,17 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
 
   @OnClick(R.id.pay_button)
   void processPayment() {
-    if (qrToken != null) {
+    if (qrCode != null) {
       //loading indicator ON
       showLoadingIndicator();
-      mPresenter.acceptTransaction(qrToken);
-      qrToken = null;
+      if (currentUiState == UIState.STATIC_QR_GENERATE_PAYMENT){
+        int saleAmount = Integer.parseInt(enterSaleAmount.getText().toString());
+        mPresenter.acceptTransaction(qrCode,saleAmount);
+      }
+      else if (currentUiState == UIState.DYNAMIC_QR_PAYMENT_CONFIRMATION){
+        mPresenter.acceptTransaction(qrCode, -1);
+      }
+      qrCode = null;
     }
   }
 
@@ -180,12 +194,13 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   }
 
   public void setUIState(UIState uiState) {
+    currentUiState = uiState;
     switch (uiState) {
       case SCANNER:
         scannerFrameLayout.setVisibility(View.VISIBLE);
         paymentConfirmationLayout.setVisibility(View.GONE);
         qrScannerFragement.resumeScanning();
-        qrToken = null;
+        qrCode = null;
         break;
       case DYNAMIC_QR_PAYMENT_CONFIRMATION:
         scannerFrameLayout.setVisibility(View.GONE);
@@ -199,7 +214,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
         scannerFrameLayout.setVisibility(View.GONE);
         paymentConfirmationLayout.setVisibility(View.VISIBLE);
         enterSaleAmount.setVisibility(View.VISIBLE);
-        enterSaleAmount.setEnabled(true);
+        enterSaleAmount.setText("");
         saleAmount.setVisibility(View.GONE);
         payButton.setVisibility(View.VISIBLE);
         barCode.setVisibility(View.GONE);
@@ -215,19 +230,10 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
 
   }
 
-  public UIState getUIState() {
-    switch (paymentConfirmationLayout.getVisibility()) {
-      case View.VISIBLE:
-        return UIState.DYNAMIC_QR_PAYMENT_CONFIRMATION;
-      default:
-        return UIState.SCANNER;
-    }
-  }
-
   @Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
     if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-      if (getUIState().equals(UIState.SCANNER)) {
+      if (currentUiState.equals(UIState.SCANNER)) {
         finish();
       } else {
         setUIState(UIState.SCANNER);

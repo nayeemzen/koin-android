@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
 import com.sendkoin.api.AcceptTransactionRequest;
+import com.sendkoin.api.QrCode;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.Data.Payments.PaymentService;
 
@@ -51,21 +52,34 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
    * <p>
    * 2. Save the transaction object to realm
    *
-   * @param qrToken - provided from the QR
+   * @param qrCode - provided from the QR
    */
   @Override
-  public void acceptTransaction(String qrToken) {
+  public void acceptTransaction(QrCode qrCode, int saleAmount) {
     // 1. create the transaction object
-    long timeStamp = System.currentTimeMillis() / 1000L;
-
-    AcceptTransactionRequest acceptTransactionRequest = new AcceptTransactionRequest.Builder()
-        .idempotence_token(UUID.randomUUID().toString())
-        .qr_token(qrToken)
-        .build();
+    AcceptTransactionRequest.Builder acceptTransactionRequest = new AcceptTransactionRequest.Builder();
+    switch (qrCode.qr_type){
+      case DYNAMIC:
+        acceptTransactionRequest
+            .idempotence_token(UUID.randomUUID().toString())
+            .qr_token(qrCode.qr_token);
+        break;
+      case STATIC:
+        if (saleAmount != -1){
+          acceptTransactionRequest
+              .idempotence_token(UUID.randomUUID().toString())
+              .qr_token(qrCode.qr_token)
+              .sale_amount(saleAmount);
+        }
+        else {
+          Log.e(TAG, "Static: Qr sale amount = -1");
+        }
+        break;
+    }
 
     // 2. save the transaction in the DB
     subscription = paymentService
-        .acceptCurrentTransaction(acceptTransactionRequest)
+        .acceptCurrentTransaction(acceptTransactionRequest.build())
         .subscribeOn(Schedulers.io())
         .flatMap(acceptTransactionResponse ->
             localPaymentDataStore.createTransaction(acceptTransactionResponse.transaction))
