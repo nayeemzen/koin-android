@@ -1,6 +1,5 @@
 package com.sendkoin.customer.LoadPayments;
 
-import android.os.Debug;
 import android.text.format.DateFormat;
 
 import com.annimon.stream.Stream;
@@ -27,7 +26,6 @@ import org.robolectric.RobolectricTestRunner;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -48,16 +46,12 @@ public class LoadPaymentTest {
   @Rule
   public RxSchedulersOverrideRule rxSchedulersOverrideRule = new RxSchedulersOverrideRule();
 
-  @Captor
-  ArgumentCaptor<List<PaymentEntity>> argumentCaptor;
-  @Inject
-  MainPaymentContract.View view;
-  @Inject
-  MainPaymentContract.Presenter mainPaymentPresenter;
-  @Inject
-  QRScannerContract.Presenter qrScannerPresenter;
-  @Inject
-  LocalPaymentDataStore localPaymentDataStore;
+  @Captor ArgumentCaptor<List<PaymentEntity>> argumentCaptor;
+  @Inject MainPaymentContract.View view;
+  @Inject MainPaymentContract.Presenter mainPaymentPresenter;
+  @Inject QRScannerContract.Presenter qrScannerPresenter;
+  @Inject LocalPaymentDataStore localPaymentDataStore;
+
   @Before
   public void setup(){
     DaggerLoadPaymentTestComponent.builder()
@@ -84,9 +78,9 @@ public class LoadPaymentTest {
     verify(view).showPaymentItems(payments);
 
     String transactionToken = "1";
-    qrScannerPresenter.createTransaction(transactionToken);
+    qrScannerPresenter.acceptTransaction(transactionToken);
     String transactionToken2 = "2";
-    qrScannerPresenter.createTransaction(transactionToken2);
+    qrScannerPresenter.acceptTransaction(transactionToken2);
 
     verify(view, times(3)).showPaymentItems(argumentCaptor.capture());
     List<PaymentEntity> paymentEntities = argumentCaptor.getValue();
@@ -131,6 +125,7 @@ public class LoadPaymentTest {
     int day = cal.get(Calendar.DAY_OF_MONTH);
     return dateString + getDateSuffix(day);
   }
+
   private String getDateSuffix(int day) {
     switch (day) {
       case 1:
@@ -155,6 +150,7 @@ public class LoadPaymentTest {
         transaction.merchant.store_name,
         transaction.merchant.store_type);
   }
+
   public void createTransactionHash(){
     long timeStamp = System.currentTimeMillis() /1000L;
     String transactionToken = "1";
