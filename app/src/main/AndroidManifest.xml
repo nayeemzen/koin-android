@@ -27,7 +27,7 @@
         </activity>
         <activity
             android:name="com.sendkoin.customer.Payment.QRPayment.QRCodeScannerActivity"
-            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"/>
+            android:theme="@style/AppTheme.QRScanner"/>
         <activity
             android:name="com.sendkoin.customer.Payment.QRPayment.PaymentConfirmationActivity"
             android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen"/>

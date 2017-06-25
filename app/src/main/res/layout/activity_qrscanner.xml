@@ -86,10 +86,21 @@
                     android:layout_centerInParent="true"
                     android:text=""
                     android:textColor="#757575"
-                    android:hint="$"
                     android:textAlignment="center"
                     android:inputType="number"
-                    android:textSize="70sp"
+                    android:textSize="70sp"/>
+
+                <TextView
+                    android:id="@+id/enter_sales_message"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="#757575"
+                    android:layout_below="@id/enter_sales"
+                    android:layout_centerHorizontal="true"
+                    android:textAlignment="center"
+                    android:paddingTop="10dp"
+                    fontPath="fonts/Nunito-Regular.ttf"
                     />
 
 
