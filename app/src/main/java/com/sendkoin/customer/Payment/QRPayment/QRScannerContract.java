@@ -3,6 +3,7 @@ package com.sendkoin.customer.Payment.QRPayment;
 import android.content.Context;
 
 import com.sendkoin.api.QrCode;
+import com.sendkoin.api.Transaction;
 import com.sendkoin.customer.BasePresenter;
 
 /**
@@ -14,7 +15,7 @@ public interface QRScannerContract {
   interface View {
     Context getContext();
 
-    void showTransactionComplete();
+    void showTransactionComplete(Transaction transaction);
 
     void showTransactionError(String errorMessage);
   }

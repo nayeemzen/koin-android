@@ -31,8 +31,12 @@ public class LocalPaymentDataStore {
     this.storIOSQLite = storIOSQLite;
   }
 
-  public Observable<PutResult> createTransaction(Transaction transaction) {
-    return storIOSQLite.put().object(fromWire(transaction)).prepare().asRxObservable();
+  public Observable<Transaction> createTransaction(Transaction transaction) {
+    Observable<PutResult> putResultObservable =  storIOSQLite.put()
+        .object(fromWire(transaction))
+        .prepare()
+        .asRxObservable();
+    return Observable.just(transaction);
   }
 
 

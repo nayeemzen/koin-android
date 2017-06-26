@@ -6,6 +6,7 @@ import android.util.Log;
 import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
 import com.sendkoin.api.AcceptTransactionRequest;
 import com.sendkoin.api.QrCode;
+import com.sendkoin.api.Transaction;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.Data.Payments.PaymentService;
 
@@ -84,7 +85,7 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
         .flatMap(acceptTransactionResponse ->
             localPaymentDataStore.createTransaction(acceptTransactionResponse.transaction))
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Subscriber<PutResult>() {
+        .subscribe(new Subscriber<Transaction>() {
           @Override
           public void onCompleted() {
             Log.d(TAG, "on Completed!");
@@ -97,8 +98,8 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
           }
 
           @Override
-          public void onNext(PutResult putResult) {
-            view.showTransactionComplete();
+          public void onNext(Transaction transaction) {
+            view.showTransactionComplete(transaction);
           }
         });
 

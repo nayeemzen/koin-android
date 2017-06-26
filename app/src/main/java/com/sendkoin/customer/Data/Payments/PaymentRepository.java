@@ -25,7 +25,7 @@ public class PaymentRepository implements PaymentDataStore {
 
   @Override
   public Observable<Transaction> createPayment(Transaction transaction) {
-    return localPaymentDataStore.createTransaction(transaction).map(putResult -> transaction);
+    return localPaymentDataStore.createTransaction(transaction);
   }
 
   @Override
