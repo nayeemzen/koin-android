@@ -8,14 +8,24 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
 
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.sendkoin.api.SaleItem;
 import com.sendkoin.api.Transaction;
 import com.sendkoin.api.TransactionDetail;
 import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 import com.sendkoin.customer.KoinApplication;
 import com.sendkoin.customer.R;
 
+import net.glxn.qrgen.android.QRCode;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.inject.Inject;
 
+import agency.tango.android.avatarview.IImageLoader;
+import agency.tango.android.avatarview.loader.PicassoLoader;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -28,28 +38,24 @@ import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
 
 public class TransactionDetailsActivity
     extends AppCompatActivity
-    implements TransactionDetailsContract.View{
+    implements TransactionDetailsContract.View {
 
   @Inject
   TransactionDetailsContract.Presenter mPresenter;
-  @BindView(R.id.recyclerView_sale_item)
+  @BindView(R.id.sectioned_rv)
   RecyclerView transactionRecyclerView;
-  @BindView(R.id.tv_date)
-  TextView transactionDate;
-  @BindView(R.id.tv_merchant_name)
-  TextView merchantName;
-  @BindView(R.id.tv_sales_total)
-  TextView salesTotal;
-  private TransactionDetailsAdapter transactionDetailsAdapter;
+  IImageLoader imageLoader;
+  AdapterSectionRecycler adapterRecycler;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_details_transaction);
+    setContentView(R.layout.detailed_reciept_layout);
     ButterKnife.bind(this);
     setUpDagger();
     setUpRecyclerView();
     String transactionToken = getIntent().getStringExtra("transaction_token");
+    imageLoader = new PicassoLoader();
     mPresenter.fetchTransactionDetails(transactionToken);
 
   }
@@ -57,8 +63,6 @@ public class TransactionDetailsActivity
   private void setUpRecyclerView() {
     transactionRecyclerView.setLayoutManager(new LinearLayoutManager(this, VERTICAL, false));
     transactionRecyclerView.setHasFixedSize(true);
-    transactionDetailsAdapter = new TransactionDetailsAdapter();
-    transactionRecyclerView.setAdapter(transactionDetailsAdapter);
   }
 
   /**
@@ -83,19 +87,25 @@ public class TransactionDetailsActivity
 
   @Override
   public void showDetailedTransaction(TransactionDetail transactionDetail) {
-    Transaction transaction = transactionDetail.transaction;
-    setupHeader(transaction);
-    transactionDetailsAdapter.saleItems = transactionDetail.sale_items;
-    transactionDetailsAdapter.notifyDataSetChanged();
+
+    List<SaleItem> saleItems = transactionDetail.sale_items;
+    SaleItem.SaleType saleType = saleItems.get(0).sale_type;
+    List<Item> items = new ArrayList<>();
+    if (saleType != SaleItem.SaleType.STATIC_QR){
+      // TODO: 6/26/17 WAREF - remove this version issue
+      if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+        items = saleItems.stream().map(saleItem -> new Item()
+            .setPrice(saleItem.price)
+            .setItemName(saleItem.name)
+            .setQuantity(saleItem.quantity)).collect(Collectors.toList());
+      }
+    }
+    List<SectionHeader> sections = new ArrayList<>();
+    sections.add(new SectionHeader()
+        .setChildList(items)
+        .setTransaction(transactionDetail.transaction));
+
+    adapterRecycler = new AdapterSectionRecycler(this, sections, imageLoader);
+    transactionRecyclerView.setAdapter(adapterRecycler);
   }
-
-  private void setupHeader(Transaction transaction) {
-    RealmTransaction realmTransaction = RealmTransaction.toRealmTransaction(transaction);
-    transactionDate.setText(realmTransaction.getCreatedAt());
-    merchantName.setText(realmTransaction.getMerchantName());
-    String salesAmountString = "$"+realmTransaction.getAmount().toString();
-    salesTotal.setText(salesAmountString);
-  }
-
-
 }

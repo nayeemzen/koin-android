@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                tools:ignore="MissingPrefix"
+                android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/payment_complete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:paddingTop="20dp"
+        android:visibility="visible">
+
+        <agency.tango.android.avatarview.views.AvatarView
+            android:id="@+id/merchant_logo_pay_complete"
+            app:av_text_size_percentage="35"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerHorizontal="true"/>
+
+
+        <TextView
+            android:id="@+id/merchant_name_pay_complete"
+            fontPath="fonts/Nunito-Regular.ttf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/merchant_logo_pay_complete"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:text="Gloria Jeans Coffees"
+            android:textColor="#757575"
+            android:textSize="16sp"
+            />
+
+        <TextView
+            android:id="@+id/sale_amount_payment_complete"
+            fontPath="fonts/Nunito-Regular.ttf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/merchant_logo_pay_complete"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"
+            android:text="$1400"
+            android:textColor="#37B3B8"
+            android:textSize="60sp"
+            android:visibility="visible"
+            />
+
+        <RelativeLayout
+            android:id="@+id/transaction_state_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/sale_amount_payment_complete"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp">
+
+            <ImageView
+                android:id="@+id/transaction_state_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignBottom="@+id/transaction_state_text"
+                android:layout_alignTop="@+id/transaction_state_text"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@+id/transaction_state_text"
+                android:src="@drawable/trans_approved"/>
+
+            <TextView
+                android:id="@+id/transaction_state_text"
+                fontPath="fonts/Nunito-Bold.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="Transaction Approved"
+                android:textColor="#37B3B8"
+                android:textSize="16sp"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/fees_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/transaction_state_layout"
+            android:layout_marginTop="30dp"
+            >
+
+            <TextView
+                fontPath="fonts/Nunito-Bold.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:text="Fees"
+                android:textColor="#757575"
+                android:textSize="16sp"
+                />
+
+            <TextView
+                fontPath="fonts/Nunito-Regular.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="0.15"
+                android:textColor="#757575"
+                android:textSize="16sp"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/amount_paid_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fees_layout"
+            android:layout_marginTop="20dp"
+            >
+
+            <TextView
+                fontPath="fonts/Nunito-Bold.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:text="Amount Paid"
+                android:textColor="#757575"
+                android:textSize="16sp"/>
+
+            <TextView
+                fontPath="fonts/Nunito-Regular.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="$1399"
+                android:textColor="#757575"
+                android:textSize="16sp"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/date_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/amount_paid_layout"
+            android:layout_marginTop="20dp"
+            >
+
+            <TextView
+                fontPath="fonts/Nunito-Bold.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:text="Date"
+                android:textColor="#757575"
+                android:textSize="16sp"/>
+
+            <TextView
+                fontPath="fonts/Nunito-Regular.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="May 24th, 2017, 1:05pm"
+                android:textColor="#757575"
+                android:textSize="16sp"/>
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/barcode_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/date_layout"
+            android:paddingBottom="30dp"
+            android:paddingTop="30dp"
+            android:layout_centerHorizontal="true"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/barcode_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/transaction_list_header_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/barcode_layout"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
+            >
+
+            <TextView
+                android:id="@+id/transaction_list_header_text"
+                fontPath="fonts/Nunito-Bold.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:text="Transaction Items:"
+                android:textColor="#757575"
+                android:textSize="16sp"/>
+        </RelativeLayout>
+
+    </RelativeLayout>
+</RelativeLayout>

@@ -1,46 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                xmlns:tools="http://schemas.android.com/tools"
                 android:orientation="horizontal"
-                tools:ignore="MissingPrefix"
-    android:layout_marginLeft="40dp"
-    android:layout_marginRight="40dp"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp">
+                android:paddingBottom="10dp"
+                android:paddingLeft="30dp"
+                android:paddingRight="30dp"
+                android:paddingTop="10dp"
+                tools:ignore="MissingPrefix">
+
     <TextView
         android:id="@+id/item_name"
+        fontPath="fonts/Nunito-Regular.ttf"
         android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignTop="@+id/item_quantity"
         android:text="Shawarma"
-        android:textSize="20sp"
-        fontPath="fonts/Nunito-Regular.ttf"
+        android:textSize="16sp"
         />
 
     <TextView
         android:id="@+id/item_quantity"
+        fontPath="fonts/Nunito-Regular.ttf"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_toRightOf="@+id/item_name"
-        android:text="X2"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:textSize="20sp"
-        fontPath="fonts/Nunito-Regular.ttf"/>
+        android:layout_toRightOf="@+id/item_name"
+        android:text="X2"
+        android:textSize="16sp"/>
 
     <TextView
 
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/item_quantity"
         android:id="@+id/item_price"
+        fontPath="fonts/Nunito-Regular.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/item_quantity"
         android:text="$346"
-        android:textColor="@color/colorPrimaryDark"
-        android:textSize="20sp"
-        fontPath="fonts/Nunito-Regular.ttf"/>
+        android:textColor="@color/colorPrimary"
+        android:textSize="16sp"/>
 </RelativeLayout>

@@ -163,6 +163,9 @@ dependencies {
     //if you want to use Picasso for loading images
     compile 'agency.tango.android:avatar-view-picasso:0.0.2'
 
+    // Sectioned Recycler View adapter
+    compile 'com.github.IntruderShanky:Sectioned-RecyclerView:2.1.1'
+
 }
 
 // This handles the protocol buffer generation with wire
