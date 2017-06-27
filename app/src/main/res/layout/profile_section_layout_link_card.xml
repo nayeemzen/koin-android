@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                xmlns:tools="http://schemas.android.com/tools"
+                tools:ignore="MissingPrefix"
+                android:orientation="vertical"
+                android:paddingBottom="20dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingTop="20dp">
+
+    <TextView
+        android:id="@+id/link_card_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Link Cards:"
+        fontPath="fonts/Nunito-Bold.ttf"
+        android:textAlignment="center"
+        android:textSize="17sp"/>
+
+    <TextView
+        android:id="@+id/link_card_helper_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/link_card_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:text="Please link your credit cards to enjoy paying with Koin"
+        android:textAlignment="center"
+        android:textSize="15sp"/>
+
+    <mehdi.sakout.fancybuttons.FancyButton
+        android:id="@+id/link_card_button"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/link_card_title"
+        android:layout_marginTop="15dp"
+        android:background="@color/colorPrimary"
+        android:padding="20dp"
+        android:text="Done"
+        android:textColor="@color/colorWhiteText"/>
+
+</RelativeLayout>
