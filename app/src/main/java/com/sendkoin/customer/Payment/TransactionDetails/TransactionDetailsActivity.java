@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.widget.TextView;
 
+import com.annimon.stream.Stream;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.sendkoin.api.SaleItem;
 import com.sendkoin.api.Transaction;
@@ -24,7 +25,6 @@ import net.glxn.qrgen.android.QRCode;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -64,7 +64,7 @@ public class TransactionDetailsActivity
     if (getIntent().hasExtra("transaction_token"))
       transactionToken = getIntent().getStringExtra("transaction_token");
     if (getIntent().hasExtra("from_payment"))
-      fromPayment = getIntent().getBooleanExtra("from_payment",false);
+      fromPayment = getIntent().getBooleanExtra("from_payment", false);
 
     imageLoader = new PicassoLoader();
     mPresenter.fetchTransactionDetails(transactionToken);
@@ -113,14 +113,11 @@ public class TransactionDetailsActivity
     List<SaleItem> saleItems = transactionDetail.sale_items;
     SaleItem.SaleType saleType = saleItems.get(0).sale_type;
     List<Item> items = new ArrayList<>();
-    if (saleType != SaleItem.SaleType.STATIC_QR){
-      // TODO: 6/26/17 WAREF - remove this version issue
-      if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-        items = saleItems.stream().map(saleItem -> new Item()
-            .setPrice(saleItem.price)
-            .setItemName(saleItem.name)
-            .setQuantity(saleItem.quantity)).collect(Collectors.toList());
-      }
+    if (saleType != SaleItem.SaleType.STATIC_QR) {
+      items = Stream.of(saleItems).map(saleItem -> new Item()
+          .setPrice(saleItem.price)
+          .setItemName(saleItem.name)
+          .setQuantity(saleItem.quantity)).toList();
     }
     List<SectionHeader> sections = new ArrayList<>();
     sections.add(new SectionHeader()
