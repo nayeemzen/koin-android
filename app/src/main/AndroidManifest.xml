@@ -67,6 +67,7 @@
 
         </activity>
         <activity android:name=".Payment.SimpleScannerActivity"/>
+        <activity android:name=".Profile.InviteFriendsActivity"/>
     </application>
 
 </manifest>

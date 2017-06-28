@@ -41,4 +41,5 @@ public class MainProfileFragment extends android.support.v4.app.Fragment {
     ProfileRecyclerAdapter profileRecyclerAdapter = new ProfileRecyclerAdapter(getActivity());
     profileRecyclerView.setAdapter(profileRecyclerAdapter);
   }
+
 }

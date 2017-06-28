@@ -1,18 +1,24 @@
 package com.sendkoin.customer.Profile;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
+import com.sendkoin.customer.MainActivity;
 import com.sendkoin.customer.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 /**
@@ -196,6 +202,32 @@ public class ProfileRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     linkCardButton.setRadius(20);
     linkCardButton.setPadding(10, 20, 10, 20);
     linkCardButton.setCustomTextFont("Nunito-Regular.ttf");
+  }
+
+  public class ProfileChildViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+
+    @BindView(R.id.profile_header_icon)
+    ImageView profileItemIcon;
+    @BindView(R.id.profile_header_text)
+    TextView profileHeaderText;
+    public ProfileChildViewHolder(View itemView) {
+      super(itemView);
+      ButterKnife.bind(this, itemView);
+      itemView.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View view) {
+      if (listItems.get(getAdapterPosition()).getType() == TYPE_ITEM){
+        ProfileChild profileChild = (ProfileChild) listItems.get(getAdapterPosition());
+        switch (profileChild.title){
+          case "Invite Friends":
+            MainActivity mainActivity = ((MainActivity) context);
+            mainActivity.startActivity(new Intent(mainActivity, InviteFriendsActivity.class));
+            break;
+        }
+      }
+    }
   }
 
 }

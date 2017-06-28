@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                tools:ignore="MissingPrefix">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="40dp"
+        android:layout_centerInParent="true"
+        android:paddingRight="40dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/invite_smiley"
+            app:srcCompat="@drawable/ic_noun_invite_similey"
+            android:layout_above="@+id/invite_main_text"
+            android:layout_centerHorizontal="true"/>
+
+
+        <TextView
+            android:id="@+id/invite_main_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/invite_and_earn"
+            fontPath="fonts/Nunito-Bold.ttf"
+            android:layout_above="@+id/invite_friends_helper"
+            android:layout_centerHorizontal="true"
+            android:textSize="20sp"
+            android:layout_marginBottom="5dp"
+            />
+
+        <TextView
+            android:id="@+id/invite_friends_helper"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:text="@string/invite_friends_helper"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/invite_buton"
+            android:text="14skc"
+            android:textAlignment="center"
+            android:padding="10dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/back"/>
+
+        <mehdi.sakout.fancybuttons.FancyButton
+            android:id="@+id/invite_buton"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_alignParentBottom="true"
+            android:padding="20dp"
+            android:layout_marginBottom="30dp">
+
+        </mehdi.sakout.fancybuttons.FancyButton>
+
+    </RelativeLayout>
+
+
+
+</RelativeLayout>
