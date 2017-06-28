@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.Image;
@@ -29,6 +30,7 @@ import com.sendkoin.api.QrType;
 import com.sendkoin.api.Transaction;
 import com.sendkoin.customer.KoinApplication;
 import com.sendkoin.customer.Payment.TextDrawable;
+import com.sendkoin.customer.Payment.TransactionDetails.TransactionDetailsActivity;
 import com.sendkoin.customer.R;
 
 import net.glxn.qrgen.android.QRCode;
@@ -191,17 +193,21 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
 
   @Override
   public void showTransactionComplete(Transaction transaction) {
-    //loading indicator off and show check mark
-//    showLoadingComplete();
-    merchant_name_pay_complete.setText(transaction.merchant.store_name);
-    imageLoader.loadImage(merchantLogoPaymentComplete, (String) null, transaction.merchant.store_name);
-    String saleAmount = transaction.amount.toString();
-    saleAmountPayComplete.setText("$" + saleAmount);
-    // need to know to show the sign and on backPresses();
-    transactionState = transaction.state;
-    setTransactionStateUI();
-    setUpBarcode(transaction.token);
-    setUIState(UIState.PAYMENT_COMPLETE);
+//    //loading indicator off and show check mark
+////    showLoadingComplete();
+//    merchant_name_pay_complete.setText(transaction.merchant.store_name);
+//    imageLoader.loadImage(merchantLogoPaymentComplete, (String) null, transaction.merchant.store_name);
+//    String saleAmount = transaction.amount.toString();
+//    saleAmountPayComplete.setText("$" + saleAmount);
+//    // need to know to show the sign and on backPresses();
+//    transactionState = transaction.state;
+//    setTransactionStateUI();
+//    setUpBarcode(transaction.token);
+//    setUIState(UIState.PAYMENT_COMPLETE);
+    Intent intent = new Intent(QRCodeScannerActivity.this, TransactionDetailsActivity.class);
+    intent.putExtra("transaction_token",transaction.token);
+    intent.putExtra("from_payment",true);
+    startActivity(intent);
   }
 
   private void setUpBarcode(String token) {

@@ -1,11 +1,13 @@
 package com.sendkoin.customer.Payment.TransactionDetails;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.widget.TextView;
 
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
@@ -14,6 +16,8 @@ import com.sendkoin.api.Transaction;
 import com.sendkoin.api.TransactionDetail;
 import com.sendkoin.customer.Data.Payments.Models.RealmTransaction;
 import com.sendkoin.customer.KoinApplication;
+import com.sendkoin.customer.MainActivity;
+import com.sendkoin.customer.Payment.QRPayment.QRCodeScannerActivity;
 import com.sendkoin.customer.R;
 
 import net.glxn.qrgen.android.QRCode;
@@ -47,6 +51,9 @@ public class TransactionDetailsActivity
   IImageLoader imageLoader;
   AdapterSectionRecycler adapterRecycler;
 
+  String transactionToken;
+  boolean fromPayment = false;
+
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -54,7 +61,11 @@ public class TransactionDetailsActivity
     ButterKnife.bind(this);
     setUpDagger();
     setUpRecyclerView();
-    String transactionToken = getIntent().getStringExtra("transaction_token");
+    if (getIntent().hasExtra("transaction_token"))
+      transactionToken = getIntent().getStringExtra("transaction_token");
+    if (getIntent().hasExtra("from_payment"))
+      fromPayment = getIntent().getBooleanExtra("from_payment",false);
+
     imageLoader = new PicassoLoader();
     mPresenter.fetchTransactionDetails(transactionToken);
 
@@ -63,6 +74,17 @@ public class TransactionDetailsActivity
   private void setUpRecyclerView() {
     transactionRecyclerView.setLayoutManager(new LinearLayoutManager(this, VERTICAL, false));
     transactionRecyclerView.setHasFixedSize(true);
+  }
+
+  @Override
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+    if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+      if (fromPayment)
+        startActivity(new Intent(TransactionDetailsActivity.this, MainActivity.class));
+      else
+        finish();
+    }
+    return true;
   }
 
   /**
