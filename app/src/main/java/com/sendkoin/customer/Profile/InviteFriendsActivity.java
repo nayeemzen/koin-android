@@ -1,9 +1,12 @@
 package com.sendkoin.customer.Profile;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sendkoin.customer.R;
 
@@ -17,7 +20,11 @@ import mehdi.sakout.fancybuttons.FancyButton;
  */
 
 public class InviteFriendsActivity extends AppCompatActivity {
-  @BindView(R.id.invite_buton) FancyButton inviteButton;
+  @BindView(R.id.invite_buton)
+  FancyButton inviteButton;
+  @BindView(R.id.user_referral_code)
+  TextView userReferralCode;
+
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -38,7 +45,18 @@ public class InviteFriendsActivity extends AppCompatActivity {
   }
 
   @OnClick(R.id.invite_buton)
-  void inviteClicked(){
-
+  void inviteClicked() {
+    try {
+      Intent inviteFriendsIntent = new Intent(Intent.ACTION_SEND);
+      inviteFriendsIntent.setType("text/plain");
+      inviteFriendsIntent.putExtra(Intent.EXTRA_SUBJECT, "Koin");
+      String sAux = "\nYour Koin referral Code: \n";
+      String code = userReferralCode.getText().toString();
+      sAux = sAux + " " + code;
+      inviteFriendsIntent.putExtra(Intent.EXTRA_TEXT, sAux);
+      startActivity(Intent.createChooser(inviteFriendsIntent, "choose one"));
+    } catch (Exception e) {
+      Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
+    }
   }
 }
