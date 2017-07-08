@@ -284,6 +284,9 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
           int saleAmount = Integer.parseInt(enterSaleAmount.getText().toString());
 
           mPresenter.acceptTransaction(qrCode, Collections.singletonList(new SaleItem.Builder()
+              .name("One Time Payment")
+              .quantity(1)
+              .sale_type(SaleItem.SaleType.QUICK_SALE)
               .price(saleAmount)
               .build()));
           break;
