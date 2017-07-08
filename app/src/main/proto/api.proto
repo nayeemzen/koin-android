@@ -30,24 +30,30 @@ message AuthenticationResponse {
     }
 }
 
-message InitiateTransactionRequest {
-    optional uint64 created_at = 1;
-    /* Needed to implement idempotence and prevent replay attacks. */
-    optional string idempotence_token = 2;
-    repeated SaleItem sale_items = 3;
+message InitiateDynamicTransactionRequest {
+    optional string idempotence_token = 1;
+    repeated SaleItem sale_items = 2;
 }
 
-message InitiateTransactionResponse {
-    /* The QrCode uniquely identifying this tranasction. */
+message InitiateDynamicTransactionResponse {
     optional QrCode qr_code = 1;
     optional string transaction_token = 2;
     optional Status status = 3;
 }
 
+message InitiateStaticTransactionRequest {
+    optional string qr_token = 1;
+    repeated SaleItem sale_items = 2;
+}
+
+message InitiateStaticTransactionResponse {
+    optional Order order = 1;
+    optional Status status = 2;
+}
+
 message AcceptTransactionRequest {
     optional string qr_token = 1;
-    optional uint32 sale_amount = 2;
-    optional string idempotence_token = 3;
+    optional string idempotence_token = 2;
 }
 
 message AcceptTransactionResponse {
@@ -95,16 +101,58 @@ message Transaction {
     optional uint64 created_at = 2;
     optional Merchant merchant = 3;
     optional uint32 amount = 5;
-    optional State state = 6;
+    optional TransactionState state = 6;
+}
 
-    enum State {
-        WAITING_ON_MERCHANT = 1;
-        WAITING_ON_CUSTOMER = 2;
-        WAITING_ON_RISK = 3;
-        PROCESSING = 4;
-        COMPLETE = 5;
-        FAILED = 6;
-    }
+enum TransactionState {
+    VALIDATING = 1;
+    WAITING_ON_MERCHANT = 2;
+    WAITING_ON_CUSTOMER = 3;
+    WAITING_ON_RISK = 4;
+    PROCESSING = 5;
+    COMPLETE = 6;
+    FAILED = 7;
+}
+
+message ListOrdersRequest {
+    optional QueryParameters query_parameters = 1;
+}
+
+message ListOrdersResponse {
+    repeated Order order = 1;
+    optional bool has_next_page = 2;
+}
+
+message CompleteOrderResponse {
+    optional Order order = 1;
+    optional Status status = 2;
+}
+
+message PickUpOrderResponse {
+    optional Order order = 1;
+    optional Status status = 2;
+}
+
+message Order {
+    optional uint64 order_id = 1;
+    optional uint64 created_at = 2;
+    optional uint64 updated_at = 3;
+    optional Transaction transaction = 4;
+    optional OrderState state = 5;
+}
+
+message OrderDetails {
+    optional Order order = 1;
+    repeated SaleItem sale_items = 2;
+}
+
+enum OrderState {
+    VALIDATING = 1;
+    WAITING_ON_CUSTOMER = 2;
+    ORDER_PROCESSING = 3;
+    ORDER_PENDING_PICKUP = 4;
+    COMPLETE = 5;
+    FAILED = 6;
 }
 
 message TransactionDetail {
@@ -116,7 +164,9 @@ message QueryParameters {
     optional uint64 updates_before = 1;
     optional uint64 updates_after = 2;
     optional Order order = 3;
-    optional uint32 page_size  = 4;
+    optional uint32 page_size = 4;
+    optional TransactionState transaction_state = 5;
+    optional OrderState order_state = 6;
 
     enum Order {
         ASCENDING = 1;
@@ -129,12 +179,12 @@ message SaleItem {
     optional string name = 2;
     optional uint32 price = 3;
     optional uint32 quantity = 4;
-    optional SaleType sale_type = 5;
+    optional string customer_notes = 5;
+    optional SaleType sale_type = 6;
 
     enum SaleType {
-        INVENTORY = 1;
+        INVENTORY_SALE = 1;
         QUICK_SALE = 2;
-        STATIC_QR = 3;
     }
 }
 
@@ -156,6 +206,83 @@ message QrCode {
 }
 
 enum QrType {
-    STATIC = 1;
-    DYNAMIC = 2;
+    DYNAMIC = 1;
+    STATIC = 2;
+    INVENTORY_STATIC = 3;
+}
+
+message InventoryItem {
+    optional uint64 inventory_item_id = 1;
+    optional string name = 2;
+    optional uint32 price = 3;
+    optional uint32 quantity = 4;
+    optional string description = 5;
+    optional string image_url = 6;
+}
+
+message Category {
+    optional uint64 category_id = 1;
+    optional string category_name = 2;
+    repeated InventoryItem inventory_items = 3;
+}
+
+/* GET /inventory */
+message GetInventoryResponse {
+    repeated Category categories = 1;
+}
+
+/* POST /inventory/category */
+message CreateCategoryRequest {
+    optional string category_name = 1;
+}
+
+message CreateCategoryResponse {
+    optional Category category = 1;
+    optional Status status = 2;
+}
+
+/* PUT /inventory/category/:id */
+message UpdateCategoryRequest {
+    optional string category_name = 1;
+}
+
+message UpdateCategoryResponse {
+    optional Category category = 1;
+    optional Status status = 2;
+}
+
+/* DELETE /inventory/category/:id */
+message DeleteCategoryResponse {
+    optional Category category = 1;
+    optional Status status = 2;
+}
+
+/* POST /inventory/category/:id */
+message AddInventoryItemsRequest {
+    repeated InventoryItem inventory_items = 1;
+}
+
+message AddInventoryItemsResponse {
+    repeated InventoryItem inventory_items = 1;
+    optional Status status = 2;
+}
+
+/* PUT /inventory/category/:category_id/items/:id */
+message UpdateInventoryItemRequest {
+    optional InventoryItem inventory_item = 1;
+}
+
+message UpdateInventoryItemResponse {
+    optional InventoryItem inventory_item = 1;
+    optional Status status = 2;
+}
+
+/* DELETE /inventory/category/:category_id/items/:id */
+message DeleteInventoryItemRequest {
+    optional InventoryItem inventory_item = 1;
+}
+
+message DeleteInventoryItemResponse {
+    optional InventoryItem inventory_item = 1;
+    optional Status status = 2;
 }

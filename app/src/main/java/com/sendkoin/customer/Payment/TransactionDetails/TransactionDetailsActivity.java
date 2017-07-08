@@ -111,14 +111,13 @@ public class TransactionDetailsActivity
   public void showDetailedTransaction(TransactionDetail transactionDetail) {
 
     List<SaleItem> saleItems = transactionDetail.sale_items;
-    SaleItem.SaleType saleType = saleItems.get(0).sale_type;
-    List<Item> items = new ArrayList<>();
-    if (saleType != SaleItem.SaleType.STATIC_QR) {
-      items = Stream.of(saleItems).map(saleItem -> new Item()
-          .setPrice(saleItem.price)
-          .setItemName(saleItem.name)
-          .setQuantity(saleItem.quantity)).toList();
-    }
+    List<Item> items;
+
+    items = Stream.of(saleItems).map(saleItem -> new Item()
+        .setPrice(saleItem.price)
+        .setItemName(saleItem.name)
+        .setQuantity(saleItem.quantity)).toList();
+
     List<SectionHeader> sections = new ArrayList<>();
     sections.add(new SectionHeader()
         .setChildList(items)

@@ -2,6 +2,8 @@ package com.sendkoin.customer.Data.Payments;
 
 import com.sendkoin.api.AcceptTransactionRequest;
 import com.sendkoin.api.AcceptTransactionResponse;
+import com.sendkoin.api.InitiateStaticTransactionRequest;
+import com.sendkoin.api.InitiateStaticTransactionResponse;
 import com.sendkoin.api.ListTransactionsRequest;
 import com.sendkoin.api.ListTransactionsResponse;
 import com.sendkoin.api.TransactionDetail;
@@ -27,6 +29,10 @@ public interface PaymentService {
   @POST("transactions/customer/accept/")
   Observable<AcceptTransactionResponse>
   acceptCurrentTransaction(@Body AcceptTransactionRequest acceptTransactionRequest);
+
+  @POST("transactions/customer/initiate/")
+  Observable<InitiateStaticTransactionResponse>
+  initiateCurrentTransaction(@Body InitiateStaticTransactionRequest initiateStaticTransactionRequest);
 
   @GET("transactions/customer/{token}/")
   Observable<TransactionDetail>

@@ -11,6 +11,7 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.intrusoft.sectionedrecyclerview.Section;
 import com.intrusoft.sectionedrecyclerview.SectionRecyclerViewAdapter;
 import com.sendkoin.api.Transaction;
+import com.sendkoin.api.TransactionState;
 import com.sendkoin.customer.R;
 
 import net.glxn.qrgen.android.QRCode;
@@ -66,8 +67,8 @@ public class AdapterSectionRecycler extends SectionRecyclerViewAdapter<SectionHe
 
     sectionViewHolder.saleAmountPayComplete.setText("$"+sectionHeader.transaction.amount.toString());
 
-    if (sectionHeader.transaction.state == Transaction.State.PROCESSING
-        || sectionHeader.transaction.state == Transaction.State.COMPLETE) {
+    if (sectionHeader.transaction.state == TransactionState.PROCESSING
+        || sectionHeader.transaction.state == TransactionState.COMPLETE) {
       sectionViewHolder.transactionStateIcon.setImageResource(R.drawable.trans_approved);
       sectionViewHolder.transactionStateText.setText("Transaction Approved");
       sectionViewHolder.transactionStateText.setTextColor(Color.parseColor("#37B3B8"));

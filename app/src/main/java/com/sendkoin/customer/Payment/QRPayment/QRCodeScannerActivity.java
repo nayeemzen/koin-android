@@ -27,7 +27,9 @@ import com.google.zxing.WriterException;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.sendkoin.api.QrCode;
 import com.sendkoin.api.QrType;
+import com.sendkoin.api.SaleItem;
 import com.sendkoin.api.Transaction;
+import com.sendkoin.api.TransactionState;
 import com.sendkoin.customer.KoinApplication;
 import com.sendkoin.customer.Payment.TextDrawable;
 import com.sendkoin.customer.Payment.TransactionDetails.TransactionDetailsActivity;
@@ -35,6 +37,8 @@ import com.sendkoin.customer.R;
 
 import net.glxn.qrgen.android.QRCode;
 import net.glxn.qrgen.core.scheme.VCard;
+
+import java.util.Collections;
 
 import javax.inject.Inject;
 
@@ -48,6 +52,8 @@ import butterknife.Unbinder;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import mehdi.sakout.fancybuttons.FancyButton;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+import static com.sendkoin.api.QrType.DYNAMIC;
 
 /**
  * Created by warefhaque on 5/23/17.
@@ -107,13 +113,14 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   private QrCode qrCode;
   private UIState currentUiState;
   private UIState paymentUiState;
-  private Transaction.State transactionState;
+  private TransactionState transactionState;
 
   private enum UIState {
     SCANNER,
     DYNAMIC_QR_PAYMENT_CONFIRMATION,
     STATIC_QR_GENERATE_PAYMENT,
-    PAYMENT_COMPLETE
+    PAYMENT_COMPLETE,
+    INVENTORY_STATIC
   }
 
   @Override
@@ -181,8 +188,20 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     this.qrCode = mGson.fromJson(qrContent, QrCode.class);
     merchantName.setText(qrCode.merchant_name);
     imageLoader.loadImage(merchantLogo, (String) null, qrCode.merchant_name);
-    UIState uiState = (qrCode.qr_type == QrType.DYNAMIC) ?
-        UIState.DYNAMIC_QR_PAYMENT_CONFIRMATION : UIState.STATIC_QR_GENERATE_PAYMENT;
+    UIState uiState;
+    switch (qrCode.qr_type) {
+      case DYNAMIC:
+        uiState = UIState.DYNAMIC_QR_PAYMENT_CONFIRMATION;
+        break;
+      case STATIC:
+        uiState = UIState.STATIC_QR_GENERATE_PAYMENT;
+        break;
+      case INVENTORY_STATIC:
+        uiState = UIState.INVENTORY_STATIC;
+        break;
+      default:
+        throw new UnsupportedOperationException("invalid qr state");
+    }
     setUIState(uiState);
 
     if (currentUiState == UIState.DYNAMIC_QR_PAYMENT_CONFIRMATION) {
@@ -200,13 +219,13 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
 //    String saleAmount = transaction.amount.toString();
 //    saleAmountPayComplete.setText("$" + saleAmount);
 //    // need to know to show the sign and on backPresses();
-//    transactionState = transaction.state;
+//    transactionState = TransactionState;
 //    setTransactionStateUI();
 //    setUpBarcode(transaction.token);
 //    setUIState(UIState.PAYMENT_COMPLETE);
     Intent intent = new Intent(QRCodeScannerActivity.this, TransactionDetailsActivity.class);
-    intent.putExtra("transaction_token",transaction.token);
-    intent.putExtra("from_payment",true);
+    intent.putExtra("transaction_token", transaction.token);
+    intent.putExtra("from_payment", true);
     startActivity(intent);
   }
 
@@ -256,15 +275,23 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
       //loading indicator ON
 //      showLoadingIndicator();
       // TODO: 6/25/17 WAREF - get loading indicator from Dare!
-      if (currentUiState == UIState.STATIC_QR_GENERATE_PAYMENT) {
-        if (enterSaleAmount.getText().toString().isEmpty()) {
-          Toast.makeText(this, "Please enter a valid sale amount", Toast.LENGTH_SHORT).show();
-          return;
-        }
-        int saleAmount = Integer.parseInt(enterSaleAmount.getText().toString());
-        mPresenter.acceptTransaction(qrCode, saleAmount);
-      } else if (currentUiState == UIState.DYNAMIC_QR_PAYMENT_CONFIRMATION) {
-        mPresenter.acceptTransaction(qrCode, -1);
+      switch (currentUiState) {
+        case STATIC_QR_GENERATE_PAYMENT:
+          if (enterSaleAmount.getText().toString().isEmpty()) {
+            Toast.makeText(this, "Please enter a valid sale amount", Toast.LENGTH_SHORT).show();
+            return;
+          }
+          int saleAmount = Integer.parseInt(enterSaleAmount.getText().toString());
+
+          mPresenter.acceptTransaction(qrCode, Collections.singletonList(new SaleItem.Builder()
+              .price(saleAmount)
+              .build()));
+          break;
+        case DYNAMIC_QR_PAYMENT_CONFIRMATION:
+          mPresenter.acceptTransaction(qrCode, Collections.emptyList());
+          break;
+        case INVENTORY_STATIC:
+          break;
       }
       qrCode = null;
     }
@@ -352,6 +379,9 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
         paymentInProcessLayout.setVisibility(View.GONE);
         paymentCompleteLayout.setVisibility(View.VISIBLE);
         setUpDoneButton();
+        break;
+      case INVENTORY_STATIC:
+        break;
     }
 
   }
@@ -365,9 +395,9 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
         if (currentUiState == UIState.PAYMENT_COMPLETE) {
           // TODO: 6/25/17 WAREF - the transaction states were not working need to incorporate
           // transaction state cannot be null here
-          if (transactionState == Transaction.State.COMPLETE || transactionState == Transaction.State.PROCESSING) {
+          if (transactionState == TransactionState.COMPLETE || transactionState == TransactionState.PROCESSING) {
             finish();
-          } else if (transactionState == Transaction.State.FAILED) {
+          } else if (transactionState == TransactionState.FAILED) {
             setUIState(paymentUiState);
           }
         } else

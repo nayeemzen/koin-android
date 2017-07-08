@@ -2,6 +2,8 @@ package com.sendkoin.customer;
 
 import com.sendkoin.api.AcceptTransactionRequest;
 import com.sendkoin.api.AcceptTransactionResponse;
+import com.sendkoin.api.InitiateStaticTransactionRequest;
+import com.sendkoin.api.InitiateStaticTransactionResponse;
 import com.sendkoin.api.ListTransactionsRequest;
 import com.sendkoin.api.ListTransactionsResponse;
 import com.sendkoin.api.Transaction;
@@ -42,6 +44,11 @@ public class FakePaymentService implements PaymentService {
         .transaction(paymentEntityLinkedHashMap.get(acceptTransactionRequest.qr_token))
         .build();
     return Observable.just(acceptTransactionResponse);
+  }
+
+  @Override
+  public Observable<InitiateStaticTransactionResponse> initiateCurrentTransaction(@Body InitiateStaticTransactionRequest initiateStaticTransactionRequest) {
+    return null;
   }
 
   @Override
