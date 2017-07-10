@@ -106,7 +106,6 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
         });
 
     compositeSubscription.add(subscription);
-
   }
 
   private void processStaticTransaction(QrCode qrCode, List<SaleItem> saleItems) {

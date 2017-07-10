@@ -33,6 +33,7 @@ import com.sendkoin.customer.KoinApplication;
 import com.sendkoin.customer.Payment.TransactionDetails.TransactionDetailsActivity;
 import com.sendkoin.customer.R;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -191,7 +192,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   @Override
   public void showInventoryItems(List<Category> groupedInventoryItems) {
     // call a function in INventoryFragment which will transfer to adapter
-    Log.d(TAG,groupedInventoryItems.toString());
+
   }
 
 
