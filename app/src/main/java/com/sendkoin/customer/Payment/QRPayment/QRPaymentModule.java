@@ -2,6 +2,7 @@ package com.sendkoin.customer.Payment.QRPayment;
 
 import com.sendkoin.customer.Data.Authentication.SessionManager;
 import com.sendkoin.customer.Data.Dagger.CustomScope;
+import com.sendkoin.customer.Data.Payments.InventoryService;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.Data.Payments.PaymentService;
 
@@ -30,9 +31,16 @@ public class QRPaymentModule {
 
   @Provides
   @CustomScope
+  public InventoryService providesInventoryService(Retrofit retrofit){
+    return retrofit.create(InventoryService.class);
+  }
+
+  @Provides
+  @CustomScope
   public QRScannerContract.Presenter providesPresenter(LocalPaymentDataStore localPaymentDataStore,
-                                                       PaymentService paymentService){
-    return new QRScannerPresenter(view, localPaymentDataStore, paymentService);
+                                                       PaymentService paymentService,
+                                                       InventoryService inventoryService){
+    return new QRScannerPresenter(view, localPaymentDataStore, paymentService, inventoryService);
   }
 
   @Provides
@@ -46,4 +54,5 @@ public class QRPaymentModule {
   public ZBarScannerView providesZBarScannerView(){
     return new ZBarScannerView(view.getContext());
   }
+
 }

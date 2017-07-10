@@ -44,7 +44,7 @@ public class QRPaymentTest {
   @Test
   public void createPayment() throws Exception {
     presenter.acceptTransaction("waref");
-    verify(view).showTransactionComplete();
+    verify(view).showTransactionReciept();
   }
 
 }

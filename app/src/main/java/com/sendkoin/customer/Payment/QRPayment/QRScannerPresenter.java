@@ -3,12 +3,13 @@ package com.sendkoin.customer.Payment.QRPayment;
 
 import android.util.Log;
 
-import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
 import com.sendkoin.api.AcceptTransactionRequest;
+import com.sendkoin.api.GetInventoryResponse;
 import com.sendkoin.api.InitiateStaticTransactionRequest;
 import com.sendkoin.api.QrCode;
 import com.sendkoin.api.SaleItem;
 import com.sendkoin.api.Transaction;
+import com.sendkoin.customer.Data.Payments.InventoryService;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.Data.Payments.PaymentService;
 
@@ -33,6 +34,7 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
   private QRScannerContract.View view;
   private LocalPaymentDataStore localPaymentDataStore;
   private PaymentService paymentService;
+  private InventoryService inventoryService;
   public static final String MERCHANT_NAME = "merchant_name";
   public static final String SALE_AMOUNT = "sale_amount";
   private CompositeSubscription compositeSubscription = new CompositeSubscription();
@@ -44,11 +46,13 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
   @Inject
   public QRScannerPresenter(QRScannerContract.View view,
                             LocalPaymentDataStore localPaymentDataStore,
-                            PaymentService paymentService) {
+                            PaymentService paymentService,
+                            InventoryService inventoryService) {
 
     this.view = view;
     this.localPaymentDataStore = localPaymentDataStore;
     this.paymentService = paymentService;
+    this.inventoryService = inventoryService;
   }
 
   /**
@@ -79,6 +83,32 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
     // 2. save the transaction in the DB
   }
 
+  @Override
+  public void getInventory(String qrToken) {
+    Subscription subscription = inventoryService
+        .getAllInventoryItems(qrToken)
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Subscriber<GetInventoryResponse>() {
+          @Override
+          public void onCompleted() {
+          }
+
+          @Override
+          public void onError(Throwable e) {
+            Log.e(TAG, e.getLocalizedMessage());
+          }
+
+          @Override
+          public void onNext(GetInventoryResponse getInventoryResponse) {
+            view.showInventoryItems(getInventoryResponse.categories);
+          }
+        });
+
+    compositeSubscription.add(subscription);
+
+  }
+
   private void processStaticTransaction(QrCode qrCode, List<SaleItem> saleItems) {
     Subscription subscription = paymentService
         .initiateCurrentTransaction(new InitiateStaticTransactionRequest.Builder()
@@ -105,7 +135,7 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
 
           @Override
           public void onNext(Transaction transaction) {
-            view.showTransactionComplete(transaction);
+            view.showTransactionReciept(transaction);
           }
         });
 
@@ -136,7 +166,7 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
 
           @Override
           public void onNext(Transaction transaction) {
-            view.showTransactionComplete(transaction);
+            view.showTransactionReciept(transaction);
           }
         });
 
