@@ -109,6 +109,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   public QrCode qrCode;
   public String name;
   public String dynamicQRAmount;
+  private InventoryQRPaymentFragment inventoryQRPaymentFragment;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -163,7 +164,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
         replaceViewWith(staticQPaymentFragment);
         break;
       case INVENTORY_STATIC:
-        InventoryQRPaymentFragment inventoryQRPaymentFragment = new InventoryQRPaymentFragment();
+        inventoryQRPaymentFragment = new InventoryQRPaymentFragment();
         replaceViewWith(inventoryQRPaymentFragment);
         break;
       default:
@@ -192,7 +193,9 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   @Override
   public void showInventoryItems(List<Category> groupedInventoryItems) {
     // call a function in INventoryFragment which will transfer to adapter
-
+    if (inventoryQRPaymentFragment != null){
+      inventoryQRPaymentFragment.setUpRecyclerView(groupedInventoryItems, this);
+    }
   }
 
 

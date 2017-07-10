@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                tools:ignore="MissingPrefix"
+    android:layout_marginTop="10dp">
+
+    <TextView
+        android:id="@+id/inventory_category_name_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        fontPath="fonts/Nunito-Bold.ttf"
+        android:textSize="17sp"
+        android:text="Most Popular"/>
+
+    <ImageView
+        android:id="@+id/inventory_category_line_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/inventory_category_line"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/inventory_category_name_tv"
+        android:layout_centerHorizontal="true"/>
+
+</RelativeLayout>

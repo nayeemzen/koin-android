@@ -6,10 +6,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.sendkoin.api.Category;
 import com.sendkoin.api.InventoryItem;
 import com.sendkoin.customer.R;
+import com.squareup.picasso.Picasso;
+
+import net.sourceforge.zbar.Image;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,14 +62,14 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     switch (viewType) {
       case CATEGORY:
         View categoryView = LayoutInflater.from(context).inflate(
-            R.layout.profile_child_layout,
+            R.layout.inventory_header,
             parent,
             false);
         viewHolder = new CategoryViewHolder(categoryView);
         break;
       case INVENTORY:
         View inventoryView = LayoutInflater.from(context).inflate(
-            R.layout.profile_child_layout,
+            R.layout.inventory_item,
             parent,
             false);
         viewHolder = new InventoryItemViewHolder(inventoryView);
@@ -77,11 +82,30 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
   public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
     switch (qrPaymentListItems.get(position).getType()) {
       case CATEGORY:
-        InventoryItemViewHolder inventoryItemViewHolder = (InventoryItemViewHolder) holder;
+        CategoryViewHolder categoryViewHolder = (CategoryViewHolder) holder;
+        CategoryQRPaymentListItemItem categoryQRPaymentListItemItem =
+            (CategoryQRPaymentListItemItem) qrPaymentListItems.get(position);
         // holder.name = listItems.get(position).name;
+        categoryViewHolder.inventoryCategoryNameTextView.setText(categoryQRPaymentListItemItem.categoryName);
         break;
       case INVENTORY:
-        CategoryViewHolder categoryViewHolder = (CategoryViewHolder) holder;
+        InventoryItemViewHolder inventoryItemViewHolder = (InventoryItemViewHolder) holder;
+        InventoryQRPaymentListItem inventoryQRPaymentListItem =
+            (InventoryQRPaymentListItem) qrPaymentListItems.get(position);
+
+        //load the image
+        Picasso.with(context)
+            .load(inventoryQRPaymentListItem.itemImageUrl)
+            .fit()
+            .into(inventoryItemViewHolder.inventoryItemImageView);
+        //set the name of the item
+        inventoryItemViewHolder.inventoryItemNameTextView.setText(inventoryQRPaymentListItem.itemName);
+        // set the description of the item
+        inventoryItemViewHolder.inventoryItemDescriptionTextView
+            .setText(inventoryQRPaymentListItem.itemDescription);
+        // set the price of the item
+        String price = String.valueOf(inventoryQRPaymentListItem.itemPrice);
+        inventoryItemViewHolder.inventoryItemPriceTextView.setText("BDT " + price);
         // holder.name = listItems.get(position).name;
         break;
     }
@@ -146,6 +170,11 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 
   public class InventoryItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
+    @BindView(R.id.inventory_item_iv) ImageView inventoryItemImageView;
+    @BindView(R.id.inventory_name_tv) TextView inventoryItemNameTextView;
+    @BindView(R.id.inventory_description_tv) TextView inventoryItemDescriptionTextView;
+    @BindView(R.id.inventory_price_tv) TextView inventoryItemPriceTextView;
+
     public InventoryItemViewHolder(View itemView) {
       super(itemView);
       ButterKnife.bind(this, itemView);
@@ -159,6 +188,8 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
   }
 
   public class CategoryViewHolder extends RecyclerView.ViewHolder {
+
+    @BindView(R.id.inventory_category_name_tv) TextView inventoryCategoryNameTextView;
 
     public CategoryViewHolder(View itemView) {
       super(itemView);
