@@ -1,14 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
+              android:layout_height="match_parent"
               android:background="#FFFFFF"
-              android:layout_height="match_parent">
+              android:orientation="vertical"
+              tools:ignore="MissingPrefix">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/inventory_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_height="match_parent"
+        android:layout_above="@+id/checkout_total_order_layout">
     </android.support.v7.widget.RecyclerView>
-</LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/checkout_total_order_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimary"
+        android:visibility="gone"
+        android:padding="15dp">
+
+        <TextView
+            android:id="@+id/checkout_amount_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:text="$ 40"
+            android:textColor="#FFFFFF"
+            android:layout_alignTop="@+id/checkout_text_view"/>
+
+        <TextView
+            android:id="@+id/checkout_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/checkout"
+            android:textAlignment="center"
+            android:textColor="#ffffff"
+            android:textSize="15sp"/>
+
+        <TextView
+            android:id="@+id/checkout_num_items_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/checkout_text_view"
+            android:text="2"
+            android:textAlignment="center"
+            android:textColor="#ffffff"
+            android:textSize="15sp"/>
+
+    </RelativeLayout>
+</RelativeLayout>

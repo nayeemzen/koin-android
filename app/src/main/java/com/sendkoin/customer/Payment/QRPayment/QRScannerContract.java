@@ -8,6 +8,8 @@ import com.sendkoin.api.QrCode;
 import com.sendkoin.api.SaleItem;
 import com.sendkoin.api.Transaction;
 import com.sendkoin.customer.BasePresenter;
+import com.sendkoin.sql.entities.CurrentOrderEntity;
+import com.sendkoin.sql.entities.InventoryOrderItemEntity;
 
 import java.util.List;
 
@@ -22,11 +24,16 @@ public interface QRScannerContract {
     void showTransactionReciept(Transaction transaction);
     void showTransactionError(String errorMessage);
     void showInventoryItems(List<Category> groupedInventoryItems);
+    void handleOrderItems(List<InventoryOrderItemEntity> inventoryOrderEntities);
+    void showOrderDeleted();
   }
 
   interface Presenter extends BasePresenter {
     void acceptTransaction(QrCode qrCode, List<SaleItem> saleItemList);
     void getInventory(String qrToken);
+    void getOrderItems();
+    void putOrder(String qrToken, InventoryRecyclerViewAdapter.InventoryQRPaymentListItem inventoryQRPaymentListItem);
+    void removeAllOrders();
   }
 
 

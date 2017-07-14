@@ -4,14 +4,11 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -20,21 +17,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.WriterException;
-import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.sendkoin.api.Category;
-import com.sendkoin.api.InventoryItem;
 import com.sendkoin.api.QrCode;
-import com.sendkoin.api.SaleItem;
 import com.sendkoin.api.Transaction;
-import com.sendkoin.api.TransactionState;
 import com.sendkoin.customer.KoinApplication;
 import com.sendkoin.customer.Payment.TransactionDetails.TransactionDetailsActivity;
 import com.sendkoin.customer.R;
+import com.sendkoin.sql.entities.InventoryOrderItemEntity;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -44,7 +34,6 @@ import agency.tango.android.avatarview.loader.PicassoLoader;
 import agency.tango.android.avatarview.views.AvatarView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import mehdi.sakout.fancybuttons.FancyButton;
@@ -100,10 +89,8 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   @BindView(R.id.barcode_image)
   ImageView barcodeImageView;
 
-
-
   IImageLoader imageLoader;
-
+  SweetAlertDialog pDialog;
   QRScannerFragment qrScannerFragement;
   private Unbinder unbinder;
   public QrCode qrCode;
@@ -122,6 +109,9 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     transaction.add(R.id.scanner_fragment_layout, qrScannerFragement);
     transaction.commit();
     imageLoader = new PicassoLoader();
+//    mPresenter.removeAllOrderItems();
+//    mPresenter.removeAllOrders();
+
   }
 
   private void setUpDagger() {
@@ -155,7 +145,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     imageLoader.loadImage(merchantLogo, (String) null, qrCode.merchant_name);
     switch (qrCode.qr_type) {
       case DYNAMIC:
-        dynamicQRAmount =  qrCode.amount.toString();
+        dynamicQRAmount = qrCode.amount.toString();
         DynamicQRPaymentFragment dynamicQRPaymentFragment = new DynamicQRPaymentFragment();
         replaceViewWith(dynamicQRPaymentFragment);
         break;
@@ -174,7 +164,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
 
   public void setUpLogo(AvatarView logoView) {
     imageLoader = new PicassoLoader();
-    imageLoader.loadImage(logoView, (String) null,name);
+    imageLoader.loadImage(logoView, (String) null, name);
   }
 
   @Override
@@ -193,15 +183,38 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   @Override
   public void showInventoryItems(List<Category> groupedInventoryItems) {
     // call a function in INventoryFragment which will transfer to adapter
-    if (inventoryQRPaymentFragment != null){
-      inventoryQRPaymentFragment.setUpRecyclerView(groupedInventoryItems, this);
+    if (inventoryQRPaymentFragment != null) {
+      inventoryQRPaymentFragment.setAdapterList(groupedInventoryItems);
     }
   }
 
+  // TODO: 7/13/17 (WAREF) you can make an abstract class that extends from Fragment and then you could have on call
+  @Override
+  public void handleOrderItems(List<InventoryOrderItemEntity> inventoryOrderEntities) {
+    Fragment currentFragment = getFragmentManager().findFragmentById(R.id.scanner_fragment_layout);
+    if (currentFragment instanceof InventoryQRPaymentFragment) {
+      InventoryQRPaymentFragment inventoryQRPaymentFragment = (InventoryQRPaymentFragment) currentFragment;
+      inventoryQRPaymentFragment.updateCheckoutView(inventoryOrderEntities);
+    } else if (currentFragment instanceof DetailedInventoryFragment) {
+      DetailedInventoryFragment detailedInventoryFragment = (DetailedInventoryFragment) currentFragment;
+      detailedInventoryFragment.updateItemInformation(inventoryOrderEntities);
+    } else if (currentFragment instanceof ConfirmOrderFragment) {
+      ConfirmOrderFragment confirmOrderFragment = (ConfirmOrderFragment) currentFragment;
+    }
+  }
 
-  private void replaceViewWith(android.app.Fragment fragment) {
+  @Override
+  public void showOrderDeleted() {
+    getFragmentManager().beginTransaction()
+        .replace(R.id.scanner_fragment_layout, qrScannerFragement)
+        .commit();
+  }
+
+
+  public void replaceViewWith(android.app.Fragment fragment) {
     FragmentTransaction transaction = getFragmentManager().beginTransaction();
     transaction.replace(R.id.scanner_fragment_layout, fragment);
+    transaction.addToBackStack(null);
     transaction.commit();
   }
 
@@ -209,13 +222,26 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   public boolean onKeyDown(int keyCode, KeyEvent event) {
     if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
       Fragment currentFragment = getFragmentManager().findFragmentById(R.id.scanner_fragment_layout);
-      if (currentFragment instanceof QRScannerFragment){
+      if (currentFragment instanceof InventoryQRPaymentFragment) {
+        showOrderCancelDialog();
+      } else if (currentFragment instanceof QRScannerFragment) {
         finish();
       } else {
-        replaceViewWith(qrScannerFragement);
+        getFragmentManager().popBackStack();
       }
     }
     return true;
+  }
+
+  private void showOrderCancelDialog() {
+    pDialog = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE);
+    pDialog.setCancelText("No").setOnCancelListener(dialogInterface
+        -> pDialog.dismiss());
+    pDialog.setConfirmText("Yes").setOnDismissListener(dialogInterface
+        -> mPresenter.removeAllOrders());
+    pDialog.setTitleText("Would you like to cancel your order?");
+    pDialog.setCancelable(false);
+    pDialog.show();
   }
 
   /**

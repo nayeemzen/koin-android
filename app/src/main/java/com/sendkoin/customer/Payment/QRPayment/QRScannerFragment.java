@@ -15,6 +15,8 @@ import android.view.ViewGroup;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import me.dm7.barcodescanner.zbar.Result;
 import me.dm7.barcodescanner.zbar.ZBarScannerView;
 
@@ -25,6 +27,7 @@ import me.dm7.barcodescanner.zbar.ZBarScannerView;
 public class QRScannerFragment extends android.app.Fragment implements ZBarScannerView.ResultHandler {
   private ZBarScannerView mScannerView;
   public static final int PERMISSION_REQUEST_CAMERA = 1;
+  QRCodeScannerActivity qrCodeScannerActivity;
 
   @SuppressLint("NewApi")
   @Nullable
@@ -36,9 +39,12 @@ public class QRScannerFragment extends android.app.Fragment implements ZBarScann
     mScannerView = new ZBarScannerView(getActivity());
     if (!haveCameraPermission())
       requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CAMERA);
+    qrCodeScannerActivity = (QRCodeScannerActivity) getActivity();
     return mScannerView;
   }
 
+  // TODO: 7/14/17 WAREF - Need to fix crash when app is uninstalled and then reinstalled and then
+  // the first QR scanned after permission is INVENTORY_QR
   private boolean haveCameraPermission() {
     return Build.VERSION.SDK_INT < 23 || getActivity().checkSelfPermission(Manifest.permission.CAMERA)
         == PackageManager.PERMISSION_GRANTED;
@@ -48,8 +54,8 @@ public class QRScannerFragment extends android.app.Fragment implements ZBarScann
   public void onRequestPermissionsResult(int requestCode,
                                          @NonNull String[] permissions,
                                          @NonNull int[] grantResults) {
-    if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
-      switch (requestCode){
+    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+      switch (requestCode) {
         case PERMISSION_REQUEST_CAMERA:
           startCamera();
           break;
@@ -68,7 +74,7 @@ public class QRScannerFragment extends android.app.Fragment implements ZBarScann
   @Override
   public void onResume() {
     super.onResume();
-   startCamera();
+    startCamera();
   }
 
   @Override
@@ -77,8 +83,7 @@ public class QRScannerFragment extends android.app.Fragment implements ZBarScann
     if (rawResult.getContents().contains(QRScannerPresenter.MERCHANT_NAME)) {
       QRCodeScannerActivity qrCodeScannerActivity = (QRCodeScannerActivity) getActivity();
       qrCodeScannerActivity.showTransactionConfirmationScreen(rawResult.getContents());
-    }
-    else{
+    } else {
       resumeScanning();
     }
   }

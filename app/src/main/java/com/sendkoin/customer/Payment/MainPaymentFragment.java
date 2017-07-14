@@ -149,8 +149,6 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment
     recyclerViewPaymentHistory.setHasFixedSize(true);
     mMainPaymentHistoryAdapter = new MainPaymentHistoryAdapter((MainActivity) getActivity());
     recyclerViewPaymentHistory.setAdapter(mMainPaymentHistoryAdapter);
-
-
   }
 
 

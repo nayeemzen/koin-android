@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.sendkoin.customer.Data.Authentication.SessionManager;
 import com.sendkoin.customer.Data.Dagger.Module.AppModule;
 import com.sendkoin.customer.Data.Dagger.Module.NetModule;
+import com.sendkoin.customer.Data.Payments.Local.LocalOrderDataStore;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.Data.Payments.PaymentRepository;
 
@@ -27,6 +28,8 @@ public interface NetComponent {
     PaymentRepository paymentRepository();
 
     LocalPaymentDataStore localPaymentDataStore();
+
+    LocalOrderDataStore localOrderDataStore();
 
     Gson gson();
 

@@ -2,7 +2,6 @@ package com.sendkoin.customer.Payment.QRPayment;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +13,9 @@ import com.sendkoin.api.InventoryItem;
 import com.sendkoin.customer.R;
 import com.squareup.picasso.Picasso;
 
-import net.sourceforge.zbar.Image;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,17 +26,23 @@ import butterknife.ButterKnife;
 
 public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
   public static final int CATEGORY = 0;
-  public static final int INVENTORY = 1;
-  List<QRPaymentListItem> qrPaymentListItems;
-  private Context context;
+  public static final int INVENTORY_ITEM = 1;
 
-  public InventoryRecyclerViewAdapter(List<Category> groupedCategory, Context context) {
-    categoryToQRPaymentItems(groupedCategory);
+  public List<QRPaymentListItem> qrPaymentListItems = new ArrayList<>();
+  private Context context;
+  private InventoryQRPaymentFragment inventoryQRPaymentFragment;
+
+  public InventoryRecyclerViewAdapter(Context context,
+                                      InventoryQRPaymentFragment inventoryQRPaymentFragment) {
+
+    this.inventoryQRPaymentFragment = inventoryQRPaymentFragment;
     this.context = context;
   }
 
+  public void setQrPaymentListItems(List<Category> groupedCategory){
+    categoryToQRPaymentItems(groupedCategory);
+  }
   private void categoryToQRPaymentItems(List<Category> groupedCategory) {
-    qrPaymentListItems = new ArrayList<>();
     for (Category category : groupedCategory) {
       qrPaymentListItems.add(new CategoryQRPaymentListItemItem().setCategoryName(category.category_name));
       for (InventoryItem inventoryItem : category.inventory_items) {
@@ -46,7 +50,10 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             .setItemName(inventoryItem.name)
             .setItemDescription(inventoryItem.description)
             .setItemImageUrl(inventoryItem.image_url)
-            .setItemPrice(inventoryItem.price));
+            .setItemPrice(inventoryItem.price)
+            .setAdditionalNotes(null)
+            .setQuantity(1)
+            .setInventoryItemId(inventoryItem.inventory_item_id));
       }
     }
   }
@@ -67,7 +74,7 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             false);
         viewHolder = new CategoryViewHolder(categoryView);
         break;
-      case INVENTORY:
+      case INVENTORY_ITEM:
         View inventoryView = LayoutInflater.from(context).inflate(
             R.layout.inventory_item,
             parent,
@@ -88,7 +95,7 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         // holder.name = listItems.get(position).name;
         categoryViewHolder.inventoryCategoryNameTextView.setText(categoryQRPaymentListItemItem.categoryName);
         break;
-      case INVENTORY:
+      case INVENTORY_ITEM:
         InventoryItemViewHolder inventoryItemViewHolder = (InventoryItemViewHolder) holder;
         InventoryQRPaymentListItem inventoryQRPaymentListItem =
             (InventoryQRPaymentListItem) qrPaymentListItems.get(position);
@@ -137,10 +144,28 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 
   public class InventoryQRPaymentListItem extends QRPaymentListItem {
 
-    String itemName;
-    String itemDescription;
-    String itemImageUrl;
-    int itemPrice;
+    public String itemName;
+    public String itemDescription;
+    public String itemImageUrl;
+    public int itemPrice;
+    public int quantity;
+    public String additionalNotes;
+    public long inventoryItemId;
+
+    public InventoryQRPaymentListItem setInventoryItemId(long inventoryItemId) {
+      this.inventoryItemId = inventoryItemId;
+      return this;
+    }
+
+    public InventoryQRPaymentListItem setQuantity(int quantity) {
+      this.quantity = quantity;
+      return this;
+    }
+
+    public InventoryQRPaymentListItem setAdditionalNotes(String additionalNotes) {
+      this.additionalNotes = additionalNotes;
+      return this;
+    }
 
     public InventoryQRPaymentListItem setItemName(String itemName) {
       this.itemName = itemName;
@@ -164,7 +189,7 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 
     @Override
     public int getType() {
-      return INVENTORY;
+      return INVENTORY_ITEM;
     }
   }
 
@@ -183,7 +208,8 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 
     @Override
     public void onClick(View view) {
-
+      inventoryQRPaymentFragment
+          .setUpView((InventoryQRPaymentListItem) qrPaymentListItems.get(getAdapterPosition()));
     }
   }
 

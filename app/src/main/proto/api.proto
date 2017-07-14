@@ -220,6 +220,23 @@ message InventoryItem {
     optional string image_url = 6;
 }
 
+/**
+ This proto is only useful on the customer koin app.
+ it holds the order Item that the custome just placed
+
+message CustomerOrderItem {
+    optional uint64 order_item_id = 1;
+    optional string order_id = 2;
+    optional uint64 created_at = 3;
+    optional uint64 updated_at = 4;
+    optional uint64 item_price = 5;
+    optional uint64 item_quantity = 6;
+    optional string item_name = 7;
+    optional string item_description = 8;
+    optional string item_image_url = 9;
+    optional string item_additional_notes = 10;
+}
+*/
 message Category {
     optional uint64 category_id = 1;
     optional string category_name = 2;

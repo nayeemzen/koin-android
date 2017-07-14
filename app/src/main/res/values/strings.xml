@@ -11,6 +11,7 @@
     <string name="login_pitch">Process digital realmTransactions, analyze sales data, increase customer retention. Simple and free.</string>
     <string name="invite_friends_helper">When a friend signs up with your code and links their card you get 1000 points</string>
     <string name="invite_and_earn">Invite and earn!</string>
+    <string name="checkout">Checkout</string>
 
 
 </resources>

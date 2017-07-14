@@ -14,10 +14,16 @@ import com.sendkoin.api.FacebookAuthenticationRequest;
 import com.sendkoin.customer.Data.Authentication.AuthenticationService;
 import com.sendkoin.customer.Data.Authentication.RealSessionManager;
 import com.sendkoin.customer.Data.Authentication.SessionManager;
+import com.sendkoin.customer.Data.Dagger.CustomScope;
+import com.sendkoin.customer.Data.Payments.Local.LocalOrderDataStore;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.Data.Payments.PaymentRepository;
 import com.sendkoin.customer.Data.sql.KoinSQLiteOpenHelper;
 import com.sendkoin.customer.Login.LogoutEvent;
+import com.sendkoin.sql.entities.CurrentOrderEntity;
+import com.sendkoin.sql.entities.CurrentOrderEntitySQLiteTypeMapping;
+import com.sendkoin.sql.entities.InventoryOrderItemEntity;
+import com.sendkoin.sql.entities.InventoryOrderItemEntitySQLiteTypeMapping;
 import com.sendkoin.sql.entities.PaymentEntity;
 import com.sendkoin.sql.entities.PaymentEntitySQLiteTypeMapping;
 
@@ -157,6 +163,12 @@ public class NetModule {
   }
 
   @Provides
+  public LocalOrderDataStore providesLocalOrderDataStore (StorIOSQLite storIOSQLite) {
+    return new LocalOrderDataStore(storIOSQLite);
+  }
+
+
+  @Provides
   Realm providesRealm() {
     return Realm.getDefaultInstance();
   }
@@ -172,6 +184,8 @@ public class NetModule {
     return DefaultStorIOSQLite.builder()
         .sqliteOpenHelper(new KoinSQLiteOpenHelper(application))
         .addTypeMapping(PaymentEntity.class, new PaymentEntitySQLiteTypeMapping())
+        .addTypeMapping(CurrentOrderEntity.class, new CurrentOrderEntitySQLiteTypeMapping())
+        .addTypeMapping(InventoryOrderItemEntity.class, new InventoryOrderItemEntitySQLiteTypeMapping())
         .build();
   }
 

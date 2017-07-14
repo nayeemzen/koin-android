@@ -3,6 +3,8 @@ package com.sendkoin.customer.Payment.QRPayment;
 
 import android.util.Log;
 
+import com.pushtorefresh.storio.sqlite.operations.delete.DeleteResult;
+import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
 import com.sendkoin.api.AcceptTransactionRequest;
 import com.sendkoin.api.GetInventoryResponse;
 import com.sendkoin.api.InitiateStaticTransactionRequest;
@@ -10,17 +12,22 @@ import com.sendkoin.api.QrCode;
 import com.sendkoin.api.SaleItem;
 import com.sendkoin.api.Transaction;
 import com.sendkoin.customer.Data.Payments.InventoryService;
+import com.sendkoin.customer.Data.Payments.Local.LocalOrderDataStore;
 import com.sendkoin.customer.Data.Payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.Data.Payments.PaymentService;
+import com.sendkoin.sql.entities.CurrentOrderEntity;
+import com.sendkoin.sql.entities.InventoryOrderItemEntity;
 
 import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
@@ -35,6 +42,7 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
   private LocalPaymentDataStore localPaymentDataStore;
   private PaymentService paymentService;
   private InventoryService inventoryService;
+  private LocalOrderDataStore localOrderDataStore;
   public static final String MERCHANT_NAME = "merchant_name";
   public static final String SALE_AMOUNT = "sale_amount";
   private CompositeSubscription compositeSubscription = new CompositeSubscription();
@@ -47,12 +55,14 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
   public QRScannerPresenter(QRScannerContract.View view,
                             LocalPaymentDataStore localPaymentDataStore,
                             PaymentService paymentService,
-                            InventoryService inventoryService) {
+                            InventoryService inventoryService,
+                            LocalOrderDataStore localOrderDataStore) {
 
     this.view = view;
     this.localPaymentDataStore = localPaymentDataStore;
     this.paymentService = paymentService;
     this.inventoryService = inventoryService;
+    this.localOrderDataStore = localOrderDataStore;
   }
 
   /**
@@ -105,6 +115,83 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
           }
         });
 
+    compositeSubscription.add(subscription);
+  }
+
+  @Override
+  public void getOrderItems() {
+    Subscription subscription = localOrderDataStore
+        .getCurrentOrder()
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Subscriber<List<InventoryOrderItemEntity>>() {
+          @Override
+          public void onCompleted() {}
+
+          @Override
+          public void onError(Throwable e) {
+            e.printStackTrace();
+          }
+
+          @Override
+          public void onNext(List<InventoryOrderItemEntity> inventoryOrderEntities) {
+            view.handleOrderItems(inventoryOrderEntities);
+          }
+        });
+
+    compositeSubscription.add(subscription);
+  }
+
+  @Override
+  public void putOrder(String qrToken, InventoryRecyclerViewAdapter.InventoryQRPaymentListItem inventoryQRPaymentListItem ) {
+    Subscription subscription = localOrderDataStore
+        .createOrUpdateOrder(qrToken)
+        .flatMap(currentOrderEntity -> localOrderDataStore.createOrUpdateItem(
+            inventoryQRPaymentListItem,
+            currentOrderEntity.getOrderId()))
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Subscriber<PutResult>() {
+          @Override
+          public void onCompleted() {}
+
+          @Override
+          public void onError(Throwable e) {
+            Log.e(TAG, "Error adding inventory order: " + e.getLocalizedMessage());
+            e.printStackTrace();
+          }
+
+          @Override
+          public void onNext(PutResult inventoryOrder) {
+            Log.d(TAG, inventoryOrder.toString());
+          }
+        });
+
+    compositeSubscription.add(subscription);
+  }
+
+  @Override
+  public void removeAllOrders() {
+    Subscription subscription = localOrderDataStore
+        .removeAllOrders()
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Subscriber<DeleteResult>() {
+          @Override
+          public void onCompleted() {
+
+          }
+
+          @Override
+          public void onError(Throwable e) {
+            e.printStackTrace();
+          }
+
+          @Override
+          public void onNext(DeleteResult deleteResult) {
+            Log.d(TAG, deleteResult.toString());
+            view.showOrderDeleted();
+          }
+        });
     compositeSubscription.add(subscription);
   }
 
@@ -197,4 +284,5 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
       return "Declined. Please try again.";
     }
   }
+
 }
