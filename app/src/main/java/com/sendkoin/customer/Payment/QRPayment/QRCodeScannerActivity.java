@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -43,7 +44,8 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
  * Created by warefhaque on 5/23/17.
  */
 
-
+// TODO: 7/14/17 One possible refactoring is keeping the Checkout relative layout in the activity
+// as both the inventory qr and the cofirm order use it
 public class QRCodeScannerActivity extends Activity implements QRScannerContract.View {
 
   private static final String TAG = QRCodeScannerActivity.class.getSimpleName();
@@ -200,6 +202,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
       detailedInventoryFragment.updateItemInformation(inventoryOrderEntities);
     } else if (currentFragment instanceof ConfirmOrderFragment) {
       ConfirmOrderFragment confirmOrderFragment = (ConfirmOrderFragment) currentFragment;
+      confirmOrderFragment.showFinalOrder(inventoryOrderEntities);
     }
   }
 
@@ -260,6 +263,35 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     if (unbinder != null) {
       unbinder.unbind();
     }
+  }
+
+  public void populateCheckoutButton(
+      List<InventoryOrderItemEntity> inventoryOrderEntities,
+      RelativeLayout confirmationlayout,
+      TextView totalAmount,
+      TextView totalNumItems) {
+    confirmationlayout.setVisibility(View.VISIBLE);
+    totalAmount
+        .setText("BDT " +String.valueOf(calculateTotalOrderAmount(inventoryOrderEntities)));
+    totalNumItems.setText(String.valueOf(calculateTotalOrderItems(inventoryOrderEntities)) + " items");
+
+  }
+
+  public int calculateTotalOrderItems(List<InventoryOrderItemEntity> inventoryOrderEntities) {
+    int totalItems = 0;
+    for (InventoryOrderItemEntity inventoryOrderItemEntity : inventoryOrderEntities){
+      totalItems = (totalItems + (inventoryOrderItemEntity.getItemQuantity().intValue()));
+    }
+    return totalItems;
+  }
+
+  public int calculateTotalOrderAmount(List<InventoryOrderItemEntity> inventoryOrderEntities){
+    int totalOrderAmount = 0;
+    for (InventoryOrderItemEntity inventoryOrderItemEntity : inventoryOrderEntities){
+      totalOrderAmount = (totalOrderAmount + (inventoryOrderItemEntity.getItemPrice().intValue()
+          * inventoryOrderItemEntity.getItemQuantity().intValue()));
+    }
+    return totalOrderAmount;
   }
 
 }

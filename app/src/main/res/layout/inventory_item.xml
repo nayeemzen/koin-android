@@ -9,6 +9,20 @@
                 android:padding="10dp"
                 tools:ignore="MissingPrefix">
 
+    <TextView
+        android:id="@+id/order_quantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/inventory_name_tv"
+        android:text="2X"
+        android:layout_marginRight="10dp"
+        android:textSize="18sp"
+        android:textColor="@color/colorPrimary"
+        fontPath="fonts/Nunito-Bold.ttf"
+        android:layout_alignParentLeft="true"
+        android:visibility="gone"
+        />
+
     <ImageView
         android:id="@+id/inventory_item_iv"
         android:layout_width="90dp"
@@ -21,7 +35,7 @@
         fontPath="fonts/Nunito-Bold.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_toRightOf="@+id/order_quantity"
         android:layout_alignTop="@+id/inventory_item_iv"
         android:textSize="17sp"
         android:text="Butter Chicken"/>
@@ -30,7 +44,7 @@
         android:id="@+id/inventory_description_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_alignLeft="@+id/inventory_name_tv"
         android:layout_below="@+id/inventory_name_tv"
         android:layout_marginRight="8dp"
         android:layout_marginTop="5dp"
@@ -43,7 +57,7 @@
         android:id="@+id/inventory_price_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_alignLeft="@+id/inventory_name_tv"
         android:layout_below="@+id/inventory_description_tv"
         android:layout_marginTop="5dp"
         android:text="$ 14.95"

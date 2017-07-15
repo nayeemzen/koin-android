@@ -25,6 +25,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
 
@@ -39,8 +40,6 @@ public class InventoryQRPaymentFragment extends Fragment {
   @BindView(R.id.checkout_amount_text_view) TextView checkoutTotalAmountTextView;
 
   QRCodeScannerActivity qrCodeScannerActivity;
-  private Context context;
-  private InventoryRecyclerViewAdapter.InventoryQRPaymentListItem inventoryQRPaymentListItem;
   public InventoryRecyclerViewAdapter inventoryRecyclerViewAdapter;
 
 
@@ -61,39 +60,23 @@ public class InventoryQRPaymentFragment extends Fragment {
     qrCodeScannerActivity.mPresenter.getOrderItems();
   }
 
+  @OnClick(R.id.checkout_total_order_layout)
+  void clickedCheckout() {
+    ConfirmOrderFragment confirmOrderFragment = new ConfirmOrderFragment();
+    qrCodeScannerActivity.replaceViewWith(confirmOrderFragment);
+  }
+
   public void updateCheckoutView(List<InventoryOrderItemEntity> inventoryOrderEntities) {
     if (inventoryOrderEntities.size() > 0) {
-      populateCheckoutButton(inventoryOrderEntities);
+      qrCodeScannerActivity.populateCheckoutButton(
+          inventoryOrderEntities,
+          checkoutConfirmationLayout,
+          checkoutTotalAmountTextView,
+          checkoutTotalItemsTextView);
     }
-  }
-
-  private void populateCheckoutButton(List<InventoryOrderItemEntity> inventoryOrderEntities) {
-    checkoutConfirmationLayout.setVisibility(View.VISIBLE);
-    checkoutTotalAmountTextView
-        .setText(String.valueOf(calculateTotalOrderAmount(inventoryOrderEntities)));
-    checkoutTotalItemsTextView.setText(String.valueOf(calculateTotalOrderItems(inventoryOrderEntities)));
-
-  }
-
-  private int calculateTotalOrderItems(List<InventoryOrderItemEntity> inventoryOrderEntities) {
-    int totalItems = 0;
-    for (InventoryOrderItemEntity inventoryOrderItemEntity : inventoryOrderEntities){
-      totalItems = (totalItems + (inventoryOrderItemEntity.getItemQuantity().intValue()));
-    }
-    return totalItems;
-  }
-
-  private int calculateTotalOrderAmount(List<InventoryOrderItemEntity> inventoryOrderEntities){
-    int totalOrderamount = 0;
-    for (InventoryOrderItemEntity inventoryOrderItemEntity : inventoryOrderEntities){
-      totalOrderamount = (totalOrderamount + (inventoryOrderItemEntity.getItemPrice().intValue()
-          * inventoryOrderItemEntity.getItemQuantity().intValue()));
-    }
-    return totalOrderamount;
   }
 
   public void setUpRecyclerView() {
-    inventoryRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
     inventoryRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), VERTICAL, false));
     inventoryRecyclerView.setHasFixedSize(true);
     inventoryRecyclerViewAdapter = new InventoryRecyclerViewAdapter(getActivity(),this);

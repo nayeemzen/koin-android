@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="15dp"
+                tools:ignore="MissingPrefix">
+
+    <agency.tango.android.avatarview.views.AvatarView
+        android:id="@+id/merchant_logo"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:layout_centerHorizontal="true"
+        app:av_text_size_percentage="35"/>
+
+
+    <TextView
+        android:id="@+id/merchant_name"
+        fontPath="fonts/Nunito-Regular.ttf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/merchant_logo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:text="Gloria Jeans Coffees"
+        android:textColor="#757575"
+        android:textSize="20sp"
+        />
+
+    <ImageView
+        android:id="@+id/inventory_category_line_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/inventory_category_line"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/merchant_name"
+        android:layout_centerHorizontal="true"/>
+
+</RelativeLayout>
