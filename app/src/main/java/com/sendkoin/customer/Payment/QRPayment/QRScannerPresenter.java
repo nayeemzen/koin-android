@@ -170,7 +170,7 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
   }
 
   @Override
-  public void removeAllOrders() {
+  public void removeAllOrders(boolean orderPlaced) {
     Subscription subscription = localOrderDataStore
         .removeAllOrders()
         .subscribeOn(Schedulers.io())
@@ -189,7 +189,8 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
           @Override
           public void onNext(DeleteResult deleteResult) {
             Log.d(TAG, deleteResult.toString());
-            view.showOrderDeleted();
+            if (!orderPlaced)
+              view.showOrderDeleted(orderPlaced);
           }
         });
     compositeSubscription.add(subscription);

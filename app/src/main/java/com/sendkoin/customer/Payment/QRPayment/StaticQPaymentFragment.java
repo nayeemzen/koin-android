@@ -74,7 +74,8 @@ public class StaticQPaymentFragment extends android.app.Fragment {
       }
       int saleAmount = Integer.parseInt(enterSaleAmount.getText().toString());
 
-      qrCodeScannerActivity.mPresenter.acceptTransaction(qrCodeScannerActivity.qrCode, Collections.singletonList(new SaleItem.Builder()
+      qrCodeScannerActivity.mPresenter.acceptTransaction(qrCodeScannerActivity.qrCode,
+          Collections.singletonList(new SaleItem.Builder()
           .name("One Time Payment")
           .quantity(1)
           .sale_type(SaleItem.SaleType.QUICK_SALE)

@@ -110,6 +110,7 @@ public class ConfirmOrderRecyclerViewAdapter extends RecyclerView.Adapter<Recycl
         break;
       case CONFIRM_ORDER_MERCHANT_ITEM:
         MerchantInfoViewHolder merchantInfoViewHolder = (MerchantInfoViewHolder) holder;
+        merchantInfoViewHolder.divider.setVisibility(View.VISIBLE);
         ConfirmOrderMerchantInfoItem confirmOrderMerchantInfoItem =
             (ConfirmOrderMerchantInfoItem) confirmOrderItems.get(position);
 
@@ -221,6 +222,7 @@ public class ConfirmOrderRecyclerViewAdapter extends RecyclerView.Adapter<Recycl
 
     @BindView(R.id.merchant_logo) AvatarView merchantLogo;
     @BindView(R.id.merchant_name) TextView merchantName;
+    @BindView(R.id.inventory_category_line_iv) ImageView divider;
 
     public MerchantInfoViewHolder(View itemView) {
       super(itemView);

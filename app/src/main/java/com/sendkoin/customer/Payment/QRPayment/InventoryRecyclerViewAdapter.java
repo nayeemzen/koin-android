@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import agency.tango.android.avatarview.IImageLoader;
+import agency.tango.android.avatarview.loader.PicassoLoader;
+import agency.tango.android.avatarview.views.AvatarView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -27,22 +30,30 @@ import butterknife.ButterKnife;
 public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
   public static final int CATEGORY = 0;
   public static final int INVENTORY_ITEM = 1;
+  public static final int MERCHANT_INFO_ITEM = 2;
+  private final QRCodeScannerActivity qrCodeScannerActivity;
 
   public List<QRPaymentListItem> qrPaymentListItems = new ArrayList<>();
   private Context context;
   private InventoryQRPaymentFragment inventoryQRPaymentFragment;
+  private IImageLoader imageLoader;
 
   public InventoryRecyclerViewAdapter(Context context,
                                       InventoryQRPaymentFragment inventoryQRPaymentFragment) {
 
     this.inventoryQRPaymentFragment = inventoryQRPaymentFragment;
     this.context = context;
+    qrCodeScannerActivity = (QRCodeScannerActivity) context;
+    imageLoader = new PicassoLoader();
   }
 
   public void setQrPaymentListItems(List<Category> groupedCategory){
     categoryToQRPaymentItems(groupedCategory);
   }
   private void categoryToQRPaymentItems(List<Category> groupedCategory) {
+    InventoryQRMerchantItem inventoryQRMerchantItem = new InventoryQRMerchantItem()
+        .setMerchantName(qrCodeScannerActivity.name);
+    qrPaymentListItems.add(inventoryQRMerchantItem);
     for (Category category : groupedCategory) {
       qrPaymentListItems.add(new CategoryQRPaymentListItemItem().setCategoryName(category.category_name));
       for (InventoryItem inventoryItem : category.inventory_items) {
@@ -81,6 +92,13 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             false);
         viewHolder = new InventoryItemViewHolder(inventoryView);
         break;
+      case MERCHANT_INFO_ITEM:
+        View merchantView = LayoutInflater.from(context).inflate(
+            R.layout.inventory_qr_merchant_info_item,
+            parent,
+            false);
+        viewHolder = new MerchantInfoViewHolder(merchantView);
+        break;
     }
     return viewHolder;
   }
@@ -116,6 +134,17 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         inventoryItemViewHolder.inventoryItemPriceTextView.setText("BDT " + price);
         // holder.name = listItems.get(position).name;
         break;
+      case MERCHANT_INFO_ITEM:
+        MerchantInfoViewHolder merchantInfoViewHolder = (MerchantInfoViewHolder) holder;
+        merchantInfoViewHolder.divider.setVisibility(View.GONE);
+        InventoryQRMerchantItem inventoryQRMerchantItem =
+            (InventoryQRMerchantItem) qrPaymentListItems.get(position);
+
+        merchantInfoViewHolder.merchantName.setText(inventoryQRMerchantItem.merchantName);
+        imageLoader.loadImage(
+            merchantInfoViewHolder.merchantLogo,
+            (String)null,
+            inventoryQRMerchantItem.merchantName);
     }
   }
 
@@ -220,6 +249,34 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     @BindView(R.id.inventory_category_name_tv) TextView inventoryCategoryNameTextView;
 
     public CategoryViewHolder(View itemView) {
+      super(itemView);
+      ButterKnife.bind(this, itemView);
+    }
+  }
+
+  public class InventoryQRMerchantItem extends QRPaymentListItem {
+
+    String merchantName;
+
+    public InventoryQRMerchantItem setMerchantName(String merchantName) {
+      this.merchantName = merchantName;
+      return this;
+    }
+
+    @Override
+
+    public int getType() {
+      return MERCHANT_INFO_ITEM;
+    }
+  }
+
+  public class MerchantInfoViewHolder extends RecyclerView.ViewHolder {
+
+    @BindView(R.id.merchant_logo) AvatarView merchantLogo;
+    @BindView(R.id.merchant_name) TextView merchantName;
+    @BindView(R.id.inventory_category_line_iv) ImageView divider;
+
+    public MerchantInfoViewHolder(View itemView) {
       super(itemView);
       ButterKnife.bind(this, itemView);
     }

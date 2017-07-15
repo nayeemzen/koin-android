@@ -207,7 +207,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   }
 
   @Override
-  public void showOrderDeleted() {
+  public void showOrderDeleted(boolean orderPlaced) {
     getFragmentManager().beginTransaction()
         .replace(R.id.scanner_fragment_layout, qrScannerFragement)
         .commit();
@@ -241,7 +241,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     pDialog.setCancelText("No").setOnCancelListener(dialogInterface
         -> pDialog.dismiss());
     pDialog.setConfirmText("Yes").setOnDismissListener(dialogInterface
-        -> mPresenter.removeAllOrders());
+        -> mPresenter.removeAllOrders(false));
     pDialog.setTitleText("Would you like to cancel your order?");
     pDialog.setCancelable(false);
     pDialog.show();
@@ -273,7 +273,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     confirmationlayout.setVisibility(View.VISIBLE);
     totalAmount
         .setText("BDT " +String.valueOf(calculateTotalOrderAmount(inventoryOrderEntities)));
-    totalNumItems.setText(String.valueOf(calculateTotalOrderItems(inventoryOrderEntities)) + " items");
+    totalNumItems.setText(String.valueOf(calculateTotalOrderItems(inventoryOrderEntities)) + " Items");
 
   }
 

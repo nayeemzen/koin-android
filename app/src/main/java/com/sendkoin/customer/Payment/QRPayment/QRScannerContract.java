@@ -25,7 +25,7 @@ public interface QRScannerContract {
     void showTransactionError(String errorMessage);
     void showInventoryItems(List<Category> groupedInventoryItems);
     void handleOrderItems(List<InventoryOrderItemEntity> inventoryOrderEntities);
-    void showOrderDeleted();
+    void showOrderDeleted(boolean orderPlaced);
   }
 
   interface Presenter extends BasePresenter {
@@ -33,7 +33,7 @@ public interface QRScannerContract {
     void getInventory(String qrToken);
     void getOrderItems();
     void putOrder(String qrToken, InventoryRecyclerViewAdapter.InventoryQRPaymentListItem inventoryQRPaymentListItem);
-    void removeAllOrders();
+    void removeAllOrders(boolean orderPlaced);
   }
 
 

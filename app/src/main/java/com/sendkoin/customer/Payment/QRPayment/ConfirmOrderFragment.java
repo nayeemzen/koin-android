@@ -11,9 +11,11 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.sendkoin.api.SaleItem;
 import com.sendkoin.customer.R;
 import com.sendkoin.sql.entities.InventoryOrderItemEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import agency.tango.android.avatarview.IImageLoader;
@@ -21,6 +23,7 @@ import agency.tango.android.avatarview.loader.PicassoLoader;
 import agency.tango.android.avatarview.views.AvatarView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
 
@@ -47,6 +50,7 @@ public class ConfirmOrderFragment extends Fragment {
 
   private QRCodeScannerActivity qrCodeScannerActivity;
   private ConfirmOrderRecyclerViewAdapter confirmOrderAdapter;
+  private List<InventoryOrderItemEntity> inventoryOrderEntities;
 
 
   @Nullable
@@ -69,7 +73,26 @@ public class ConfirmOrderFragment extends Fragment {
     qrCodeScannerActivity.mPresenter.getOrderItems();
   }
 
+  @OnClick(R.id.confirm_order_pay_layout)
+  void clickedPay() {
+    List<SaleItem> saleItems = new ArrayList<>();
+    for (InventoryOrderItemEntity inventoryOrderItemEntity : inventoryOrderEntities) {
+      SaleItem saleItem = new SaleItem.Builder()
+          .name(inventoryOrderItemEntity.getItemName())
+          .price(inventoryOrderItemEntity.getItemPrice().intValue())
+          .quantity(inventoryOrderItemEntity.getItemQuantity().intValue())
+          .customer_notes(inventoryOrderItemEntity.getItemAdditionalNotes())
+          .sale_type(SaleItem.SaleType.QUICK_SALE)
+          .build();
+      saleItems.add(saleItem);
+    }
+    qrCodeScannerActivity.mPresenter.acceptTransaction(
+        qrCodeScannerActivity.qrCode,
+        saleItems);
+    qrCodeScannerActivity.mPresenter.removeAllOrders(true);
+  }
   public void showFinalOrder(List<InventoryOrderItemEntity> inventoryOrderEntities) {
+    this.inventoryOrderEntities = inventoryOrderEntities;
     confirmOrderAdapter.setListItems(inventoryOrderEntities);
     confirmOrderAdapter.notifyDataSetChanged();
     qrCodeScannerActivity.populateCheckoutButton(
