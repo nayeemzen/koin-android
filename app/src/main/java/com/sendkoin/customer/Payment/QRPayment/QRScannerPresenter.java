@@ -169,17 +169,24 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
     compositeSubscription.add(subscription);
   }
 
+  /**
+   * ALERT : PASSING IN NULL FOR TRANSACTION WHEN "BACK" IS PRESSED FROM QRScannerActivity
+   * Removes all the entries from the CurrentOrderTable and the InventoryOrderItemTable
+   *
+   * @param transaction = null if called from the QRScannerActivity when back pressed
+   *                    = transaction object when placing the complete order and transitioning to
+   *                    the TransactionDetailsActivity or detailed reciept of the payment.
+   */
+
   @Override
-  public void removeAllOrders(boolean orderPlaced) {
+  public void removeAllOrders(Transaction transaction) {
     Subscription subscription = localOrderDataStore
-        .removeAllOrders()
+        .removeAllOrders(transaction)
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Subscriber<DeleteResult>() {
+        .subscribe(new Subscriber<Transaction>() {
           @Override
-          public void onCompleted() {
-
-          }
+          public void onCompleted() {}
 
           @Override
           public void onError(Throwable e) {
@@ -187,10 +194,9 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
           }
 
           @Override
-          public void onNext(DeleteResult deleteResult) {
-            Log.d(TAG, deleteResult.toString());
-            if (!orderPlaced)
-              view.showOrderDeleted(orderPlaced);
+          public void onNext(Transaction tran) {
+            if (transaction == null)
+              view.showOrderDeleted();
           }
         });
     compositeSubscription.add(subscription);
@@ -207,6 +213,7 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
             localPaymentDataStore.createTransaction(initiateStaticTransactionResponse
                 .order
                 .transaction))
+        .flatMap(transaction -> localOrderDataStore.removeAllOrders(transaction))
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(new Subscriber<Transaction>() {
           @Override

@@ -12,6 +12,7 @@
     <string name="invite_friends_helper">When a friend signs up with your code and links their card you get 1000 points</string>
     <string name="invite_and_earn">Invite and earn!</string>
     <string name="checkout">Checkout</string>
+    <string name="cancel_order_text">Are you sure you want to cancel your order?</string>
 
 
 </resources>

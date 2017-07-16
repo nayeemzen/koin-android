@@ -89,7 +89,6 @@ public class ConfirmOrderFragment extends Fragment {
     qrCodeScannerActivity.mPresenter.acceptTransaction(
         qrCodeScannerActivity.qrCode,
         saleItems);
-    qrCodeScannerActivity.mPresenter.removeAllOrders(true);
   }
   public void showFinalOrder(List<InventoryOrderItemEntity> inventoryOrderEntities) {
     this.inventoryOrderEntities = inventoryOrderEntities;

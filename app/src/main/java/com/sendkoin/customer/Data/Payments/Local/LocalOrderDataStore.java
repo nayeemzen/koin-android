@@ -8,6 +8,7 @@ import com.pushtorefresh.storio.sqlite.operations.delete.DeleteResult;
 import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
 import com.pushtorefresh.storio.sqlite.queries.DeleteQuery;
 import com.pushtorefresh.storio.sqlite.queries.Query;
+import com.sendkoin.api.Transaction;
 import com.sendkoin.customer.Payment.QRPayment.InventoryRecyclerViewAdapter;
 import com.sendkoin.sql.entities.CurrentOrderEntity;
 import com.sendkoin.sql.entities.InventoryOrderItemEntity;
@@ -128,22 +129,23 @@ public class LocalOrderDataStore {
         .asRxObservable();
   }
 
-  public Observable<DeleteResult> removeAllOrders() {
+  public Observable<Transaction> removeAllOrders(Transaction transaction) {
     return storIOSQLite.delete()
         .byQuery(DeleteQuery.builder()
             .table(CurrentOrderTable.TABLE)
             .build())
         .prepare()
         .asRxObservable()
-        .flatMap(deleteResult -> removeAllOrderItems());
+        .flatMap(deleteResult -> removeAllOrderItems(transaction));
   }
 
-  private Observable<DeleteResult> removeAllOrderItems() {
+  private Observable<Transaction> removeAllOrderItems(Transaction transaction) {
     return storIOSQLite.delete()
         .byQuery(DeleteQuery.builder()
             .table(InventoryOrderItemTable.TABLE)
             .build())
         .prepare()
-        .asRxObservable();
+        .asRxObservable()
+        .map(deleteResult -> transaction);
   }
 }

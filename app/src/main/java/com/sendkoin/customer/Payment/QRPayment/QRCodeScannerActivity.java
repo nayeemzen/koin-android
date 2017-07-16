@@ -99,6 +99,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   public String name;
   public String dynamicQRAmount;
   private InventoryQRPaymentFragment inventoryQRPaymentFragment;
+  private List<InventoryOrderItemEntity> currentOrderItems;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -190,9 +191,10 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     }
   }
 
-  // TODO: 7/13/17 (WAREF) you can make an abstract class that extends from Fragment and then you could have on call
+  // TODO: 7/13/17 you can make an abstract class that extends from Fragment and then you could have on call
   @Override
   public void handleOrderItems(List<InventoryOrderItemEntity> inventoryOrderEntities) {
+    this.currentOrderItems = inventoryOrderEntities;
     Fragment currentFragment = getFragmentManager().findFragmentById(R.id.scanner_fragment_layout);
     if (currentFragment instanceof InventoryQRPaymentFragment) {
       InventoryQRPaymentFragment inventoryQRPaymentFragment = (InventoryQRPaymentFragment) currentFragment;
@@ -207,7 +209,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   }
 
   @Override
-  public void showOrderDeleted(boolean orderPlaced) {
+  public void showOrderDeleted() {
     getFragmentManager().beginTransaction()
         .replace(R.id.scanner_fragment_layout, qrScannerFragement)
         .commit();
@@ -226,7 +228,10 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
       Fragment currentFragment = getFragmentManager().findFragmentById(R.id.scanner_fragment_layout);
       if (currentFragment instanceof InventoryQRPaymentFragment) {
-        showOrderCancelDialog();
+        if (currentOrderItems != null && currentOrderItems.size() > 0)
+          showOrderCancelDialog();
+        else
+          getFragmentManager().popBackStack();
       } else if (currentFragment instanceof QRScannerFragment) {
         finish();
       } else {
@@ -238,11 +243,13 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
 
   private void showOrderCancelDialog() {
     pDialog = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE);
-    pDialog.setCancelText("No").setOnCancelListener(dialogInterface
-        -> pDialog.dismiss());
-    pDialog.setConfirmText("Yes").setOnDismissListener(dialogInterface
-        -> mPresenter.removeAllOrders(false));
-    pDialog.setTitleText("Would you like to cancel your order?");
+    pDialog.setCancelText("No").setCancelClickListener(dialogInterface -> pDialog.cancel());
+    pDialog.setConfirmText("Yes").setConfirmClickListener(dialogInterface ->{
+      pDialog.dismissWithAnimation();
+      mPresenter.removeAllOrders(null);
+    });
+    pDialog.setTitleText("Delete Order");
+    pDialog.setContentText(getString(R.string.cancel_order_text));
     pDialog.setCancelable(false);
     pDialog.show();
   }

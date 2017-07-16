@@ -22,6 +22,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.sendkoin.customer.Payment.QRPayment.InventoryRecyclerViewAdapter.*;
+
 /**
  * Created by warefhaque on 7/11/17.
  */
@@ -46,7 +48,9 @@ public class DetailedInventoryFragment extends Fragment {
 
   @Nullable
   @Override
-  public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+  public View onCreateView(LayoutInflater inflater,
+                           @Nullable ViewGroup container,
+                           Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.inventory_detailed_item, container, false);
     ButterKnife.bind(this, view);
     qrCodeScannerActivity = (QRCodeScannerActivity) getActivity();
@@ -78,7 +82,8 @@ public class DetailedInventoryFragment extends Fragment {
 
   @OnClick(R.id.detailed_item_plus)
   void clickedIncreaseAmount(){
-    inventoryQRPaymentListItem.quantity = inventoryQRPaymentListItem.quantity + 1;
+    int currentAmount = Integer.valueOf(detailedItemOrderCount.getText().toString());
+    inventoryQRPaymentListItem.quantity = currentAmount + 1;
     updateViewsAndAdd();
   }
 
@@ -86,7 +91,7 @@ public class DetailedInventoryFragment extends Fragment {
   void clickedReduceAmount(){
     int currentAmount = Integer.valueOf(detailedItemOrderCount.getText().toString());
     if (currentAmount > 1) {
-      inventoryQRPaymentListItem.quantity = inventoryQRPaymentListItem.quantity - 1;
+      inventoryQRPaymentListItem.quantity = currentAmount - 1;
       updateViewsAndAdd();
     }
   }
