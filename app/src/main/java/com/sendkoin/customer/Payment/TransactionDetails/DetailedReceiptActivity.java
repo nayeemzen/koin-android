@@ -31,7 +31,6 @@ import agency.tango.android.avatarview.IImageLoader;
 import agency.tango.android.avatarview.loader.PicassoLoader;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.pedant.SweetAlert.SweetAlertDialog;
 import mehdi.sakout.fancybuttons.FancyButton;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -41,20 +40,17 @@ import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
  * Created by warefhaque on 6/5/17.
  */
 
-public class TransactionDetailsActivity
+public class DetailedReceiptActivity
     extends AppCompatActivity
     implements TransactionDetailsContract.View {
 
-  @Inject
-  TransactionDetailsContract.Presenter mPresenter;
-  @BindView(R.id.sectioned_rv)
-  RecyclerView transactionRecyclerView;
-  IImageLoader imageLoader;
-  AdapterSectionRecycler adapterRecycler;
-  SweetAlertDialog pDialog;
+  @Inject TransactionDetailsContract.Presenter mPresenter;
+  @BindView(R.id.recycler_view_detailed_receipt) RecyclerView mRecyclerView;
 
-  String transactionToken;
-  boolean fromPayment = false;
+  private IImageLoader mImageLoader;
+  private DetailedReceiptAdapter mAdapter;
+  private String mTransactionToken;
+  boolean mFromPayment = false;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,25 +60,25 @@ public class TransactionDetailsActivity
     setUpDagger();
     setUpRecyclerView();
     if (getIntent().hasExtra("transaction_token"))
-      transactionToken = getIntent().getStringExtra("transaction_token");
+      mTransactionToken = getIntent().getStringExtra("transaction_token");
     if (getIntent().hasExtra("from_payment"))
-      fromPayment = getIntent().getBooleanExtra("from_payment", false);
+      mFromPayment = getIntent().getBooleanExtra("from_payment", false);
 
-    imageLoader = new PicassoLoader();
-    mPresenter.fetchTransactionDetails(transactionToken);
+    mImageLoader = new PicassoLoader();
+    mPresenter.fetchTransactionDetails(mTransactionToken);
 
   }
 
   private void setUpRecyclerView() {
-    transactionRecyclerView.setLayoutManager(new LinearLayoutManager(this, VERTICAL, false));
-    transactionRecyclerView.setHasFixedSize(true);
+    mRecyclerView.setLayoutManager(new LinearLayoutManager(this, VERTICAL, false));
+    mRecyclerView.setHasFixedSize(true);
   }
 
   @Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
     if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-      if (fromPayment)
-        startActivity(new Intent(TransactionDetailsActivity.this, MainActivity.class));
+      if (mFromPayment)
+        startActivity(new Intent(DetailedReceiptActivity.this, MainActivity.class));
       else
         finish();
     }
@@ -120,13 +116,13 @@ public class TransactionDetailsActivity
         .setItemName(saleItem.name)
         .setQuantity(saleItem.quantity)).toList();
 
-    List<SectionHeader> sections = new ArrayList<>();
-    sections.add(new SectionHeader()
+    List<DetailedRecieptHeader> sections = new ArrayList<>();
+    sections.add(new DetailedRecieptHeader()
         .setChildList(items)
         .setTransaction(transactionDetail.transaction));
 
-    adapterRecycler = new AdapterSectionRecycler(this, sections, imageLoader);
-    transactionRecyclerView.setAdapter(adapterRecycler);
+    mAdapter = new DetailedReceiptAdapter(this, sections, mImageLoader);
+    mRecyclerView.setAdapter(mAdapter);
   }
 
   public void showQRCodeDialog(Bitmap qrCode) {

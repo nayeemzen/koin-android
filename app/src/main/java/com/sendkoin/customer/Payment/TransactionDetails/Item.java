@@ -1,7 +1,5 @@
 package com.sendkoin.customer.Payment.TransactionDetails;
 
-import com.sendkoin.api.SaleItem;
-
 /**
  * Created by warefhaque on 6/26/17.
  */

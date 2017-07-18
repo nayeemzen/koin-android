@@ -7,10 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sendkoin.api.SaleItem;
-import com.sendkoin.customer.Payment.MainPaymentHistoryAdapter;
 import com.sendkoin.customer.R;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;

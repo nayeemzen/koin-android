@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,7 +21,7 @@ import com.sendkoin.api.Category;
 import com.sendkoin.api.QrCode;
 import com.sendkoin.api.Transaction;
 import com.sendkoin.customer.KoinApplication;
-import com.sendkoin.customer.Payment.TransactionDetails.TransactionDetailsActivity;
+import com.sendkoin.customer.Payment.TransactionDetails.DetailedReceiptActivity;
 import com.sendkoin.customer.R;
 import com.sendkoin.sql.entities.InventoryOrderItemEntity;
 
@@ -49,47 +48,10 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class QRCodeScannerActivity extends Activity implements QRScannerContract.View {
 
   private static final String TAG = QRCodeScannerActivity.class.getSimpleName();
-  @Inject
-  QRScannerContract.Presenter mPresenter;
+  @Inject QRScannerContract.Presenter mPresenter;
+  @Inject Gson mGson;
 
-  @Inject
-  Gson mGson;
-  @BindView(R.id.scanner_fragment_layout)
-  FrameLayout scannerFrameLayout;
-  @BindView(R.id.payment_confirmation_layout)
-  RelativeLayout paymentConfirmationLayout;
-  @BindView(R.id.pay_button)
-  FancyButton payButton;
-  @BindView(R.id.merchant_name)
-  TextView merchantName;
-  @BindView(R.id.sale_amount)
-  TextView saleAmount;
-  @BindView(R.id.enter_sales)
-  EditText enterSaleAmount;
-  @BindView(R.id.confirmation_bar_code)
-  ImageView barCode;
-  @BindView(R.id.merchant_logo)
-  AvatarView merchantLogo;
-  @BindView(R.id.enter_sales_message)
-  TextView enterSalesMessage;
-  @BindView(R.id.done_button)
-  FancyButton doneButton;
-  @BindView(R.id.payment_complete)
-  RelativeLayout paymentCompleteLayout;
-  @BindView(R.id.merchant_logo_pay_complete)
-  AvatarView merchantLogoPaymentComplete;
-  @BindView(R.id.merchant_name_pay_complete)
-  TextView merchant_name_pay_complete;
-  @BindView(R.id.sale_amount_payment_complete)
-  TextView saleAmountPayComplete;
-  @BindView(R.id.payment_in_process_layout)
-  RelativeLayout paymentInProcessLayout;
-  @BindView(R.id.transaction_state_icon)
-  ImageView transactionStateIcon;
-  @BindView(R.id.transaction_state_text)
-  TextView transactionStateText;
-  @BindView(R.id.barcode_image)
-  ImageView barcodeImageView;
+  @BindView(R.id.frame_layout) FrameLayout mFrameLayout;
 
   IImageLoader imageLoader;
   SweetAlertDialog pDialog;
@@ -109,12 +71,9 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     unbinder = ButterKnife.bind(this);
     qrScannerFragement = new QRScannerFragment();
     FragmentTransaction transaction = getFragmentManager().beginTransaction();
-    transaction.add(R.id.scanner_fragment_layout, qrScannerFragement);
+    transaction.add(R.id.frame_layout, qrScannerFragement);
     transaction.commit();
     imageLoader = new PicassoLoader();
-//    mPresenter.removeAllOrderItems();
-//    mPresenter.removeAllOrders();
-
   }
 
   private void setUpDagger() {
@@ -141,11 +100,9 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     return getApplicationContext();
   }
 
-  public void showTransactionConfirmationScreen(String qrContent) {
+  public void showTransactionMethodScreen(String qrContent) {
     this.qrCode = mGson.fromJson(qrContent, QrCode.class);
     name = qrCode.merchant_name;
-    merchantName.setText(qrCode.merchant_name);
-    imageLoader.loadImage(merchantLogo, (String) null, qrCode.merchant_name);
     switch (qrCode.qr_type) {
       case DYNAMIC:
         dynamicQRAmount = qrCode.amount.toString();
@@ -172,7 +129,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
 
   @Override
   public void showTransactionReciept(Transaction transaction) {
-    Intent intent = new Intent(QRCodeScannerActivity.this, TransactionDetailsActivity.class);
+    Intent intent = new Intent(QRCodeScannerActivity.this, DetailedReceiptActivity.class);
     intent.putExtra("transaction_token", transaction.token);
     intent.putExtra("from_payment", true);
     startActivity(intent);
@@ -195,7 +152,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   @Override
   public void handleOrderItems(List<InventoryOrderItemEntity> inventoryOrderEntities) {
     this.currentOrderItems = inventoryOrderEntities;
-    Fragment currentFragment = getFragmentManager().findFragmentById(R.id.scanner_fragment_layout);
+    Fragment currentFragment = getFragmentManager().findFragmentById(R.id.frame_layout);
     if (currentFragment instanceof InventoryQRPaymentFragment) {
       InventoryQRPaymentFragment inventoryQRPaymentFragment = (InventoryQRPaymentFragment) currentFragment;
       inventoryQRPaymentFragment.updateCheckoutView(inventoryOrderEntities);
@@ -211,14 +168,14 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   @Override
   public void showOrderDeleted() {
     getFragmentManager().beginTransaction()
-        .replace(R.id.scanner_fragment_layout, qrScannerFragement)
+        .replace(R.id.frame_layout, qrScannerFragement)
         .commit();
   }
 
 
   public void replaceViewWith(android.app.Fragment fragment) {
     FragmentTransaction transaction = getFragmentManager().beginTransaction();
-    transaction.replace(R.id.scanner_fragment_layout, fragment);
+    transaction.replace(R.id.frame_layout, fragment);
     transaction.addToBackStack(null);
     transaction.commit();
   }
@@ -226,7 +183,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   @Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
     if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-      Fragment currentFragment = getFragmentManager().findFragmentById(R.id.scanner_fragment_layout);
+      Fragment currentFragment = getFragmentManager().findFragmentById(R.id.frame_layout);
       if (currentFragment instanceof InventoryQRPaymentFragment) {
         if (currentOrderItems != null && currentOrderItems.size() > 0)
           showOrderCancelDialog();

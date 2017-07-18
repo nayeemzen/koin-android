@@ -13,7 +13,7 @@ import butterknife.ButterKnife;
  * Created by warefhaque on 6/26/17.
  */
 
-public class ItemViewHolder extends RecyclerView.ViewHolder {
+public class DetailedReceiptSaleItemViewHolder extends RecyclerView.ViewHolder {
   @BindView(R.id.item_name)
   TextView itemName;
   @BindView(R.id.item_price)
@@ -21,7 +21,7 @@ public class ItemViewHolder extends RecyclerView.ViewHolder {
   @BindView(R.id.item_quantity)
   TextView itemQuantity;
 
-  public ItemViewHolder(View itemView) {
+  public DetailedReceiptSaleItemViewHolder(View itemView) {
     super(itemView);
     ButterKnife.bind(this, itemView);
   }

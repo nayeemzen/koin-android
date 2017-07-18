@@ -2,7 +2,6 @@ package com.sendkoin.customer.Payment.QRPayment;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,11 +10,6 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 import me.dm7.barcodescanner.zbar.Result;
 import me.dm7.barcodescanner.zbar.ZBarScannerView;
@@ -82,7 +76,7 @@ public class QRScannerFragment extends android.app.Fragment implements ZBarScann
 
     if (rawResult.getContents().contains(QRScannerPresenter.MERCHANT_NAME)) {
       QRCodeScannerActivity qrCodeScannerActivity = (QRCodeScannerActivity) getActivity();
-      qrCodeScannerActivity.showTransactionConfirmationScreen(rawResult.getContents());
+      qrCodeScannerActivity.showTransactionMethodScreen(rawResult.getContents());
     } else {
       resumeScanning();
     }

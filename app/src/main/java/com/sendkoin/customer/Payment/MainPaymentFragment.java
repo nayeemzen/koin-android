@@ -34,7 +34,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import cn.pedant.SweetAlert.SweetAlertDialog;
 
 import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
 import static com.annimon.stream.Collectors.groupingBy;
@@ -47,28 +46,22 @@ import static com.annimon.stream.Collectors.toList;
 public class MainPaymentFragment extends android.support.v4.app.Fragment
     implements MainPaymentContract.View {
 
-  private static final String TAG = "MainPaymentFragment";
-  public static final String FIRST_TIME = "first_time";
   @Inject MainPaymentContract.Presenter mPresenter;
-  @Inject Gson gson;
+  @Inject Gson mGson;
+  @Inject LocalPaymentDataStore localPaymentDataStore;
 
-  @BindView(R.id.create_payment) FloatingActionButton createPayment;
-  @BindView(R.id.payment_history) RecyclerView recyclerViewPaymentHistory;
-  @BindView(R.id.main_payment_content) CoordinatorLayout mainPaymentContent;
-  @BindView(R.id.no_transactions_text) TextView noTransactionsText;
+  @BindView(R.id.fab_create_payment) FloatingActionButton mFabCreatePayment;
+  @BindView(R.id.recycler_view_main_payment) RecyclerView mRecyclerView;
+  @BindView(R.id.coordinator_layout_main) CoordinatorLayout mCoordinatorLayoutMain;
+  @BindView(R.id.text_no_payments) TextView mTextNotPayments;
 
-  private SweetAlertDialog pDialog;
-  private int lastVisibleItem, totalItemCount;
-  private boolean isLoading;
+  private int mLastVisibleItem, mTotalItemCount; // for the hiding and displaying of the fab
+  private boolean mIsLoading;
+  private Unbinder mUnbinder;
+  private MainPaymentAdapter mMainPaymentAdapter;
+  private int mVisibleThreshold = 1; // for the scrolling detector
 
-  public Unbinder unbinder;
-
-  MainPaymentHistoryAdapter mMainPaymentHistoryAdapter;
-  @Inject
-  LocalPaymentDataStore localPaymentDataStore;
-  private int visibleThreshold = 1;
-
-  enum UIState {
+  private enum UIState {
     PAYMENTS,
     NO_PAYMENTS
   }
@@ -76,13 +69,12 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment
   public void setUiState(UIState uiState) {
     switch (uiState) {
       case PAYMENTS:
-        noTransactionsText.setVisibility(View.GONE);
-        recyclerViewPaymentHistory.setVisibility(View.VISIBLE);
+        mTextNotPayments.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.VISIBLE);
         break;
       case NO_PAYMENTS:
-//        recyclerViewPaymentHistory.setVisibility(View.INVISIBLE);
-        noTransactionsText.setText("You currently have no transactions.");
-        noTransactionsText.setVisibility(View.VISIBLE);
+        mTextNotPayments.setText("You currently have no transactions.");
+        mTextNotPayments.setVisibility(View.VISIBLE);
         break;
 
     }
@@ -109,8 +101,7 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment
   @Override
   public void onDestroyView() {
     super.onDestroyView();
-    unbinder.unbind();
-    mPresenter.closeRealm();
+    mUnbinder.unbind();
   }
 
   @Override
@@ -130,13 +121,13 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment
   @Override
   public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_main_payment, container, false);
-    unbinder = ButterKnife.bind(this, view);
+    mUnbinder = ButterKnife.bind(this, view);
 
     return view;
   }
 
-  @OnClick(R.id.create_payment)
-  public void setCreatePayment(View view) {
+  @OnClick(R.id.fab_create_payment)
+  public void clickedCreatePayment(View view) {
     Intent intent = new Intent(getActivity(), QRCodeScannerActivity.class);
     startActivity(intent);
 
@@ -144,11 +135,11 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment
 
 
   public void setupRecyclerView() {
-    recyclerViewPaymentHistory.addItemDecoration(new DividerItemDecoration(getActivity()));
-    recyclerViewPaymentHistory.setLayoutManager(new LinearLayoutManager(getActivity(), VERTICAL, false));
-    recyclerViewPaymentHistory.setHasFixedSize(true);
-    mMainPaymentHistoryAdapter = new MainPaymentHistoryAdapter((MainActivity) getActivity());
-    recyclerViewPaymentHistory.setAdapter(mMainPaymentHistoryAdapter);
+    mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
+    mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), VERTICAL, false));
+    mRecyclerView.setHasFixedSize(true);
+    mMainPaymentAdapter = new MainPaymentAdapter((MainActivity) getActivity());
+    mRecyclerView.setAdapter(mMainPaymentAdapter);
   }
 
 
@@ -157,9 +148,9 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment
     UIState uiState = (paymentEntities.size() == 0) ? UIState.NO_PAYMENTS : UIState.PAYMENTS;
     setUiState(uiState);
     LinkedHashMap<String, List<PaymentEntity>> payments = groupTransactionsByCreatedAt(paymentEntities);
-    mMainPaymentHistoryAdapter.setGroupedList(payments);
-    mMainPaymentHistoryAdapter.notifyDataSetChanged();
-    isLoading = false;
+    mMainPaymentAdapter.setGroupedList(payments);
+    mMainPaymentAdapter.notifyDataSetChanged();
+    mIsLoading = false;
   }
 
   public LinkedHashMap<String, List<PaymentEntity>> groupTransactionsByCreatedAt(
@@ -200,27 +191,27 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment
 
 
   private void listenForListScroll() {
-    LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerViewPaymentHistory.getLayoutManager();
-    recyclerViewPaymentHistory.addOnScrollListener(new RecyclerView.OnScrollListener() {
+    LinearLayoutManager linearLayoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
+    mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
       @Override
       public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         super.onScrolled(recyclerView, dx, dy);
-        totalItemCount = linearLayoutManager.getItemCount();
-        lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-        if (dy > 0 && createPayment.getVisibility() == View.VISIBLE) {
+        mTotalItemCount = linearLayoutManager.getItemCount();
+        mLastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+        if (dy > 0 && mFabCreatePayment.getVisibility() == View.VISIBLE) {
           // hide the FAB when scrolling down
-          createPayment.hide();
-        } else if (dy < 0 && createPayment.getVisibility() != View.VISIBLE) {
-          createPayment.show();
+          mFabCreatePayment.hide();
+        } else if (dy < 0 && mFabCreatePayment.getVisibility() != View.VISIBLE) {
+          mFabCreatePayment.show();
         }
 
         if (dy > 0) {
-          if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+          if (!mIsLoading && mTotalItemCount <= (mLastVisibleItem + mVisibleThreshold)) {
             if (mPresenter != null) {
-                mPresenter.loadTransactionsFromServer(false);
+              mPresenter.loadTransactionsFromServer(false);
             }
 
-            isLoading = true;
+            mIsLoading = true;
           }
         }
       }

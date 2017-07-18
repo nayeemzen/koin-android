@@ -62,11 +62,10 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-            android:name=".Payment.TransactionDetails.TransactionDetailsActivity"
+            android:name=".Payment.TransactionDetails.DetailedReceiptActivity"
             android:theme="@style/AppTheme.NoActionBar">
 
         </activity>
-        <activity android:name=".Payment.SimpleScannerActivity"/>
         <activity android:name=".Profile.InviteFriendsActivity"/>
     </application>
 

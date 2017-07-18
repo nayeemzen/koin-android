@@ -1,7 +1,6 @@
 package com.sendkoin.customer.Payment.QRPayment;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,13 +12,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.sendkoin.api.Category;
-import com.sendkoin.customer.MainActivity;
-import com.sendkoin.customer.Payment.DividerItemDecoration;
-import com.sendkoin.customer.Payment.MainPaymentHistoryAdapter;
 import com.sendkoin.customer.R;
 import com.sendkoin.sql.entities.InventoryOrderItemEntity;
-
-import org.w3c.dom.Text;
 
 import java.util.List;
 

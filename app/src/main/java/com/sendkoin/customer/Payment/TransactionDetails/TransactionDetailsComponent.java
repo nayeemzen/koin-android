@@ -2,8 +2,6 @@ package com.sendkoin.customer.Payment.TransactionDetails;
 
 import com.sendkoin.customer.Data.Dagger.Component.NetComponent;
 import com.sendkoin.customer.Data.Dagger.CustomScope;
-import com.sendkoin.customer.Payment.MainPaymentFragment;
-import com.sendkoin.customer.Payment.MainPaymentModule;
 
 import dagger.Component;
 
@@ -14,5 +12,5 @@ import dagger.Component;
 @CustomScope
 @Component(dependencies = NetComponent.class, modules = TransactionDetailsModule.class)
 public interface TransactionDetailsComponent {
-  void inject (TransactionDetailsActivity transactionDetailsActivity);
+  void inject (DetailedReceiptActivity detailedReceiptActivity);
 }

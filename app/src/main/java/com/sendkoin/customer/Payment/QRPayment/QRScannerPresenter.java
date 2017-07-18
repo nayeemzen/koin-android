@@ -101,8 +101,7 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(new Subscriber<GetInventoryResponse>() {
           @Override
-          public void onCompleted() {
-          }
+          public void onCompleted() {}
 
           @Override
           public void onError(Throwable e) {
@@ -175,7 +174,7 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
    *
    * @param transaction = null if called from the QRScannerActivity when back pressed
    *                    = transaction object when placing the complete order and transitioning to
-   *                    the TransactionDetailsActivity or detailed reciept of the payment.
+   *                    the DetailedReceiptActivity or detailed reciept of the payment.
    */
 
   @Override

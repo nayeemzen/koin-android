@@ -24,7 +24,7 @@ import mehdi.sakout.fancybuttons.FancyButton;
 /**
  * Created by warefhaque on 6/26/17.
  */
-public class SectionViewHolder extends RecyclerView.ViewHolder{
+public class DetailedReceiptHeaderViewHolder extends RecyclerView.ViewHolder{
 
   @BindView(R.id.merchant_logo_pay_complete) AvatarView merchantLogoPaymentComplete;
   @BindView(R.id.merchant_name_pay_complete) TextView merchant_name_pay_complete;
@@ -37,7 +37,7 @@ public class SectionViewHolder extends RecyclerView.ViewHolder{
   @BindView(R.id.barcode_layout) RelativeLayout barcodeLayout;
   @BindView(R.id.confirmation_code_button) FancyButton confirmationCodeButton;
 
-  public SectionViewHolder(View itemView) {
+  public DetailedReceiptHeaderViewHolder(View itemView) {
     super(itemView);
     ButterKnife.bind(this, itemView);
     setUpConfirmButton();

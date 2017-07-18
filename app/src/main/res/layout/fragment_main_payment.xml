@@ -8,12 +8,12 @@
     <android.support.design.widget.CoordinatorLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/main_payment_content"
+        android:id="@+id/coordinator_layout_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/no_transactions_text"
+            android:id="@+id/text_no_payments"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -24,20 +24,20 @@
             />
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/payment_history"
+            android:id="@+id/recycler_view_main_payment"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
         </android.support.v7.widget.RecyclerView>
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/create_payment"
+            android:id="@+id/fab_create_payment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|right"
             android:layout_margin="16dp"
             android:src="@drawable/paymen_fab"
-            app:layout_anchor="@id/payment_history"
+            app:layout_anchor="@id/recycler_view_main_payment"
             app:layout_anchorGravity="bottom|right|end"/>
 
     </android.support.design.widget.CoordinatorLayout>

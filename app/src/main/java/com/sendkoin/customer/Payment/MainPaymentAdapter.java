@@ -5,11 +5,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.sendkoin.customer.MainActivity;
-import com.sendkoin.customer.Payment.TransactionDetails.TransactionDetailsActivity;
+import com.sendkoin.customer.Payment.TransactionDetails.DetailedReceiptActivity;
 import com.sendkoin.customer.R;
 import com.sendkoin.sql.entities.PaymentEntity;
 
@@ -24,13 +23,13 @@ import butterknife.ButterKnife;
  * Created by warefhaque on 5/26/17.
  */
 
-public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class MainPaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
   private static final String TAG = "MPaymentHistoryAdapter";
   public List<ListItem> groupedList;
   private MainActivity mainActivity;
 
-  public MainPaymentHistoryAdapter(MainActivity mainActivity) {
+  public MainPaymentAdapter(MainActivity mainActivity) {
     this.mainActivity = mainActivity;
     groupedList = new ArrayList<>();
   }
@@ -149,7 +148,7 @@ public class MainPaymentHistoryAdapter extends RecyclerView.Adapter<RecyclerView
       if (clickedItem.getType() == ListItem.TYPE_PAYMENT){
         PaymentItem paymentItem = (PaymentItem) clickedItem;
 
-        Intent intent = new Intent(mainActivity, TransactionDetailsActivity.class);
+        Intent intent = new Intent(mainActivity, DetailedReceiptActivity.class);
         intent.putExtra("transaction_token", paymentItem.getTransactionToken());
         mainActivity.startActivity(intent);
       }

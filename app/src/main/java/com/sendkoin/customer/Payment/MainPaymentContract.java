@@ -16,13 +16,11 @@ public interface MainPaymentContract {
 
   interface View {
     void showPaymentItems(List<PaymentEntity> payments);
-
     Context getApplicationContext();
   }
 
   interface Presenter extends BasePresenter {
     void loadTransactionsFromServer(boolean fetchHistory);
-
     void deleteAllTransactions();
   }
 }
