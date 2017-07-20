@@ -71,7 +71,7 @@ public class NetModule {
 
   /**
    * Provides an OkHTTP client for Retrofit to:
-   * 1. Automatically add the Authorization header using an interceptor.
+   * 1. Automatically add the Authorization header using an interceptor
    * 2. Automatically attempt to fetch a new session token if a 401 unauthorized is returned.
    * Keeps track of number of failed attempts to not bombard the authentication endpoint.
    * Resets failed attempts to 0 when a session token is received successfully.
@@ -86,17 +86,21 @@ public class NetModule {
             .newBuilder()
             .addHeader(AUTHORIZATION, "Bearer " + sessionManager.getSessionToken())
             .build()))
+        // if there is an authentication challenge the authenticator will follow the actions below
         .authenticator((route, response) -> {
 
           int numAttempts = sessionManager.getAuthAttempts();
 
+          // cant try to authenticate anymore log the user out
           if (numAttempts > RealSessionManager.MAX_AUTHORIZATION_ATTEMPTS ||
               sessionManager.getFbAccessToken() == null) {
             sessionManager.putSessionToken(null);
+            // Event broadcasted and can be received by any activity that is active
             EventBus.getDefault().post(new LogoutEvent());
             return null;
           }
 
+          // try to authenticate until you've run out of attempts
           sessionManager.putAuthAttempts(numAttempts + 1);
           AuthenticationResponse authenticationResponse = authenticationService
               .authenticateWithFacebook(new FacebookAuthenticationRequest.Builder()
@@ -111,6 +115,8 @@ public class NetModule {
             sessionManager.putAuthAttempts(0);
           }
 
+          // return the response as specified by the docs for Authenticator i.e. send the proper
+          // "credentials" in the response to the authentication challenge
           return response.request()
               .newBuilder()
               .addHeader(AUTHORIZATION, sessionManager.getSessionToken())

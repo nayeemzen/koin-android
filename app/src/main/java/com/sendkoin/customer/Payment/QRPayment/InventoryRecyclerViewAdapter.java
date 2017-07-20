@@ -40,8 +40,15 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
   private InventoryQRPaymentFragment inventoryQRPaymentFragment;
   private IImageLoader imageLoader;
 
-  public InventoryRecyclerViewAdapter(Context context,
-                                      InventoryQRPaymentFragment inventoryQRPaymentFragment) {
+  /**
+   * TODO: 7/19/17 For passing the information to fragment when an item is clicked you can use an
+   * interface like RecyclerViewClickListener so that its not specific to a type like InventoryQRPayment,
+   * however is it worth considering that this Adapter is custom made for inventory fragment only?
+   */
+
+  public InventoryRecyclerViewAdapter(
+      Context context,
+      InventoryQRPaymentFragment inventoryQRPaymentFragment) {
 
     this.inventoryQRPaymentFragment = inventoryQRPaymentFragment;
     this.context = context;
@@ -49,15 +56,18 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     imageLoader = new PicassoLoader();
   }
 
-  public void setQrPaymentListItems(List<Category> groupedCategory){
+  public void setQrPaymentListItems(List<Category> groupedCategory) {
     categoryToQRPaymentItems(groupedCategory);
   }
+
   private void categoryToQRPaymentItems(List<Category> groupedCategory) {
     InventoryQRMerchantItem inventoryQRMerchantItem = new InventoryQRMerchantItem()
         .setMerchantName(qrCodeScannerActivity.name);
     qrPaymentListItems.add(inventoryQRMerchantItem);
+    // O(n) still
     for (Category category : groupedCategory) {
-      qrPaymentListItems.add(new CategoryQRPaymentListItemItem().setCategoryName(category.category_name));
+      qrPaymentListItems.add(new CategoryQRPaymentListItemItem()
+          .setCategoryName(category.category_name));
       for (InventoryItem inventoryItem : category.inventory_items) {
         qrPaymentListItems.add(new InventoryQRPaymentListItem()
             .setItemName(inventoryItem.name)
@@ -81,24 +91,21 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     RecyclerView.ViewHolder viewHolder = null;
     switch (viewType) {
       case CATEGORY:
-        View categoryView = LayoutInflater.from(context).inflate(
-            R.layout.inventory_header,
-            parent,
-            false);
+        View categoryView = LayoutInflater
+            .from(context)
+            .inflate(R.layout.inventory_header, parent, false);
         viewHolder = new CategoryViewHolder(categoryView);
         break;
       case INVENTORY_ITEM:
-        View inventoryView = LayoutInflater.from(context).inflate(
-            R.layout.inventory_item,
-            parent,
-            false);
+        View inventoryView = LayoutInflater
+            .from(context)
+            .inflate(R.layout.inventory_item, parent, false);
         viewHolder = new InventoryItemViewHolder(inventoryView);
         break;
       case MERCHANT_INFO_ITEM:
-        View merchantView = LayoutInflater.from(context).inflate(
-            R.layout.inventory_qr_merchant_info_item,
-            parent,
-            false);
+        View merchantView = LayoutInflater
+            .from(context)
+            .inflate(R.layout.inventory_qr_merchant_info_item, parent, false);
         viewHolder = new MerchantInfoViewHolder(merchantView);
         break;
     }
@@ -113,7 +120,8 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         CategoryQRPaymentListItemItem categoryQRPaymentListItemItem =
             (CategoryQRPaymentListItemItem) qrPaymentListItems.get(position);
         // holder.name = listItems.get(position).name;
-        categoryViewHolder.inventoryCategoryNameTextView.setText(categoryQRPaymentListItemItem.categoryName);
+        categoryViewHolder.inventoryCategoryNameTextView
+            .setText(categoryQRPaymentListItemItem.categoryName);
         break;
       case INVENTORY_ITEM:
         InventoryItemViewHolder inventoryItemViewHolder = (InventoryItemViewHolder) holder;
@@ -122,12 +130,14 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             (InventoryQRPaymentListItem) qrPaymentListItems.get(position);
 
         //load the image
-        Picasso.with(context)
+        Picasso
+            .with(context)
             .load(inventoryQRPaymentListItem.itemImageUrl)
             .fit()
             .into(inventoryItemViewHolder.inventoryItemImageView);
         //set the name of the item
-        inventoryItemViewHolder.inventoryItemNameTextView.setText(inventoryQRPaymentListItem.itemName);
+        inventoryItemViewHolder.inventoryItemNameTextView
+            .setText(inventoryQRPaymentListItem.itemName);
         // set the description of the item
         inventoryItemViewHolder.inventoryItemDescriptionTextView
             .setText(inventoryQRPaymentListItem.itemDescription);
@@ -142,10 +152,11 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         InventoryQRMerchantItem inventoryQRMerchantItem =
             (InventoryQRMerchantItem) qrPaymentListItems.get(position);
 
-        merchantInfoViewHolder.merchantName.setText(inventoryQRMerchantItem.merchantName);
+        merchantInfoViewHolder.merchantName.
+            setText(inventoryQRMerchantItem.merchantName);
         imageLoader.loadImage(
             merchantInfoViewHolder.merchantLogo,
-            (String)null,
+            (String) null,
             inventoryQRMerchantItem.merchantName);
     }
   }
@@ -225,7 +236,7 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     }
   }
 
-  public class InventoryItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+  class InventoryItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     @BindView(R.id.inventory_item_iv) ImageView inventoryItemImageView;
     @BindView(R.id.inventory_name_tv) TextView inventoryItemNameTextView;
@@ -233,7 +244,7 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     @BindView(R.id.inventory_price_tv) TextView inventoryItemPriceTextView;
     @BindView(R.id.order_quantity) TextView orderQuantity;
 
-    public InventoryItemViewHolder(View itemView) {
+    InventoryItemViewHolder(View itemView) {
       super(itemView);
       ButterKnife.bind(this, itemView);
       itemView.setOnClickListener(this);
@@ -241,12 +252,12 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 
     @Override
     public void onClick(View view) {
-        inventoryQRPaymentFragment
-            .setUpView((InventoryQRPaymentListItem) qrPaymentListItems.get(getAdapterPosition()));
+      inventoryQRPaymentFragment
+          .setUpView((InventoryQRPaymentListItem) qrPaymentListItems.get(getAdapterPosition()));
     }
   }
 
-  public class CategoryViewHolder extends RecyclerView.ViewHolder {
+  class CategoryViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.inventory_category_name_tv) TextView inventoryCategoryNameTextView;
 
@@ -256,7 +267,7 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     }
   }
 
-  public class InventoryQRMerchantItem extends QRPaymentListItem {
+  private class InventoryQRMerchantItem extends QRPaymentListItem {
 
     String merchantName;
 
@@ -272,13 +283,13 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     }
   }
 
-  public class MerchantInfoViewHolder extends RecyclerView.ViewHolder {
+  class MerchantInfoViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.merchant_logo) AvatarView merchantLogo;
     @BindView(R.id.merchant_name) TextView merchantName;
     @BindView(R.id.inventory_category_line_iv) ImageView divider;
 
-    public MerchantInfoViewHolder(View itemView) {
+    MerchantInfoViewHolder(View itemView) {
       super(itemView);
       ButterKnife.bind(this, itemView);
     }
