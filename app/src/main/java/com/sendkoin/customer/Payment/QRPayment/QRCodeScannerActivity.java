@@ -9,9 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,7 +34,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import cn.pedant.SweetAlert.SweetAlertDialog;
-import mehdi.sakout.fancybuttons.FancyButton;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
@@ -110,7 +107,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
         replaceViewWith(dynamicQRPaymentFragment);
         break;
       case STATIC:
-        StaticQPaymentFragment staticQPaymentFragment = new StaticQPaymentFragment();
+        StaticQRPaymentFragment staticQPaymentFragment = new StaticQRPaymentFragment();
         replaceViewWith(staticQPaymentFragment);
         break;
       case INVENTORY_STATIC:

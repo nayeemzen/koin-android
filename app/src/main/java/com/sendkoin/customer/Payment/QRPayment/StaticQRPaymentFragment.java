@@ -25,16 +25,13 @@ import mehdi.sakout.fancybuttons.FancyButton;
  * Created by warefhaque on 7/9/17.
  */
 
-public class StaticQPaymentFragment extends android.app.Fragment {
+public class StaticQRPaymentFragment extends android.app.Fragment {
 
-  @BindView(R.id.pay_button)
-  FancyButton payButton;
-  @BindView(R.id.enter_sales_message)
-  TextView saleAmoutMessage;
-  @BindView(R.id.merchant_logo)
-  AvatarView merchantLogo;
-  @BindView(R.id.enter_sales)
-  EditText enterSaleAmount;
+  @BindView(R.id.pay_button) FancyButton payButton;
+  @BindView(R.id.enter_sales_message) TextView saleAmoutMessage;
+  @BindView(R.id.merchant_logo) AvatarView merchantLogo;
+  @BindView(R.id.enter_sales) EditText enterSaleAmount;
+  @BindView(R.id.merchant_name) TextView merchantName;
 
   QRCodeScannerActivity qrCodeScannerActivity;
 
@@ -48,6 +45,7 @@ public class StaticQPaymentFragment extends android.app.Fragment {
     qrCodeScannerActivity = (QRCodeScannerActivity) getActivity();
     qrCodeScannerActivity.setUpLogo(merchantLogo);
     saleAmoutMessage.setText("Please enter the amount in Taka you wish to pay " + qrCodeScannerActivity.name);
+    merchantName.setText(qrCodeScannerActivity.name);
     return view;
   }
 
