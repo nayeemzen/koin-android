@@ -2,10 +2,10 @@ package com.sendkoin.customer;
 
 import android.app.Application;
 
-import com.sendkoin.customer.Data.Dagger.Component.DaggerNetComponent;
-import com.sendkoin.customer.Data.Dagger.Component.NetComponent;
-import com.sendkoin.customer.Data.Dagger.Module.AppModule;
-import com.sendkoin.customer.Data.Dagger.Module.NetModule;
+import com.sendkoin.customer.data.dagger.Component.DaggerNetComponent;
+import com.sendkoin.customer.data.dagger.Component.NetComponent;
+import com.sendkoin.customer.data.dagger.Module.AppModule;
+import com.sendkoin.customer.data.dagger.Module.NetModule;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;

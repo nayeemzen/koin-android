@@ -13,6 +13,10 @@
     <string name="invite_and_earn">Invite and earn!</string>
     <string name="checkout">Checkout</string>
     <string name="cancel_order_text">Are you sure you want to cancel your order?</string>
+    <string name="static_qr_message">Please enter the amount in Taka you wish to pay</string>
+    <string name="static_qr_valid_input_message">Please enter a valid sale amount</string>
+    <string name="qr_code_bundle_identifier">qr_code</string>
+    <string name="static_qr_transaction_error_message">Could not process transaction. Internal error.</string>
 
 
 </resources>

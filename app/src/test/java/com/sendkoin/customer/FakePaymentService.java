@@ -8,7 +8,7 @@ import com.sendkoin.api.ListTransactionsRequest;
 import com.sendkoin.api.ListTransactionsResponse;
 import com.sendkoin.api.Transaction;
 import com.sendkoin.api.TransactionDetail;
-import com.sendkoin.customer.Data.Payments.PaymentService;
+import com.sendkoin.customer.data.payments.PaymentService;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

@@ -15,22 +15,17 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 
-import com.sendkoin.customer.Data.Authentication.RealSessionManager;
-import com.sendkoin.customer.Data.Authentication.SessionManager;
-import com.sendkoin.customer.Login.LoginActivity;
-import com.sendkoin.customer.Login.LogoutEvent;
-import com.sendkoin.customer.Payment.MainPaymentFragment;
-import com.sendkoin.customer.Profile.MainProfileFragment;
-import com.sendkoin.customer.Transfer.MainTransferFragment;
+import com.sendkoin.customer.data.authentication.SessionManager;
+import com.sendkoin.customer.login.LoginActivity;
+import com.sendkoin.customer.login.LogoutEvent;
+import com.sendkoin.customer.payment.MainPaymentFragment;
+import com.sendkoin.customer.profile.MainProfileFragment;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

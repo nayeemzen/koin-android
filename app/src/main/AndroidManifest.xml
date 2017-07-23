@@ -26,11 +26,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.sendkoin.customer.Payment.QRPayment.QRCodeScannerActivity"
+            android:name="com.sendkoin.customer.payment.makePayment.QRCodeScannerActivity"
             android:theme="@style/AppTheme.QRScanner"/>
-        <activity
-            android:name="com.sendkoin.customer.Payment.QRPayment.PaymentConfirmationActivity"
-            android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen"/>
 
 
         <!--FACEBOOK STARTS HERE -->
@@ -58,15 +55,15 @@
         </activity>
 
         <activity
-            android:name=".Login.LoginActivity"
+            android:name=".login.LoginActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-            android:name=".Payment.TransactionDetails.DetailedReceiptActivity"
+            android:name=".payment.paymentDetails.DetailedReceiptActivity"
             android:theme="@style/AppTheme.NoActionBar">
 
         </activity>
-        <activity android:name=".Profile.InviteFriendsActivity"/>
+        <activity android:name=".profile.InviteFriendsActivity"/>
     </application>
 
 </manifest>
