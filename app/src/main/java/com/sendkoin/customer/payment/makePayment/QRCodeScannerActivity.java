@@ -154,17 +154,9 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   @Override
   public void handleOrderItems(List<InventoryOrderItemEntity> inventoryOrderEntities) {
     this.currentOrderItems = inventoryOrderEntities;
-    Fragment currentFragment = getFragmentManager().findFragmentById(R.id.frame_layout);
-    if (currentFragment instanceof InventoryQRPaymentFragment) {
-      InventoryQRPaymentFragment inventoryQRPaymentFragment = (InventoryQRPaymentFragment) currentFragment;
-      inventoryQRPaymentFragment.updateCheckoutView(inventoryOrderEntities);
-    } else if (currentFragment instanceof DetailedInventoryFragment) {
-      DetailedInventoryFragment detailedInventoryFragment = (DetailedInventoryFragment) currentFragment;
-      detailedInventoryFragment.updateItemInformation(inventoryOrderEntities);
-    } else if (currentFragment instanceof ConfirmOrderFragment) {
-      ConfirmOrderFragment confirmOrderFragment = (ConfirmOrderFragment) currentFragment;
-      confirmOrderFragment.showFinalOrder(inventoryOrderEntities);
-    }
+    PaymentFragment paymentFragment
+        = (PaymentFragment) getFragmentManager().findFragmentById(R.id.frame_layout);
+    paymentFragment.handleCurrentOrderItems(inventoryOrderEntities);
   }
 
   @Override

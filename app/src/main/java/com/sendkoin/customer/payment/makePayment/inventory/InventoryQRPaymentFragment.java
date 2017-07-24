@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.sendkoin.api.Category;
 import com.sendkoin.api.QrCode;
 import com.sendkoin.customer.R;
+import com.sendkoin.customer.payment.makePayment.PaymentFragment;
 import com.sendkoin.customer.payment.makePayment.inventory.confirmInventoryOrder.ConfirmOrderFragment;
 import com.sendkoin.customer.payment.makePayment.QRCodeScannerActivity;
 import com.sendkoin.sql.entities.InventoryOrderItemEntity;
@@ -32,7 +33,7 @@ import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
  * Created by warefhaque on 7/9/17.
  */
 
-public class InventoryQRPaymentFragment extends Fragment {
+public class InventoryQRPaymentFragment extends PaymentFragment {
   @BindView(R.id.inventory_recycler_view) RecyclerView inventoryRecyclerView;
   @BindView(R.id.checkout_total_order_layout) RelativeLayout checkoutConfirmationLayout;
   @BindView(R.id.checkout_num_items_text_view) TextView checkoutTotalItemsTextView;
@@ -87,16 +88,6 @@ public class InventoryQRPaymentFragment extends Fragment {
     qrCodeScannerActivity.replaceViewWith(confirmOrderFragment);
   }
 
-  public void updateCheckoutView(List<InventoryOrderItemEntity> inventoryOrderEntities) {
-    if (inventoryOrderEntities.size() > 0) {
-      qrCodeScannerActivity.populateCheckoutButton(
-          inventoryOrderEntities,
-          checkoutConfirmationLayout,
-          checkoutTotalAmountTextView,
-          checkoutTotalItemsTextView);
-    }
-  }
-
   public void setUpRecyclerView() {
     inventoryRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), VERTICAL, false));
     inventoryRecyclerView.setHasFixedSize(true);
@@ -113,5 +104,16 @@ public class InventoryQRPaymentFragment extends Fragment {
     DetailedInventoryFragment detailedInventoryFragment =
         new DetailedInventoryFragment(qrCodeScannerActivity, inventoryQRPaymentListItem,qrCode);
     qrCodeScannerActivity.replaceViewWith(detailedInventoryFragment);
+  }
+
+  @Override
+  public void handleCurrentOrderItems(List<InventoryOrderItemEntity> inventoryOrderEntities) {
+    if (inventoryOrderEntities.size() > 0) {
+      qrCodeScannerActivity.populateCheckoutButton(
+          inventoryOrderEntities,
+          checkoutConfirmationLayout,
+          checkoutTotalAmountTextView,
+          checkoutTotalItemsTextView);
+    }
   }
 }

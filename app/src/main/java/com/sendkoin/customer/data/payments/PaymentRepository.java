@@ -10,7 +10,11 @@ import rx.Observable;
 
 /**
  * Created by warefhaque on 5/20/17.
+ *
+ * Intended to call on the REMOTE + LOCAL DB through LocalPaymentDataStore.
+ * However in the presenter FLATMAP is used to perform this
  */
+
 
 public class PaymentRepository implements PaymentDataStore {
 

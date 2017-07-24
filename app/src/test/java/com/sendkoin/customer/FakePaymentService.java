@@ -6,6 +6,8 @@ import com.sendkoin.api.InitiateStaticTransactionRequest;
 import com.sendkoin.api.InitiateStaticTransactionResponse;
 import com.sendkoin.api.ListTransactionsRequest;
 import com.sendkoin.api.ListTransactionsResponse;
+import com.sendkoin.api.Merchant;
+import com.sendkoin.api.Order;
 import com.sendkoin.api.Transaction;
 import com.sendkoin.api.TransactionDetail;
 import com.sendkoin.customer.data.payments.PaymentService;
@@ -47,8 +49,29 @@ public class FakePaymentService implements PaymentService {
   }
 
   @Override
-  public Observable<InitiateStaticTransactionResponse> initiateCurrentTransaction(@Body InitiateStaticTransactionRequest initiateStaticTransactionRequest) {
-    return null;
+  public Observable<InitiateStaticTransactionResponse> initiateCurrentTransaction(
+      @Body InitiateStaticTransactionRequest initiateStaticTransactionRequest) {
+
+    //1. build a transaction AND order
+    Transaction transaction = new Transaction.Builder()
+        .created_at(System.currentTimeMillis())
+        .token(initiateStaticTransactionRequest.qr_token)
+        .merchant(new Merchant.Builder()
+            .store_name("Gloria Jeans")
+            .build())
+        .build();
+
+    //2. store the transaction in the map
+    paymentEntityLinkedHashMap.put(initiateStaticTransactionRequest.qr_token, transaction);
+
+    //3. put the transaction in the order and return
+    InitiateStaticTransactionResponse initiateTrabsactionResponse = new InitiateStaticTransactionResponse.Builder()
+        .order(new Order.Builder()
+            .transaction(transaction)
+            .build())
+         .build();
+
+    return Observable.just(initiateTrabsactionResponse);
   }
 
   @Override

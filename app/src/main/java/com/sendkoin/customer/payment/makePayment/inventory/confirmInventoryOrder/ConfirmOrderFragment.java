@@ -14,8 +14,10 @@ import android.widget.TextView;
 import com.sendkoin.api.QrCode;
 import com.sendkoin.api.SaleItem;
 import com.sendkoin.customer.R;
+import com.sendkoin.customer.payment.makePayment.PaymentFragment;
 import com.sendkoin.customer.payment.makePayment.QRCodeScannerActivity;
 import com.sendkoin.sql.entities.InventoryOrderItemEntity;
+import com.sendkoin.sql.entities.PaymentEntity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,7 +43,7 @@ import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
  *
  * These would make it a little bit clunky if you had around 5 types of views in that adapter.
  */
-public class ConfirmOrderFragment extends Fragment {
+public class ConfirmOrderFragment extends PaymentFragment {
 
   @BindView(R.id.confirm_order_recycler_view) RecyclerView confirmOrderRecyclerView;
   @BindView(R.id.confirm_order_pay_layout) RelativeLayout confirmOrderPayLayout;
@@ -72,7 +74,7 @@ public class ConfirmOrderFragment extends Fragment {
 
   private void setUpArguments() throws IOException {
     Bundle arguments = getArguments();
-    byte[] qrCodeBytes = arguments.getByteArray("qr_code");
+    byte[] qrCodeBytes = arguments.getByteArray(getString(R.string.qr_code_bundle_identifier));
     this.qrCode = QrCode.ADAPTER.decode(qrCodeBytes);
   }
 
@@ -84,6 +86,13 @@ public class ConfirmOrderFragment extends Fragment {
 
   @OnClick(R.id.confirm_order_pay_layout)
   void clickedPay() {
+    List<SaleItem> saleItems = convertPaymentEntitiesToSaleItems();
+    qrCodeScannerActivity.mPresenter.acceptTransaction(
+        qrCode,
+        saleItems);
+  }
+
+  private List<SaleItem> convertPaymentEntitiesToSaleItems() {
     List<SaleItem> saleItems = new ArrayList<>();
     for (InventoryOrderItemEntity inventoryOrderItemEntity : inventoryOrderEntities) {
       SaleItem saleItem = new SaleItem.Builder()
@@ -95,20 +104,8 @@ public class ConfirmOrderFragment extends Fragment {
           .build();
       saleItems.add(saleItem);
     }
-    qrCodeScannerActivity.mPresenter.acceptTransaction(
-        qrCode,
-        saleItems);
-  }
-  public void showFinalOrder(List<InventoryOrderItemEntity> inventoryOrderEntities) {
-    this.inventoryOrderEntities = inventoryOrderEntities;
-    confirmOrderAdapter.setListItems(inventoryOrderEntities);
-    confirmOrderAdapter.notifyDataSetChanged();
-    qrCodeScannerActivity.populateCheckoutButton(
-        inventoryOrderEntities,
-        confirmOrderPayLayout,
-        confirmOrderTotalAmount,
-        confirmOrderTotalItems
-    );
+
+    return saleItems;
   }
 
   private void setUpRecyclerView() {
@@ -116,5 +113,20 @@ public class ConfirmOrderFragment extends Fragment {
     confirmOrderRecyclerView.setHasFixedSize(true);
     confirmOrderAdapter = new ConfirmOrderRecyclerViewAdapter(qrCode,this);
     confirmOrderRecyclerView.setAdapter(confirmOrderAdapter);
+  }
+
+  @Override
+  public void handleCurrentOrderItems(List<InventoryOrderItemEntity> inventoryOrderEntities) {
+    this.inventoryOrderEntities = inventoryOrderEntities;
+    confirmOrderAdapter.setListItems(inventoryOrderEntities);
+    confirmOrderAdapter.notifyDataSetChanged();
+
+    // populate the checkout order to finalize the order
+    qrCodeScannerActivity.populateCheckoutButton(
+        inventoryOrderEntities,
+        confirmOrderPayLayout,
+        confirmOrderTotalAmount,
+        confirmOrderTotalItems
+    );
   }
 }

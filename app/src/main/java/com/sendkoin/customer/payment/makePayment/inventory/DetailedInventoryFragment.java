@@ -12,8 +12,10 @@ import android.widget.TextView;
 
 import com.sendkoin.api.QrCode;
 import com.sendkoin.customer.R;
+import com.sendkoin.customer.payment.makePayment.PaymentFragment;
 import com.sendkoin.customer.payment.makePayment.QRCodeScannerActivity;
 import com.sendkoin.sql.entities.InventoryOrderItemEntity;
+import com.sendkoin.sql.entities.PaymentEntity;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -26,7 +28,7 @@ import butterknife.OnClick;
  * Created by warefhaque on 7/11/17.
  */
 
-public class DetailedInventoryFragment extends Fragment {
+public class DetailedInventoryFragment extends PaymentFragment {
 
   private static final String TAG = DetailedInventoryFragment.class.getSimpleName();
   @BindView(R.id.detailed_item_description) TextView detailedItemDescriptionTextView;
@@ -98,6 +100,7 @@ public class DetailedInventoryFragment extends Fragment {
     String newPriceString = String.valueOf(newPrice);
     detailedItemConfirmAmountTextView.setText("$ " + newPriceString);
   }
+
   @OnClick(R.id.detailed_item_confirm_layout)
   void clickedConfirmItem() {
     qrCodeScannerActivity.mPresenter.putOrder(
@@ -112,7 +115,10 @@ public class DetailedInventoryFragment extends Fragment {
     qrCodeScannerActivity.mPresenter.getOrderItems();
   }
 
-  public void updateItemInformation(List<InventoryOrderItemEntity> inventoryOrderEntities){
+
+  //// TODO: 7/23/17 Can refactor to one single type maybe so that don tneed to pass so many arguments to seUpViews
+  @Override
+  public void handleCurrentOrderItems(List<InventoryOrderItemEntity> inventoryOrderEntities) {
     boolean foundOrder = false;
     for (InventoryOrderItemEntity inventoryOrderItemEntity : inventoryOrderEntities) {
       if (inventoryOrderItemEntity.getItemName().equals(inventoryQRPaymentListItem.itemName)){
