@@ -17,6 +17,9 @@
     <string name="static_qr_valid_input_message">Please enter a valid sale amount</string>
     <string name="qr_code_bundle_identifier">qr_code</string>
     <string name="static_qr_transaction_error_message">Could not process transaction. Internal error.</string>
+    <string name="payments_title">Payments</string>
+    <string name="profile_title">Profile</string>
+    <string name="rewards_title">Rewards</string>
 
 
 </resources>

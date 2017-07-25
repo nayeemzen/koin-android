@@ -2,6 +2,7 @@ package com.sendkoin.customer;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,8 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sendkoin.customer.data.authentication.SessionManager;
@@ -22,6 +25,7 @@ import com.sendkoin.customer.login.LoginActivity;
 import com.sendkoin.customer.login.LogoutEvent;
 import com.sendkoin.customer.payment.MainPaymentFragment;
 import com.sendkoin.customer.profile.MainProfileFragment;
+import com.sendkoin.customer.rewards.MainRewardsFragment;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -36,9 +40,8 @@ public class MainActivity extends AppCompatActivity {
     AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
   }
 
-  public static final String PAY = "Pay";
-  public static final String TRANSFER = "Transfer";
-  public static final String PROFILE = "Profile";
+  public static final String SELECTED_FONT_COLOR = "#37B3B8";
+  public static final String UNSELECTED_FONT_COLOR = "#ABB7B7";
 
   @BindView(R.id.main_view_pager)
   ViewPager mMainViewPager;
@@ -106,45 +109,81 @@ public class MainActivity extends AppCompatActivity {
     // connect Tab Layout with View Pager
     mMainTabLayout.setupWithViewPager(mMainViewPager);
 
-    // Declare the view pager fragments
-    final MainPaymentFragment mainPaymentFragment = new MainPaymentFragment();
-    final MainProfileFragment mainProfileFragment = new MainProfileFragment();
-
     mMainViewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
       @Override
       public Fragment getItem(int position) {
         if (position == 0)
-          return mainPaymentFragment;
+          return new MainPaymentFragment();
+        else if (position == 1)
+          return new MainRewardsFragment();
         else
-          return mainProfileFragment;
+          return new MainProfileFragment();
 
       }
 
       @Override
       public int getCount() {
-        return 2;
+        return 3;
       }
 
     });
   }
 
   private void setUpBottomTabs() {
+
+    setUpInitialTabIcons();
     mMainTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
       @Override
       public void onTabSelected(TabLayout.Tab tab) {
         mMainViewPager.setCurrentItem(tab.getPosition());
 
         if (getSupportActionBar() != null) {
-          if (tab.getPosition() == 0)
-            setupActionBar("Payments");
-          else
-            setupActionBar("Profile");
+          ImageView tabIcon = (ImageView) tab.getCustomView().findViewById(R.id.image_tab_payment_selector);
+          TextView tabText = (TextView) tab.getCustomView().findViewById(R.id.text_tab_payment_selector);
+          tabText.setTextColor(Color.parseColor(SELECTED_FONT_COLOR));
+          switch (tab.getPosition()){
+            case 0:
+              setupActionBar(getString(R.string.payments_title));
+              tabIcon.setImageResource(R.drawable.ic_tab_payment_selected);
+              tabText.setText(getString(R.string.payments_title));
+              break;
+            case 1:
+              setupActionBar(getString(R.string.rewards_title));
+              tabIcon.setImageResource(R.drawable.ic_tab_rewards_selected);
+              tabText.setText(getString(R.string.rewards_title));
+              break;
+            case 2:
+              setupActionBar(getString(R.string.profile_title));
+              tabIcon.setImageResource(R.drawable.ic_tab_profile_selected);
+              tabText.setText(getString(R.string.profile_title));
+              break;
+            default:
+              tabIcon.setImageResource(R.drawable.ic_tab_payment_selected);
+              tabText.setText(getString(R.string.payments_title));
+          }
+
         }
       }
 
       @Override
       public void onTabUnselected(TabLayout.Tab tab) {
-
+        ImageView tabIcon = (ImageView) tab.getCustomView().findViewById(R.id.image_tab_payment_selector);
+        TextView tabText = (TextView) tab.getCustomView().findViewById(R.id.text_tab_payment_selector);
+        tabText.setTextColor(Color.parseColor(UNSELECTED_FONT_COLOR));
+        switch (tab.getPosition()) {
+          case 0:
+            tabIcon.setImageResource(R.drawable.ic_tab_payment_unselected);
+            tabText.setText(getString(R.string.payments_title));
+            break;
+          case 1:
+            tabIcon.setImageResource(R.drawable.ic_tab_rewards_unselected);
+            tabText.setText(getString(R.string.rewards_title));
+            break;
+          case 2:
+            tabIcon.setImageResource(R.drawable.ic_tab_profile_unselected);
+            tabText.setText(getString(R.string.profile_title));
+            break;
+        }
       }
 
       @Override
@@ -152,10 +191,33 @@ public class MainActivity extends AppCompatActivity {
 
       }
     });
+  }
 
-    mMainTabLayout.setupWithViewPager(mMainViewPager);
-    mMainTabLayout.getTabAt(0).setIcon(R.drawable.payments_selector);
-    mMainTabLayout.getTabAt(1).setIcon(R.drawable.profile_selector);
+  private void setUpInitialTabIcons() {
+    for (int i = 0; i < mMainTabLayout.getTabCount(); i++) {
+      TabLayout.Tab tab = mMainTabLayout.getTabAt(i);
+      View view = getLayoutInflater().inflate(R.layout.tab_payment_selector, null);
+      ImageView tabIcon = (ImageView) view.findViewById(R.id.image_tab_payment_selector);
+      TextView tabText = (TextView) view.findViewById(R.id.text_tab_payment_selector);
+      tab.setCustomView(view);
+      switch (i) {
+        case 0:
+          tabIcon.setImageResource(R.drawable.ic_tab_payment_selected);
+          tabText.setText(R.string.payments_title);
+          tabText.setTextColor(Color.parseColor(SELECTED_FONT_COLOR));
+          break;
+        case 1:
+          tabIcon.setImageResource(R.drawable.ic_tab_rewards_unselected);
+          tabText.setText(R.string.rewards_title);
+          tabText.setTextColor(Color.parseColor(UNSELECTED_FONT_COLOR));
+          break;
+        case 2:
+          tabIcon.setImageResource(R.drawable.ic_tab_profile_unselected);
+          tabText.setText(R.string.profile_title);
+          tabText.setTextColor(Color.parseColor(UNSELECTED_FONT_COLOR));
+          break;
+      }
+    }
   }
 
   @Override

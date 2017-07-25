@@ -1,4 +1,4 @@
-package com.sendkoin.customer.transfer;
+package com.sendkoin.customer.rewards;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,7 +12,7 @@ import com.sendkoin.customer.R;
  * Created by warefhaque on 5/20/17.
  */
 
-public class MainTransferFragment extends android.support.v4.app.Fragment {
+public class MainRewardsFragment extends android.support.v4.app.Fragment {
 
     @Nullable
     @Override

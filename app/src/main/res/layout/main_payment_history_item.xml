@@ -44,7 +44,7 @@
         app:layout_constraintEnd_toEndOf="@id/payment_constraint_layout"
         app:layout_constraintTop_toTopOf="@+id/payment_place_name"
         android:text="150CAD"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/colorPrimary"
         fontPath="fonts/Nunito-Bold.ttf"
         android:textSize="18sp"/>
 
