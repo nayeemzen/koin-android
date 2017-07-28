@@ -12,6 +12,6 @@
         android:textSize="20sp"
         android:textColor="@color/colorWhiteText"
         android:id="@+id/main_tab_title"
-        fontPath="fonts/Nunito-Bold.ttf"
+        fontPath="fonts/Nunito-Regular.ttf"
         />
 </RelativeLayout>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="MissingPrefix"
+    >
+
+    <com.braintreepayments.cardform.view.SupportedCardTypesView
+        android:id="@+id/view_supported_card_types"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"/>
+
+    <com.braintreepayments.cardform.view.CardForm
+        android:id="@+id/form_cc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="25dp"
+        android:paddingBottom="25dp"
+        android:layout_centerInParent="true"
+        android:paddingRight="25dp">
+
+    </com.braintreepayments.cardform.view.CardForm>
+
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/layout_confirm_add_cc"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_marginBottom="10dp"-->
+        <!--android:layout_marginLeft="10dp"-->
+        <!--android:layout_marginRight="10dp"-->
+        <!--android:background="@color/colorPrimary"-->
+        <!--android:padding="15dp">-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/detailed_item_confirm_text"-->
+            <!--fontPath="fonts/Nunito-Regular.ttf"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--android:text="Scan Card"-->
+            <!--android:textAlignment="center"-->
+            <!--android:textColor="@color/colorWhiteText"-->
+            <!--android:textSize="15sp"/>-->
+    <!--</RelativeLayout>-->
+</RelativeLayout>

@@ -10,12 +10,12 @@
     <application
         android:name="com.sendkoin.customer.KoinApplication"
         android:allowBackup="true"
-        tools:replace = "android:icon"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:replace="android:icon">
         <activity
             android:name="com.sendkoin.customer.MainActivity"
             android:label="@string/title_activity_main"
@@ -64,6 +64,12 @@
 
         </activity>
         <activity android:name=".profile.InviteFriendsActivity"/>
+
+        <activity android:name=".profile.linkCard.LinkCardActivity"
+                  android:theme="@style/AppTheme">
+        </activity>
+
+        <activity android:name=".profile.linkCard.SampleActivity"/>
     </application>
 
 </manifest>

@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import com.sendkoin.customer.MainActivity;
 import com.sendkoin.customer.R;
+import com.sendkoin.customer.profile.linkCard.LinkCardActivity;
+import com.sendkoin.customer.profile.linkCard.SampleActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,6 +107,10 @@ public class ProfileRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
       case TYPE_LINK_CARD:
         ProfileLinkCardViewHolder linkCardViewHolder = (ProfileLinkCardViewHolder) holder;
         ProfileLinkCardHeader linkCardHeader = (ProfileLinkCardHeader) listItems.get(position);
+        linkCardViewHolder.linkCardButton.setOnClickListener(view -> {
+          MainActivity mainActivity = (MainActivity) context;
+          mainActivity.startActivity(new Intent(mainActivity, LinkCardActivity.class));
+        });
         setUpLinkCardbutton(linkCardViewHolder);
         break;
     }

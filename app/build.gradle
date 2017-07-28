@@ -23,7 +23,7 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "com.sendkoin.koincustomer"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -165,6 +165,16 @@ dependencies {
 
     // Sectioned Recycler View adapter
     compile 'com.github.IntruderShanky:Sectioned-RecyclerView:2.1.1'
+
+    // Card io
+    compile 'io.card:android-sdk:5.5.1'
+
+    // braintree cc form
+    compile 'com.braintreepayments:card-form:3.0.6'
+
+    // Joda Time
+    compile 'net.danlew:android.joda:2.9.9'
+
 
 }
 
