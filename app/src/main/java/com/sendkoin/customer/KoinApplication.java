@@ -45,7 +45,7 @@ public class KoinApplication extends Application {
 
     LockManager<PinConfirmationActivity> lockManager = LockManager.getInstance();
     lockManager.enableAppLock(this, PinConfirmationActivity.class);
-    lockManager.getAppLock().setLogoId(R.drawable.ic_tab_payment_selected);
+    lockManager.getAppLock().setLogoId(R.drawable.ic_pin_confirmation_logo);
     lockManager.getAppLock().setTimeout(1000);
   }
 

@@ -142,6 +142,11 @@ public class PinConfirmationActivity extends AppLockActivity implements PinConfi
   }
 
   @Override
+  public int getContentView() {
+    return R.layout.activity_pin_confirmation;
+  }
+
+  @Override
   public void finish() {
     super.finish();
     //If code successful, reset the timer
