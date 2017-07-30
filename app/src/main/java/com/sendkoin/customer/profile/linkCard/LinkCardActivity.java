@@ -68,6 +68,15 @@ public class LinkCardActivity extends AppCompatActivity
     JodaTimeAndroid.init(this);
     mSupportedCardTypesView.setSupportedCardTypes(SUPPORTED_CARD_TYPES);
 
+    setUpCreditCardForm();
+    if (getSupportActionBar()!=null) {
+      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+      getSupportActionBar().setTitle("Add Card Details");
+    }
+
+  }
+
+  private void setUpCreditCardForm() {
     mCardForm.cardRequired(true)
         .expirationRequired(true)
         .cvvRequired(true)
@@ -82,11 +91,6 @@ public class LinkCardActivity extends AppCompatActivity
     mCardForm.getPostalCodeEditText().setInputType(InputType.TYPE_CLASS_NUMBER);
     mCardForm.getPostalCodeEditText().setFilters(
         new InputFilter[] {new InputFilter.LengthFilter(MAX_POSTAL_CODE_LEN)});
-    if (getSupportActionBar()!=null) {
-      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-      getSupportActionBar().setTitle("Add Card Details");
-    }
-
   }
 
   /**

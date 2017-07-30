@@ -21,6 +21,7 @@ import com.sendkoin.sql.entities.PaymentEntity;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -87,9 +88,7 @@ public class ConfirmOrderFragment extends PaymentFragment {
   @OnClick(R.id.confirm_order_pay_layout)
   void clickedPay() {
     List<SaleItem> saleItems = convertPaymentEntitiesToSaleItems();
-    qrCodeScannerActivity.mPresenter.acceptTransaction(
-        qrCode,
-        saleItems);
+    qrCodeScannerActivity.showpinConfirmationActivity(qrCode, saleItems);
   }
 
   private List<SaleItem> convertPaymentEntitiesToSaleItems() {

@@ -2,6 +2,7 @@ package com.sendkoin.customer.payment.makePayment;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,6 +11,11 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.github.orangegangsters.lollipin.lib.managers.AppLock;
+import com.sendkoin.customer.payment.ScannerActivity;
+
+import java.util.Scanner;
 
 import me.dm7.barcodescanner.zbar.Result;
 import me.dm7.barcodescanner.zbar.ZBarScannerView;
@@ -21,7 +27,6 @@ import me.dm7.barcodescanner.zbar.ZBarScannerView;
 public class QRScannerFragment extends android.app.Fragment implements ZBarScannerView.ResultHandler {
   private ZBarScannerView mScannerView;
   public static final int PERMISSION_REQUEST_CAMERA = 1;
-  QRCodeScannerActivity qrCodeScannerActivity;
 
   @SuppressLint("NewApi")
   @Nullable
@@ -33,7 +38,6 @@ public class QRScannerFragment extends android.app.Fragment implements ZBarScann
     mScannerView = new ZBarScannerView(getActivity());
     if (!haveCameraPermission())
       requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CAMERA);
-    qrCodeScannerActivity = (QRCodeScannerActivity) getActivity();
     return mScannerView;
   }
 
@@ -75,8 +79,11 @@ public class QRScannerFragment extends android.app.Fragment implements ZBarScann
   public void handleResult(Result rawResult) {
 
     if (rawResult.getContents().contains(QRScannerPresenter.MERCHANT_NAME)) {
-      QRCodeScannerActivity qrCodeScannerActivity = (QRCodeScannerActivity) getActivity();
-      qrCodeScannerActivity.showTransactionMethodScreen(rawResult.getContents());
+      ScannerActivity scannerActivity = (ScannerActivity) getActivity();
+      Intent intent = new Intent(scannerActivity, QRCodeScannerActivity.class);
+      intent.putExtra(AppLock.EXTRA_TYPE, AppLock.UNLOCK_PIN);
+      intent.putExtra("qr_string", rawResult.getContents());
+      startActivity(intent);
     } else {
       resumeScanning();
     }

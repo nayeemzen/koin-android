@@ -73,7 +73,7 @@ public class DynamicQRPaymentFragment extends android.app.Fragment {
 
   @OnClick(R.id.pay_button)
   void payClicked(){
-    ((QRCodeScannerActivity) getActivity()).mPresenter
-        .acceptTransaction(qrCode, Collections.emptyList());
+    ((QRCodeScannerActivity) getActivity())
+        .showpinConfirmationActivity(qrCode, Collections.emptyList());
   }
 }

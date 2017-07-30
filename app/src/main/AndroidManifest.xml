@@ -70,6 +70,10 @@
         </activity>
 
         <activity android:name=".profile.linkCard.SampleActivity"/>
+
+        <activity android:name=".payment.ScannerActivity"/>
+
+        <activity android:name=".payment.makePayment.pinConfirmation.PinConfirmationActivity"/>
     </application>
 
 </manifest>

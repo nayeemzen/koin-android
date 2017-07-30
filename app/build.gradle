@@ -175,6 +175,13 @@ dependencies {
     // Joda Time
     compile 'net.danlew:android.joda:2.9.9'
 
+    //Lollipin
+    compile ('com.github.orangegangsters:lollipin:2.0.0@aar') {
+        transitive = true
+    }
+
+    compile 'uk.me.lewisdeane.ldialogs:ldialogs:1.2.0@aar'
+
 
 }
 

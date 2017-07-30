@@ -10,10 +10,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.github.orangegangsters.lollipin.lib.managers.AppLock;
 import com.sendkoin.customer.MainActivity;
 import com.sendkoin.customer.R;
+import com.sendkoin.customer.payment.makePayment.pinConfirmation.PinConfirmationActivity;
 import com.sendkoin.customer.profile.linkCard.LinkCardActivity;
-import com.sendkoin.customer.profile.linkCard.SampleActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ public class ProfileRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
   public static final int TYPE_HEADER = 0;
   public static final int TYPE_ITEM = 1;
   public static final int TYPE_LINK_CARD = 2;
+  private static final int REQUEST_CODE_ENABLE = 11;
   public List<ProfileListItem> listItems;
   private Context context;
 
@@ -57,6 +59,10 @@ public class ProfileRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         .setType(TYPE_ITEM));
     listItems.add(new ProfileChild()
         .setTitle("Account Settings")
+        .setIconId(R.drawable.ic_noun_account_settings)
+        .setType(TYPE_ITEM));
+    listItems.add(new ProfileChild()
+        .setTitle("Enable Pin")
         .setIconId(R.drawable.ic_noun_account_settings)
         .setType(TYPE_ITEM));
     listItems.add(new ProfileSectionHeader()
@@ -225,10 +231,15 @@ public class ProfileRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     public void onClick(View view) {
       if (listItems.get(getAdapterPosition()).getType() == TYPE_ITEM){
         ProfileChild profileChild = (ProfileChild) listItems.get(getAdapterPosition());
+        MainActivity mainActivity = ((MainActivity) context);
         switch (profileChild.title){
           case "Invite Friends":
-            MainActivity mainActivity = ((MainActivity) context);
             mainActivity.startActivity(new Intent(mainActivity, InviteFriendsActivity.class));
+            break;
+          case "Enable Pin":
+            Intent intent = new Intent(mainActivity, PinConfirmationActivity.class);
+            intent.putExtra(AppLock.EXTRA_TYPE, AppLock.ENABLE_PINLOCK);
+            mainActivity.startActivityForResult(intent, REQUEST_CODE_ENABLE);
             break;
         }
       }

@@ -1,5 +1,6 @@
 package com.sendkoin.customer.payment.makePayment.staticQr;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,10 +11,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.orangegangsters.lollipin.lib.managers.AppLock;
 import com.sendkoin.api.QrCode;
 import com.sendkoin.api.SaleItem;
 import com.sendkoin.customer.R;
 import com.sendkoin.customer.payment.makePayment.QRCodeScannerActivity;
+import com.sendkoin.customer.payment.makePayment.pinConfirmation.PinConfirmationActivity;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -80,9 +83,10 @@ public class StaticQPaymentFragment extends android.app.Fragment {
       Toast.makeText(getActivity(), R.string.static_qr_valid_input_message, Toast.LENGTH_SHORT).show();
       return;
     }
+
     // process payment
     int saleAmount = Integer.parseInt(enterSaleAmount.getText().toString());
-    ((QRCodeScannerActivity) getActivity()).mPresenter.acceptTransaction(
+    ((QRCodeScannerActivity) getActivity()).showpinConfirmationActivity(
         qrCode,
         Collections.singletonList(
             new SaleItem.Builder()

@@ -128,7 +128,7 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment
 
   @OnClick(R.id.fab_create_payment)
   public void clickedCreatePayment(View view) {
-    Intent intent = new Intent(getActivity(), QRCodeScannerActivity.class);
+    Intent intent = new Intent(getActivity(), ScannerActivity.class);
     startActivity(intent);
 
   }

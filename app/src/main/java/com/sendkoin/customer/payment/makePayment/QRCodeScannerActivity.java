@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -14,11 +15,20 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.orangegangsters.lollipin.lib.PinActivity;
+import com.github.orangegangsters.lollipin.lib.PinCompatActivity;
+import com.github.orangegangsters.lollipin.lib.managers.AppLock;
 import com.google.gson.Gson;
+import com.sendkoin.api.AcceptTransactionRequest;
 import com.sendkoin.api.Category;
+import com.sendkoin.api.InitiateDynamicTransactionRequest;
+import com.sendkoin.api.InitiateStaticTransactionRequest;
 import com.sendkoin.api.QrCode;
+import com.sendkoin.api.QrType;
+import com.sendkoin.api.SaleItem;
 import com.sendkoin.api.Transaction;
 import com.sendkoin.customer.KoinApplication;
+import com.sendkoin.customer.payment.makePayment.pinConfirmation.PinConfirmationActivity;
 import com.sendkoin.customer.payment.paymentDetails.DetailedReceiptActivity;
 import com.sendkoin.customer.R;
 import com.sendkoin.customer.payment.makePayment.dynamicQr.DynamicQRPaymentFragment;
@@ -29,6 +39,7 @@ import com.sendkoin.customer.payment.makePayment.staticQr.StaticQPaymentFragment
 import com.sendkoin.sql.entities.InventoryOrderItemEntity;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -50,6 +61,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class QRCodeScannerActivity extends Activity implements QRScannerContract.View {
 
   private static final String TAG = QRCodeScannerActivity.class.getSimpleName();
+  private static final int REQUEST_CODE_ENABLE = 11;
   @Inject public QRScannerContract.Presenter mPresenter;
   @Inject Gson mGson;
 
@@ -57,7 +69,6 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
 
   IImageLoader imageLoader;
   SweetAlertDialog pDialog;
-  QRScannerFragment qrScannerFragement;
   private Unbinder unbinder;
   private InventoryQRPaymentFragment inventoryQRPaymentFragment;
   private List<InventoryOrderItemEntity> currentOrderItems;
@@ -68,14 +79,18 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     setContentView(R.layout.activity_qrscanner);
     setUpDagger();
     unbinder = ButterKnife.bind(this);
-    qrScannerFragement = new QRScannerFragment();
-    FragmentTransaction transaction = getFragmentManager().beginTransaction();
-    transaction.add(R.id.frame_layout, qrScannerFragement);
-    transaction.commit();
     imageLoader = new PicassoLoader();
   }
 
-  private void setUpDagger() {
+  @Override
+  protected void onResume() {
+    super.onResume();
+    if (getIntent().hasExtra("qr_string")) {
+      showTransactionMethodScreen(getIntent().getStringExtra("qr_string"));
+    }
+  }
+
+  void setUpDagger() {
     DaggerQRComponent.builder().netComponent(((KoinApplication) getApplication()
         .getApplicationContext())
         .getNetComponent())
@@ -100,6 +115,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   }
 
   public void showTransactionMethodScreen(String qrContent) {
+
     QrCode qrCode = mGson.fromJson(qrContent, QrCode.class);
     Bundle bundle = new Bundle();
     bundle.putByteArray(getString(R.string.qr_code_bundle_identifier), QrCode.ADAPTER.encode(qrCode));
@@ -161,9 +177,9 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
 
   @Override
   public void showOrderDeleted() {
-    getFragmentManager().beginTransaction()
-        .replace(R.id.frame_layout, qrScannerFragement)
-        .commit();
+//    getFragmentManager().beginTransaction()
+//        .replace(R.id.frame_layout, qrScannerFragement)
+//        .commit();
   }
 
 
@@ -182,7 +198,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
         if (currentOrderItems != null && currentOrderItems.size() > 0)
           showOrderCancelDialog();
         else
-          getFragmentManager().popBackStack();
+          finish();
       } else if (currentFragment instanceof QRScannerFragment) {
         finish();
       } else {
@@ -205,9 +221,6 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     pDialog.show();
   }
 
-  /**
-   * Not using onResume to subscribe as the Fragment with the scanner does that
-   */
 
   @Override
   protected void onPause() {
@@ -250,6 +263,34 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
           * inventoryOrderItemEntity.getItemQuantity().intValue()));
     }
     return totalOrderAmount;
+  }
+
+  public void showpinConfirmationActivity(QrCode qrCode, List<SaleItem> saleItemList) {
+
+    Bundle bundle = new Bundle();
+    bundle.putByteArray(QrType.class.getSimpleName(), QrType.ADAPTER.encode(qrCode.qr_type));
+    if (qrCode.qr_type == QrType.DYNAMIC) {
+      AcceptTransactionRequest acceptTransactionRequest =
+          new AcceptTransactionRequest.Builder()
+              .idempotence_token(UUID.randomUUID().toString())
+              .qr_token(qrCode.qr_token)
+              .build();
+      bundle.putByteArray(
+          AcceptTransactionRequest.class.getSimpleName(),
+          AcceptTransactionRequest.ADAPTER.encode(acceptTransactionRequest));
+    } else {
+      InitiateStaticTransactionRequest initiateStaticTransactionRequest =
+          new InitiateStaticTransactionRequest.Builder()
+              .sale_items(saleItemList)
+              .qr_token(qrCode.qr_token)
+              .build();
+      bundle.putByteArray(
+          InitiateStaticTransactionRequest.class.getSimpleName(),
+          InitiateStaticTransactionRequest.ADAPTER.encode(initiateStaticTransactionRequest));
+    }
+    Intent intent = new Intent(QRCodeScannerActivity.this, PinConfirmationActivity.class);
+    intent.putExtra(getString(R.string.bundle_id_sale_summary), bundle);
+    startActivity(intent);
   }
 
 }

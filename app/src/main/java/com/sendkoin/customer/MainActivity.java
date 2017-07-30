@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sendkoin.customer.data.authentication.SessionManager;
 import com.sendkoin.customer.login.LoginActivity;
@@ -36,6 +37,8 @@ import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MainActivity extends AppCompatActivity {
+  private static final int REQUEST_CODE_ENABLE = 11;
+
   static {
     AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
   }
@@ -244,5 +247,15 @@ public class MainActivity extends AppCompatActivity {
   @Subscribe(threadMode = ThreadMode.MAIN)
   public void onLogoutRecieved(LogoutEvent logoutEvent) {
     startActivity(new Intent(MainActivity.this, LoginActivity.class));
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    switch (requestCode){
+      case REQUEST_CODE_ENABLE:
+        Toast.makeText(this, "PinCode enabled", Toast.LENGTH_SHORT).show();
+        break;
+    }
   }
 }
