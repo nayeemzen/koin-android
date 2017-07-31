@@ -8,6 +8,13 @@
     tools:context="com.sendkoin.customer.MainActivity"
     android:animateLayoutChanges="true">
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_above="@+id/main_tab_layout"
+        android:background="@drawable/tab_layout_shadow"/>
+
+
     <android.support.design.widget.TabLayout
         android:id="@+id/main_tab_layout"
         android:layout_width="match_parent"

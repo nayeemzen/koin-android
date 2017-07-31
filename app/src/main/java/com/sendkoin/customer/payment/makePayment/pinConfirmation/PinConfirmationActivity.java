@@ -48,6 +48,8 @@ public class PinConfirmationActivity extends AppLockActivity implements PinConfi
     super.onCreate(savedInstanceState);
     // link the presenter, View and the modules required
     setUpDagger();
+    // this variable is responsible for patching a bug in the pin library that calls the on
+    // in success twice and hence allows for duplicate transactions
     pinSuccessCount = 0;
   }
 
@@ -119,30 +121,42 @@ public class PinConfirmationActivity extends AppLockActivity implements PinConfi
     if (getIntent().hasExtra(getString(R.string.bundle_id_sale_summary)) && pinSuccessCount == 1) {
       Bundle bundle = getIntent().getBundleExtra(getString(R.string.bundle_id_sale_summary));
 
-      pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
-      pDialog.getProgressHelper().setBarColor(Color.parseColor("#37b3b8"));
-      pDialog.setTitleText("Processing Payment");
-      pDialog.setCancelable(false);
-      pDialog.show();
+      showLoadingDialog();
       try {
         QrType qrType = QrType.ADAPTER.decode(bundle.getByteArray(QrType.class.getSimpleName()));
         if (qrType == QrType.DYNAMIC) {
-          byte[] accepTransactionRequestByteArray =
-              bundle.getByteArray(AcceptTransactionRequest.class.getSimpleName());
-          AcceptTransactionRequest acceptTransactionRequest =
-              AcceptTransactionRequest.ADAPTER.decode(accepTransactionRequestByteArray);
-          mPresenter.processDynamicTransactionRequest(acceptTransactionRequest);
+          processDynamicTransaction(bundle);
         } else {
-          byte[] initiateStaticTransactionByteArray =
-              bundle.getByteArray(InitiateStaticTransactionRequest.class.getSimpleName());
-          InitiateStaticTransactionRequest initiateStaticTransactionRequest =
-              InitiateStaticTransactionRequest.ADAPTER.decode(initiateStaticTransactionByteArray);
-          mPresenter.processStaticTransactionRequest(initiateStaticTransactionRequest);
+          processStaticTransaction(bundle);
         }
       } catch (IOException e) {
         e.printStackTrace();
       }
     }
+  }
+
+  private void processStaticTransaction(Bundle bundle) throws IOException {
+    byte[] initiateStaticTransactionByteArray =
+        bundle.getByteArray(InitiateStaticTransactionRequest.class.getSimpleName());
+    InitiateStaticTransactionRequest initiateStaticTransactionRequest =
+        InitiateStaticTransactionRequest.ADAPTER.decode(initiateStaticTransactionByteArray);
+    mPresenter.processStaticTransactionRequest(initiateStaticTransactionRequest);
+  }
+
+  private void processDynamicTransaction(Bundle bundle) throws IOException {
+    byte[] accepTransactionRequestByteArray =
+        bundle.getByteArray(AcceptTransactionRequest.class.getSimpleName());
+    AcceptTransactionRequest acceptTransactionRequest =
+        AcceptTransactionRequest.ADAPTER.decode(accepTransactionRequestByteArray);
+    mPresenter.processDynamicTransactionRequest(acceptTransactionRequest);
+  }
+
+  private void showLoadingDialog() {
+    pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+    pDialog.getProgressHelper().setBarColor(Color.parseColor("#37b3b8"));
+    pDialog.setTitleText("Processing Payment");
+    pDialog.setCancelable(false);
+    pDialog.show();
   }
 
   @Override
@@ -157,10 +171,12 @@ public class PinConfirmationActivity extends AppLockActivity implements PinConfi
 
   @Override
   public void finish() {
-    //If code successful, reset the timer
-    if (!getIntent().hasExtra(getString(R.string.bundle_id_sale_summary))) {
+      // pinSuccessCount < 1 is so that the user can press back when from this screen
+      // as that calls finish as well
+      if (!getIntent().hasExtra(getString(R.string.bundle_id_sale_summary))
+          || pinSuccessCount < 1) {
         super.finish();
-    }
+      }
   }
 
   @Override
@@ -184,18 +200,8 @@ public class PinConfirmationActivity extends AppLockActivity implements PinConfi
   }
 
   @Override
-  protected void onResume() {
-    super.onResume();
-  }
-
-  @Override
-  protected void onPause() {
-    super.onPause();
-  }
-
-  @Override
   public void showTransactionError(String errorMessage) {
-
+    Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
   }
 
 }

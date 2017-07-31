@@ -1,6 +1,7 @@
 package com.sendkoin.customer;
 
 import android.app.Application;
+import android.widget.TabHost;
 
 import com.github.orangegangsters.lollipin.lib.managers.LockManager;
 import com.sendkoin.customer.data.dagger.Component.DaggerNetComponent;
@@ -8,6 +9,7 @@ import com.sendkoin.customer.data.dagger.Component.NetComponent;
 import com.sendkoin.customer.data.dagger.Module.AppModule;
 import com.sendkoin.customer.data.dagger.Module.NetModule;
 import com.sendkoin.customer.payment.makePayment.pinConfirmation.PinConfirmationActivity;
+import com.sendkoin.customer.profile.EnablePinActivity;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;

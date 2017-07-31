@@ -74,6 +74,8 @@
         <activity android:name=".payment.ScannerActivity"/>
 
         <activity android:name=".payment.makePayment.pinConfirmation.PinConfirmationActivity"/>
+
+        <activity android:name=".profile.EnablePinActivity"/>
     </application>
 
 </manifest>

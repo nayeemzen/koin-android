@@ -36,5 +36,8 @@
     <string name="activity_dialog_content">Tap \'OK\' to log out, when you log back in you\'ll be able to create a new Pincode.\n\nIf you remember your Pincode, tap \'Cancel\' to go back.</string>
     <string name="activity_appcompat_message">I am a PinCompatActivity!</string>
     <string name="bundle_id_sale_summary">sale_summary</string>
+    <string name="intent_extra_finish_type">finish_type</string>
+    <string name="enable_pin">enable_pin</string>
+    <string name="check_pin">check_pin</string>
 
 </resources>

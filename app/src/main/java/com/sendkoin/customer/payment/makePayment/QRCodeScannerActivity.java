@@ -136,7 +136,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
         replaceViewWith(inventoryQRPaymentFragment);
         break;
       default:
-        throw new UnsupportedOperationException("invalid qr state");
+        throw new UnsupportedOperationException("Invalid QR state");
     }
   }
 
@@ -177,9 +177,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
 
   @Override
   public void showOrderDeleted() {
-//    getFragmentManager().beginTransaction()
-//        .replace(R.id.frame_layout, qrScannerFragement)
-//        .commit();
+    finish();
   }
 
 
@@ -199,11 +197,11 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
           showOrderCancelDialog();
         else
           finish();
-      } else if (currentFragment instanceof QRScannerFragment) {
+      } else if (currentFragment instanceof StaticQPaymentFragment
+          || currentFragment instanceof DynamicQRPaymentFragment){
         finish();
-      } else {
-        getFragmentManager().popBackStack();
       }
+      else getFragmentManager().popBackStack();
     }
     return true;
   }
@@ -270,27 +268,35 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     Bundle bundle = new Bundle();
     bundle.putByteArray(QrType.class.getSimpleName(), QrType.ADAPTER.encode(qrCode.qr_type));
     if (qrCode.qr_type == QrType.DYNAMIC) {
-      AcceptTransactionRequest acceptTransactionRequest =
-          new AcceptTransactionRequest.Builder()
-              .idempotence_token(UUID.randomUUID().toString())
-              .qr_token(qrCode.qr_token)
-              .build();
-      bundle.putByteArray(
-          AcceptTransactionRequest.class.getSimpleName(),
-          AcceptTransactionRequest.ADAPTER.encode(acceptTransactionRequest));
+      bundleDynamicTransaction(qrCode, bundle);
     } else {
-      InitiateStaticTransactionRequest initiateStaticTransactionRequest =
-          new InitiateStaticTransactionRequest.Builder()
-              .sale_items(saleItemList)
-              .qr_token(qrCode.qr_token)
-              .build();
-      bundle.putByteArray(
-          InitiateStaticTransactionRequest.class.getSimpleName(),
-          InitiateStaticTransactionRequest.ADAPTER.encode(initiateStaticTransactionRequest));
+      bundleStaticTransaction(qrCode, saleItemList, bundle);
     }
     Intent intent = new Intent(QRCodeScannerActivity.this, PinConfirmationActivity.class);
     intent.putExtra(getString(R.string.bundle_id_sale_summary), bundle);
     startActivity(intent);
+  }
+
+  private void bundleStaticTransaction(QrCode qrCode, List<SaleItem> saleItemList, Bundle bundle) {
+    InitiateStaticTransactionRequest initiateStaticTransactionRequest =
+        new InitiateStaticTransactionRequest.Builder()
+            .sale_items(saleItemList)
+            .qr_token(qrCode.qr_token)
+            .build();
+    bundle.putByteArray(
+        InitiateStaticTransactionRequest.class.getSimpleName(),
+        InitiateStaticTransactionRequest.ADAPTER.encode(initiateStaticTransactionRequest));
+  }
+
+  private void bundleDynamicTransaction(QrCode qrCode, Bundle bundle) {
+    AcceptTransactionRequest acceptTransactionRequest =
+        new AcceptTransactionRequest.Builder()
+            .idempotence_token(UUID.randomUUID().toString())
+            .qr_token(qrCode.qr_token)
+            .build();
+    bundle.putByteArray(
+        AcceptTransactionRequest.class.getSimpleName(),
+        AcceptTransactionRequest.ADAPTER.encode(acceptTransactionRequest));
   }
 
 }
