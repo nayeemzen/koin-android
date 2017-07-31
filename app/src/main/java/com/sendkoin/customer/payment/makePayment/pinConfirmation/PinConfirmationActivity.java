@@ -10,6 +10,7 @@ import android.test.mock.MockApplication;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.github.orangegangsters.lollipin.lib.managers.AppLock;
 import com.github.orangegangsters.lollipin.lib.managers.AppLockActivity;
 import com.sendkoin.api.AcceptTransactionRequest;
 import com.sendkoin.api.InitiateDynamicTransactionRequest;
@@ -26,6 +27,7 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import uk.me.lewisdeane.ldialogs.BaseDialog;
 import uk.me.lewisdeane.ldialogs.CustomDialog;
 
@@ -37,6 +39,8 @@ public class PinConfirmationActivity extends AppLockActivity implements PinConfi
 
   @Inject PinConfirmationContract.Presenter mPresenter;
   private int pinSuccessCount;
+  SweetAlertDialog pDialog;
+
 
 
   @Override
@@ -115,6 +119,11 @@ public class PinConfirmationActivity extends AppLockActivity implements PinConfi
     if (getIntent().hasExtra(getString(R.string.bundle_id_sale_summary)) && pinSuccessCount == 1) {
       Bundle bundle = getIntent().getBundleExtra(getString(R.string.bundle_id_sale_summary));
 
+      pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+      pDialog.getProgressHelper().setBarColor(Color.parseColor("#37b3b8"));
+      pDialog.setTitleText("Processing Payment");
+      pDialog.setCancelable(false);
+      pDialog.show();
       try {
         QrType qrType = QrType.ADAPTER.decode(bundle.getByteArray(QrType.class.getSimpleName()));
         if (qrType == QrType.DYNAMIC) {
@@ -148,17 +157,30 @@ public class PinConfirmationActivity extends AppLockActivity implements PinConfi
 
   @Override
   public void finish() {
-    super.finish();
     //If code successful, reset the timer
-    Log.d(TAG, "checking how many times called");
+    if (!getIntent().hasExtra(getString(R.string.bundle_id_sale_summary))) {
+        super.finish();
+    }
   }
 
   @Override
   public void showTransactionReciept(Transaction transaction) {
-    Intent intent = new Intent(PinConfirmationActivity.this, DetailedReceiptActivity.class);
-    intent.putExtra("transaction_token", transaction.token);
-    intent.putExtra("from_payment", true);
-    startActivity(intent);
+
+    pDialog
+        .setTitleText("Payment Complete")
+        .setConfirmText("OK")
+        .setConfirmClickListener(sweetAlertDialog -> {
+          Intent intent = new Intent(PinConfirmationActivity.this, DetailedReceiptActivity.class);
+          intent.putExtra("transaction_token", transaction.token);
+          intent.putExtra("from_payment", true);
+          startActivity(intent);
+        })
+        .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+  }
+
+  @Override
+  public void onBackPressed() {
+    finish();
   }
 
   @Override
@@ -175,4 +197,5 @@ public class PinConfirmationActivity extends AppLockActivity implements PinConfi
   public void showTransactionError(String errorMessage) {
 
   }
+
 }
