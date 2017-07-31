@@ -119,7 +119,6 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         break;
       case INVENTORY_ITEM:
         InventoryItemViewHolder inventoryItemViewHolder = (InventoryItemViewHolder) holder;
-        inventoryItemViewHolder.orderQuantity.setVisibility(View.GONE);
         InventoryQRPaymentListItem inventoryQRPaymentListItem =
             (InventoryQRPaymentListItem) qrPaymentListItems.get(position);
 
@@ -236,7 +235,6 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     @BindView(R.id.inventory_name_tv) TextView inventoryItemNameTextView;
     @BindView(R.id.inventory_description_tv) TextView inventoryItemDescriptionTextView;
     @BindView(R.id.inventory_price_tv) TextView inventoryItemPriceTextView;
-    @BindView(R.id.order_quantity) TextView orderQuantity;
 
     InventoryItemViewHolder(View itemView) {
       super(itemView);

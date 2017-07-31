@@ -69,7 +69,7 @@ public class ConfirmOrderRecyclerViewAdapter extends RecyclerView.Adapter<Recycl
       case CONFIRM_ORDER_SALE_ITEM:
         View saleItemView = LayoutInflater
             .from(confirmOrderFragment.getActivity())
-            .inflate(R.layout.inventory_item, parent, false);
+            .inflate(R.layout.item_confirm_order, parent, false);
         viewHolder = new SaleItemViewHolder(saleItemView);
         break;
       case CONFIRM_ORDER_MERCHANT_ITEM:
