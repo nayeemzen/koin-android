@@ -13,30 +13,32 @@
     <TextView
         android:id="@+id/item_name"
         fontPath="fonts/Nunito-Regular.ttf"
-        android:layout_width="130dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+id/item_quantity"
-        android:text="Shawarma"
+        android:layout_toEndOf="@+id/item_quantity"
+        android:layout_toLeftOf="@+id/item_price"
+        android:layout_toRightOf="@+id/item_quantity"
+        android:layout_toStartOf="@+id/item_price"
+        android:text="Super big chicken with extra spicy sauce and french fries"
         android:textSize="16sp"
         />
 
     <TextView
         android:id="@+id/item_quantity"
-        fontPath="fonts/Nunito-Regular.ttf"
-        android:layout_width="50dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_toRightOf="@+id/item_name"
-        android:text="X2"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/item_name"
+        android:layout_marginEnd="12dp"
+        android:layout_marginRight="12dp"
+        android:text="2X"
+        android:textColor="@color/colorPrimary"
         android:textSize="16sp"/>
 
     <TextView
 
         android:id="@+id/item_price"
-        fontPath="fonts/Nunito-Regular.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"

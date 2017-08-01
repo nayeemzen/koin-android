@@ -93,7 +93,7 @@ public class DetailedReceiptAdapter extends SectionRecyclerViewAdapter<DetailedR
   public void onBindChildViewHolder(DetailedReceiptSaleItemViewHolder detailedReceiptSaleItemViewHolder, int i, int i1, Item item) {
     detailedReceiptSaleItemViewHolder.itemName.setText(item.itemName);
     detailedReceiptSaleItemViewHolder.itemPrice.setText("$" + item.price);
-    detailedReceiptSaleItemViewHolder.itemQuantity.setText("x" + item.quantity);
+    detailedReceiptSaleItemViewHolder.itemQuantity.setText(item.quantity + "X");
   }
 
 
