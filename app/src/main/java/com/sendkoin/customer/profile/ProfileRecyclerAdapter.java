@@ -65,7 +65,7 @@ public class ProfileRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         .setType(TYPE_ITEM));
     listItems.add(new ProfileChild()
         .setTitle("Enable Pin")
-        .setIconId(R.drawable.ic_noun_account_settings)
+        .setIconId(R.drawable.ic_pin_settings)
         .setType(TYPE_ITEM));
     listItems.add(new ProfileSectionHeader()
         .setTitle("Options")
@@ -114,7 +114,6 @@ public class ProfileRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         break;
       case TYPE_LINK_CARD:
         ProfileLinkCardViewHolder linkCardViewHolder = (ProfileLinkCardViewHolder) holder;
-        ProfileLinkCardHeader linkCardHeader = (ProfileLinkCardHeader) listItems.get(position);
         linkCardViewHolder.linkCardButton.setOnClickListener(view -> {
           MainActivity mainActivity = (MainActivity) context;
           mainActivity.startActivity(new Intent(mainActivity, LinkCardActivity.class));

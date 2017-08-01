@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -13,27 +12,41 @@
     android:layout_marginBottom="5dp"
     android:layout_marginRight="10dp"
     android:layout_marginEnd="10dp"
-    android:padding="15dp">
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp">
+
+    <com.sendkoin.customer.utility.AvatarImageView
+        android:id="@+id/image_merchant_logo"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:baselineAlignBottom="true"
+        android:layout_alignParentLeft="true"/>
 
     <TextView
         android:id="@+id/payment_place_name"
         android:layout_width="270dp"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/payment_constraint_layout"
-        app:layout_constraintTop_toTopOf="@+id/payment_constraint_layout"
+        android:layout_alignTop="@+id/image_merchant_logo"
+        android:layout_marginStart="15dp"
+        android:layout_toEndOf="@id/image_merchant_logo"
         android:text="Merchant Name"
         fontPath="fonts/Nunito-Bold.ttf"
-        android:textSize="18sp"
-        />
+        android:textSize="16sp"
+        android:layout_marginLeft="15dp"
+        android:layout_toRightOf="@id/image_merchant_logo"/>
 
     <TextView
         android:id="@+id/payment_place_type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/payment_place_name"
-        app:layout_constraintStart_toStartOf="@id/payment_constraint_layout"
-        android:layout_marginTop="5dp"
+        android:layout_below="@+id/payment_place_name"
+        android:layout_alignLeft="@id/payment_place_name"
+        android:layout_marginTop="4dp"
         android:text="Restaurants"
+        android:textStyle="italic"
         fontPath="fonts/Nunito-Regular.ttf"
         android:textSize="16sp" />
 
@@ -41,11 +54,11 @@
         android:id="@+id/payment_amount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="@id/payment_constraint_layout"
-        app:layout_constraintTop_toTopOf="@+id/payment_place_name"
+        android:layout_alignTop="@+id/payment_place_name"
+        android:layout_alignParentRight="true"
         android:text="150CAD"
         android:textColor="@color/colorPrimary"
-        fontPath="fonts/Nunito-Bold.ttf"
+        fontPath="fonts/Nunito-Regular.ttf"
         android:textSize="18sp"/>
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>

@@ -1,6 +1,7 @@
 package com.sendkoin.customer.payment;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import com.sendkoin.customer.MainActivity;
 import com.sendkoin.customer.payment.paymentDetails.DetailedReceiptActivity;
 import com.sendkoin.customer.R;
+import com.sendkoin.customer.utility.AvatarImageView;
 import com.sendkoin.sql.entities.PaymentEntity;
 
 import java.util.ArrayList;
@@ -113,6 +115,9 @@ public class MainPaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         paymentHistoryViewHolder.paymentPlaceName.setText(paymentItem.placeName);
         paymentHistoryViewHolder.paymentPlaceType.setText(paymentItem.placeType);
         paymentHistoryViewHolder.paymentAmount.setText("$" + paymentItem.paidAmount);
+        paymentHistoryViewHolder.merchantLogo.setBackgroundColor(Color.parseColor("#f2f2f2"));
+        paymentHistoryViewHolder.merchantLogo.setName(paymentItem.placeName);
+        paymentHistoryViewHolder.merchantLogo.setTextColor(Color.parseColor("#37B3B8"));
         break;
       case ListItem.TYPE_DATE:
         DateItem dateItem = (DateItem) groupedList.get(position);
@@ -135,6 +140,8 @@ public class MainPaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     TextView paymentPlaceType;
     @BindView(R.id.payment_amount)
     TextView paymentAmount;
+    @BindView(R.id.image_merchant_logo)
+    AvatarImageView merchantLogo;
 
     public PaymentHistoryViewHolder(View itemView) {
       super(itemView);
