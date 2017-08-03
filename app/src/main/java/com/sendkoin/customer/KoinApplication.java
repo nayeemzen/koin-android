@@ -1,19 +1,20 @@
 package com.sendkoin.customer;
 
 import android.app.Application;
-import android.widget.TabHost;
 
 import com.github.orangegangsters.lollipin.lib.managers.LockManager;
+import com.sendkoin.customer.KoinServerMap.KoinServer;
 import com.sendkoin.customer.data.dagger.Component.DaggerNetComponent;
 import com.sendkoin.customer.data.dagger.Component.NetComponent;
 import com.sendkoin.customer.data.dagger.Module.AppModule;
 import com.sendkoin.customer.data.dagger.Module.NetModule;
 import com.sendkoin.customer.payment.makePayment.pinConfirmation.PinConfirmationActivity;
-import com.sendkoin.customer.profile.EnablePinActivity;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+
+import static com.sendkoin.customer.KoinServerMap.getServerMap;
 
 /**
  * Created by warefhaque on 5/20/17.
@@ -21,8 +22,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 public class KoinApplication extends Application {
   public static final String DEFAULT_FONT = "fonts/Nunito-Regular.ttf";
-  public static final String KOIN_SERVERURL =
-      "http://custom-env-1.2tfxydg93p.us-west-2.elasticbeanstalk.com/api/v1/";
+  public static final String KOIN_SERVER_URL = getServerMap().get(KoinServer.PRODUCTION);
   private NetComponent netComponent;
 
   @Override
@@ -31,7 +31,7 @@ public class KoinApplication extends Application {
 
     this.netComponent = DaggerNetComponent.builder()
         .appModule(new AppModule(this))
-        .netModule(new NetModule(KOIN_SERVERURL))
+        .netModule(new NetModule(KOIN_SERVER_URL))
         .build();
 
 
