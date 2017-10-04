@@ -9,7 +9,6 @@ import android.view.View;
 import com.sendkoin.customer.R;
 
 /**
- * Created by warefhaque on 5/28/17.
  * This class deals with bordering the list in the MainPayments Fragment
  */
 

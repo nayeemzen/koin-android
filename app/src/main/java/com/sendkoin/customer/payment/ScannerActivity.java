@@ -13,7 +13,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by warefhaque on 7/29/17.
+ * Holds the QrScanner
+ * todo : QRScannerFragment just needs to be ported to QRCodeScannerActivity - delete this class
  */
 
 public class ScannerActivity extends Activity {

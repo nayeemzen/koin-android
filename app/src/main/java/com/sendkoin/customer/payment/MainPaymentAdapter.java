@@ -22,12 +22,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by warefhaque on 5/26/17.
+ * List of payments data fed to be shown by the MainPaymentFragment
  */
 
 public class MainPaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-  private static final String TAG = "MPaymentHistoryAdapter";
+  private static final String TAG = MainPaymentAdapter.class.getSimpleName();
+  public static final String TRANSACTION_TOKEN_EXTRA = "transaction_token";
   public List<ListItem> groupedList;
   private MainActivity mainActivity;
 
@@ -71,11 +72,7 @@ public class MainPaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
   }
 
   /**
-   * Infates the view and assigns the variables in the viewholder to the right items
-   *
-   * @param parent
-   * @param viewType
-   * @return
+   * Infates the view and assigns the variables in the ViewHolder to the right items
    */
   @Override
   public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -99,10 +96,7 @@ public class MainPaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
   }
 
   /**
-   * For every position in the cell sets the text and/or images in the viewholder
-   *
-   * @param holder
-   * @param position
+   * For every position in the cell sets the text and/or images in the ViewHolder
    */
   @Override
   public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
@@ -156,7 +150,7 @@ public class MainPaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         PaymentItem paymentItem = (PaymentItem) clickedItem;
 
         Intent intent = new Intent(mainActivity, DetailedReceiptActivity.class);
-        intent.putExtra("transaction_token", paymentItem.getTransactionToken());
+        intent.putExtra(TRANSACTION_TOKEN_EXTRA, paymentItem.getTransactionToken());
         mainActivity.startActivity(intent);
       }
     }

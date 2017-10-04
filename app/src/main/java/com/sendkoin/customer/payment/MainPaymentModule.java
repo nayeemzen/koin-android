@@ -10,7 +10,8 @@ import dagger.Provides;
 import retrofit2.Retrofit;
 
 /**
- * Created by warefhaque on 5/20/17.
+ * Dependencies for MainPaymentFragment
+ * @see MainPaymentFragment
  */
 
 @Module

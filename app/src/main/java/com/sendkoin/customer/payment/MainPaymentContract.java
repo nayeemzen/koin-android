@@ -20,6 +20,5 @@ public interface MainPaymentContract {
 
   interface Presenter extends BasePresenter {
     void loadTransactionsFromServer(boolean fetchHistory);
-    void deleteAllTransactions();
   }
 }

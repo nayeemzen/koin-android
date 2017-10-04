@@ -39,5 +39,6 @@
     <string name="intent_extra_finish_type">finish_type</string>
     <string name="enable_pin">enable_pin</string>
     <string name="check_pin">check_pin</string>
+    <string name="no_transactions">You currently have no transactions.</string>
 
 </resources>

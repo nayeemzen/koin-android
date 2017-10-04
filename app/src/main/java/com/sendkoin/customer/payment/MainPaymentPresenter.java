@@ -24,7 +24,8 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
- * Created by warefhaque on 5/20/17.
+ * Presenter for MainPaymentFragment
+ * @see MainPaymentContract
  */
 
 public class MainPaymentPresenter implements MainPaymentContract.Presenter {
@@ -109,11 +110,6 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
     compositeSubscription.add(subscription);
   }
 
-  @Override
-  public void deleteAllTransactions() {
-
-  }
-
   /**
    * Fetches the transactions from the server and if `has_next_page` is true, recursively is called
    * again until `has_next_page` is false.
@@ -169,9 +165,10 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
   }
 
   /**
-   * Kick-off the realm loading while the server fetch happens on the background. The server will
-   * fetch the new transactions/old missing transactions and insert them to Realm. Since we're using
-   * an observable query on Realm, any new insertions should update the UI automatically.
+   * 1. Load cached transactions first
+   * 2. Simultaneously call server for updates
+   * 3. Save the transactions from server to local DB
+   * 4. Local DB updates the payment list as the payment list if subscribed to it
    */
   @Override
   public void subscribe() {
@@ -184,9 +181,5 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
     if (compositeSubscription != null) {
       compositeSubscription.clear();
     }
-  }
-
-  @Override
-  public void closeRealm() {
   }
 }

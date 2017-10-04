@@ -5,9 +5,6 @@ import com.sendkoin.customer.data.dagger.CustomScope;
 
 import dagger.Component;
 
-/**
- * Created by warefhaque on 5/20/17.
- */
 
 @CustomScope
 @Component(dependencies = NetComponent.class, modules = MainPaymentModule.class)

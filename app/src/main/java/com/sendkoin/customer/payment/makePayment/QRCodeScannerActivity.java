@@ -56,8 +56,6 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
  * Created by warefhaque on 5/23/17.
  */
 
-// TODO: 7/14/17 One possible refactoring is keeping the Checkout relative layout in the activity
-// as both the inventory qr and the cofirm order use it
 public class QRCodeScannerActivity extends Activity implements QRScannerContract.View {
 
   private static final String TAG = QRCodeScannerActivity.class.getSimpleName();
