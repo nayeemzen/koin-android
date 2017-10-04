@@ -13,16 +13,12 @@ QR Code based Mobile Wallet
 
 ### Screenshots
 
-<img src = "app/src/main/assets/screenshots/home_screen.png" width = "200" style="margin:20px">
-<img src = "app/src/main/assets/screenshots/profile_screen.png" width = "200" style="margin:20px">
-<img src = "app/src/main/assets/screenshots/cc_screen.png" width = "200" style="margin:20px">
-<img src = "app/src/main/assets/screenshots/detailed_reciept_screen.png" width = "200" style="margin:20px">
-<img src = "app/src/main/assets/screenshots/inventory_static_list.png" width = "200" style="margin:20px">
-<img src = "app/src/main/assets/screenshots/detailed_inventory_item.png" width = "200" style="margin:20px">
+<img src = "app/src/main/assets/screenshots/home_screen.png" width = "200" style="margin:20px"> <img src = "app/src/main/assets/screenshots/profile_screen.png" width = "200" style="margin:20px"><img src = "app/src/main/assets/screenshots/cc_screen.png" width = "200" style="margin:20px">
+<img src = "app/src/main/assets/screenshots/detailed_reciept_screen.png" width = "200" style="margin:20px"><img src = "app/src/main/assets/screenshots/inventory_static_list.png" width = "200" style="margin:20px"><img src = "app/src/main/assets/screenshots/detailed_inventory_item.png" width = "200" style="margin:20px">
 
 
 ### Models
-[Protocol Buffers](https://github.com/google/protobuf)is an interface definition language that is used here to represent the models and Data Transfer Objects (DTO). This makes the DTOs platform independent with minimal boilerplate code.
+[Protocol Buffers](https://github.com/google/protobuf) is an interface definition language that is used here to represent the models and Data Transfer Objects (DTO). This makes the DTOs platform independent with minimal boilerplate code.
 
 
 ### Dependencies
