@@ -13,13 +13,13 @@ QR Code based Mobile Wallet
 
 ### Screenshots
 
-![Alt text](/koin-android/app/src/main/assets/screenshots/facebook_login.png?raw=true "Login Screen") 
-![Alt text](/koin-android/app/src/main/assets/screenshots/home_screen.png?raw=true "Home Screen")
-![Alt text](/koin-android/app/src/main/assets/screenshots/profile_screen.png?raw=true "Profile Screen")
-![Alt text](/koin-android/app/src/main/assets/screenshots/cc_screen.png?raw=true "Scan Credit Card")
-![Alt text](/koin-android/app/src/main/assets/screenshots/detailed_reciept_screen.png?raw=true "Detailed Receipt Screen")
-![Alt text](/koin-android/app/src/main/assets/screenshots/inventory_static_list.png?raw=true "Merchant Inventory List")
-![Alt text](/koin-android/app/src/main/assets/screenshots/detailed_inventory_item.png?raw=true "Detailed Inventory Item")
+![Alt text](koin-android/app/src/main/assets/screenshots/facebook_login.png?raw=true "Login Screen") 
+![Alt text](koin-android/app/src/main/assets/screenshots/home_screen.png?raw=true "Home Screen")
+![Alt text](koin-android/app/src/main/assets/screenshots/profile_screen.png?raw=true "Profile Screen")
+![Alt text](koin-android/app/src/main/assets/screenshots/cc_screen.png?raw=true "Scan Credit Card")
+![Alt text](koin-android/app/src/main/assets/screenshots/detailed_reciept_screen.png?raw=true "Detailed Receipt Screen")
+![Alt text](koin-android/app/src/main/assets/screenshots/inventory_static_list.png?raw=true "Merchant Inventory List")
+![Alt text](koin-android/app/src/main/assets/screenshots/detailed_inventory_item.png?raw=true "Detailed Inventory Item")
 
 
 ### Models
