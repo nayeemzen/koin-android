@@ -13,14 +13,12 @@ QR Code based Mobile Wallet
 
 ### Screenshots
 
-<img src = "app/src/main/assets/screenshots/facebook_login.png" width = "200">
-<!-- ![](app/src/main/assets/screenshots/facebook_login.png) -->
-<!-- ![](app/src/main/assets/screenshots/home_screen.png) -->
-<!-- ![](app/src/main/assets/screenshots/profile_screen.png) -->
-<!-- ![](app/src/main/assets/screenshots/cc_screen.png) -->
-<!-- ![](app/src/main/assets/screenshots/detailed_reciept_screen.png) -->
-<!-- ![](app/src/main/assets/screenshots/inventory_static_list.png) -->
-<!-- ![](app/src/main/assets/screenshots/detailed_inventory_item.png)   -->
+<img src = "app/src/main/assets/screenshots/home_screen.png" width = "200" style="margin:20px">
+<img src = "app/src/main/assets/screenshots/profile_screen.png" width = "200" style="margin:20px">
+<img src = "app/src/main/assets/screenshots/cc_screen.png" width = "200" style="margin:20px">
+<img src = "app/src/main/assets/screenshots/detailed_reciept_screen.png" width = "200" style="margin:20px">
+<img src = "app/src/main/assets/screenshots/inventory_static_list.png" width = "200" style="margin:20px">
+<img src = "app/src/main/assets/screenshots/detailed_inventory_item.png" width = "200" style="margin:20px">
 
 
 ### Models
