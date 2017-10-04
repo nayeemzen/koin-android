@@ -11,13 +11,6 @@ QR Code based Mobile Wallet
    * Dynamic Qr codes - scan the Qr from the merchant application and hit "Pay"
    * Inventory Qr codes - scan the Qr code, select from a range of items on the menu and hit "Pay"
 
-### Screenshots
-  <img align = "left" src = "app/src/main/assets/screenshots/detailed_reciept_screen.png" width = "200">
-  <p align = "center">
-     <img src = "app/src/main/assets/screenshots/inventory_static_list.png" width = "200">
-  </p>
-  <img align = "right" src = "app/src/main/assets/screenshots/detailed_inventory_item.png" width = "200">
-
 ### Models
 [Protocol Buffers](https://github.com/google/protobuf) is an interface definition language that is used here to represent the models and Data Transfer Objects (DTO). This makes the DTOs platform independent with minimal boilerplate code.
 
