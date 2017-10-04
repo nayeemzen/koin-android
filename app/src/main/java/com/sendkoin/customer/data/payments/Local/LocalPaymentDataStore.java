@@ -84,6 +84,11 @@ public class LocalPaymentDataStore {
         .asRxObservable();
   }
 
+  /**
+   * Used in the test class to verify some tests only.
+   * Doesn't need to return observables
+   * @return
+   */
   public List<PaymentEntity> getAllPayments() {
     List<PaymentEntity> paymentEntities = storIOSQLite.get()
         .listOfObjects(PaymentEntity.class)

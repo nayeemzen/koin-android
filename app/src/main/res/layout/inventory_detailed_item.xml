@@ -12,7 +12,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/detailed_item_confirm_layout">
+        android:layout_above="@+id/detailed_item_confirm_layout"
+        android:layout_alignParentTop="true">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -22,7 +23,7 @@
             <ImageView
                 android:id="@+id/detailed_inventory_item_iv"
                 android:layout_width="match_parent"
-                android:layout_height="220dp"
+                android:layout_height="260dp"
                 />
 
             <RelativeLayout
