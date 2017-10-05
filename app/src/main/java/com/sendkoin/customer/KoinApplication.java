@@ -8,7 +8,7 @@ import com.sendkoin.customer.data.dagger.Component.DaggerNetComponent;
 import com.sendkoin.customer.data.dagger.Component.NetComponent;
 import com.sendkoin.customer.data.dagger.Module.AppModule;
 import com.sendkoin.customer.data.dagger.Module.NetModule;
-import com.sendkoin.customer.payment.makePayment.pinConfirmation.PinConfirmationActivity;
+import com.sendkoin.customer.payment.paymentCreate.pinConfirmation.PinConfirmationActivity;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;

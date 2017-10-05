@@ -8,8 +8,8 @@ import com.sendkoin.customer.data.payments.InventoryService;
 import com.sendkoin.customer.data.payments.Local.LocalOrderDataStore;
 import com.sendkoin.customer.data.payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.data.payments.PaymentService;
-import com.sendkoin.customer.payment.makePayment.QRScannerContract;
-import com.sendkoin.customer.payment.makePayment.QRScannerPresenter;
+import com.sendkoin.customer.payment.paymentCreate.QRScannerContract;
+import com.sendkoin.customer.payment.paymentCreate.QRScannerPresenter;
 
 import dagger.Module;
 import dagger.Provides;

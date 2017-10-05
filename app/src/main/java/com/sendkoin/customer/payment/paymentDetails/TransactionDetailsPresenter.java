@@ -46,11 +46,6 @@ public class TransactionDetailsPresenter implements TransactionDetailsContract.P
   }
 
   @Override
-  public void closeRealm() {
-    // no applicable here
-  }
-
-  @Override
   public void fetchTransactionDetails(String transactionToken) {
 
     subscription = paymentService

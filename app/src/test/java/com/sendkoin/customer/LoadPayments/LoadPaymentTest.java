@@ -1,14 +1,8 @@
 package com.sendkoin.customer.LoadPayments;
 
-import android.text.format.DateFormat;
-
-import com.annimon.stream.Stream;
-import com.sendkoin.api.Merchant;
 import com.sendkoin.api.QrCode;
 import com.sendkoin.api.QrType;
 import com.sendkoin.api.SaleItem;
-import com.sendkoin.api.Transaction;
-import com.sendkoin.api.TransactionState;
 import com.sendkoin.customer.DaggerKoinTestComponent;
 import com.sendkoin.customer.FakePaymentService;
 import com.sendkoin.customer.KoinTestModule;
@@ -16,8 +10,8 @@ import com.sendkoin.customer.MiscGenerator;
 import com.sendkoin.customer.QRPayment.QRPaymentTestModule;
 import com.sendkoin.customer.RxSchedulersOverrideRule;
 import com.sendkoin.customer.data.payments.Local.LocalPaymentDataStore;
-import com.sendkoin.customer.payment.MainPaymentContract;
-import com.sendkoin.customer.payment.makePayment.QRScannerContract;
+import com.sendkoin.customer.payment.paymentList.MainPaymentContract;
+import com.sendkoin.customer.payment.paymentCreate.QRScannerContract;
 import com.sendkoin.sql.entities.PaymentEntity;
 
 import org.junit.Before;
@@ -30,15 +24,11 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
 import static com.annimon.stream.Collectors.groupingBy;
-import static com.annimon.stream.Collectors.toList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;

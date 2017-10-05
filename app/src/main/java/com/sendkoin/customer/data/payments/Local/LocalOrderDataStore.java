@@ -5,7 +5,7 @@ import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
 import com.pushtorefresh.storio.sqlite.queries.DeleteQuery;
 import com.pushtorefresh.storio.sqlite.queries.Query;
 import com.sendkoin.api.Transaction;
-import com.sendkoin.customer.payment.makePayment.inventory.InventoryRecyclerViewAdapter;
+import com.sendkoin.customer.data.payments.Models.inventory.InventoryItemLocal;
 import com.sendkoin.sql.entities.CurrentOrderEntity;
 import com.sendkoin.sql.entities.InventoryOrderItemEntity;
 import com.sendkoin.sql.tables.CurrentOrderTable;
@@ -48,13 +48,13 @@ public class LocalOrderDataStore {
   }
 
   public Observable<PutResult> createOrUpdateItem(
-      InventoryRecyclerViewAdapter.InventoryQRPaymentListItem inventoryQRPaymentListItem,
+     InventoryItemLocal inventoryItemLocal,
       String orderId) {
 
       return storIOSQLite.get().listOfObjects(InventoryOrderItemEntity.class).withQuery(Query.builder()
         .table(InventoryOrderItemTable.TABLE)
         .where(InventoryOrderItemTable.COLUMN_ORDER_ITEM_ID + " = ?")
-        .whereArgs(inventoryQRPaymentListItem.inventoryItemId)
+        .whereArgs(inventoryItemLocal.inventoryItemId)
         .build())
         .prepare()
         .asRxObservable()
@@ -65,16 +65,16 @@ public class LocalOrderDataStore {
               ? inventoryOrderItemEntities.get(0).getCreatedAt()
               : System.currentTimeMillis();
           return saveOrderItem(new InventoryOrderItemEntity(
-              inventoryQRPaymentListItem.inventoryItemId,
+              inventoryItemLocal.inventoryItemId,
               createdAt,
               System.currentTimeMillis(),
               orderId,
-              (long) inventoryQRPaymentListItem.itemPrice,
-              (long) inventoryQRPaymentListItem.quantity,
-              inventoryQRPaymentListItem.itemName,
-              inventoryQRPaymentListItem.itemDescription,
-              inventoryQRPaymentListItem.itemImageUrl,
-              inventoryQRPaymentListItem.additionalNotes));
+              (long) inventoryItemLocal.itemPrice,
+              (long) inventoryItemLocal.quantity,
+              inventoryItemLocal.itemName,
+              inventoryItemLocal.itemDescription,
+              inventoryItemLocal.itemImageUrl,
+              inventoryItemLocal.additionalNotes));
 
         });
 

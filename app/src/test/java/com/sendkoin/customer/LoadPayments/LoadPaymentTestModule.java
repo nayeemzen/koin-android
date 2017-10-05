@@ -4,8 +4,8 @@ import com.sendkoin.customer.data.dagger.CustomScope;
 import com.sendkoin.customer.data.payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.data.payments.PaymentRepository;
 import com.sendkoin.customer.data.payments.PaymentService;
-import com.sendkoin.customer.payment.MainPaymentContract;
-import com.sendkoin.customer.payment.MainPaymentPresenter;
+import com.sendkoin.customer.payment.paymentList.MainPaymentContract;
+import com.sendkoin.customer.payment.paymentList.MainPaymentPresenter;
 
 import dagger.Module;
 import dagger.Provides;

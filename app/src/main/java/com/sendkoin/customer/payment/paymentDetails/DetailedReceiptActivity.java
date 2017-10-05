@@ -21,6 +21,9 @@ import com.sendkoin.api.TransactionDetail;
 import com.sendkoin.customer.KoinApplication;
 import com.sendkoin.customer.MainActivity;
 import com.sendkoin.customer.R;
+import com.sendkoin.customer.payment.paymentDetails.detailedReceiptRecyclerView.DetailedReceiptAdapter;
+import com.sendkoin.customer.payment.paymentDetails.detailedReceiptRecyclerView.DetailedRecieptHeader;
+import com.sendkoin.customer.payment.paymentDetails.detailedReceiptRecyclerView.Item;
 
 import java.util.ArrayList;
 import java.util.List;

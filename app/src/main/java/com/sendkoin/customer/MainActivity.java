@@ -24,7 +24,7 @@ import android.widget.Toast;
 import com.sendkoin.customer.data.authentication.SessionManager;
 import com.sendkoin.customer.login.LoginActivity;
 import com.sendkoin.customer.login.LogoutEvent;
-import com.sendkoin.customer.payment.MainPaymentFragment;
+import com.sendkoin.customer.payment.paymentList.MainPaymentFragment;
 import com.sendkoin.customer.profile.MainProfileFragment;
 import com.sendkoin.customer.rewards.MainRewardsFragment;
 

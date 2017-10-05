@@ -10,12 +10,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.github.orangegangsters.lollipin.lib.PinActivity;
 import com.github.orangegangsters.lollipin.lib.managers.AppLock;
-import com.github.orangegangsters.lollipin.lib.managers.AppLockActivity;
 import com.sendkoin.customer.MainActivity;
 import com.sendkoin.customer.R;
-import com.sendkoin.customer.payment.makePayment.pinConfirmation.PinConfirmationActivity;
+import com.sendkoin.customer.payment.paymentCreate.pinConfirmation.PinConfirmationActivity;
 import com.sendkoin.customer.profile.linkCard.LinkCardActivity;
 
 import java.util.ArrayList;

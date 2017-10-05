@@ -40,5 +40,7 @@
     <string name="enable_pin">enable_pin</string>
     <string name="check_pin">check_pin</string>
     <string name="no_transactions">You currently have no transactions.</string>
+    <string name="trans_token_extra">transaction_token</string>
+    <string name="from_payment_extra">from_payment</string>
 
 </resources>
