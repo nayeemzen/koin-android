@@ -16,7 +16,7 @@ import com.sendkoin.api.QrType;
 import com.sendkoin.api.Transaction;
 import com.sendkoin.customer.KoinApplication;
 import com.sendkoin.customer.R;
-import com.sendkoin.customer.payment.paymentDetails.DetailedReceiptActivity;
+import com.sendkoin.customer.payment.paymentDetails.TransactionDetailsActivity;
 
 import java.io.IOException;
 
@@ -180,7 +180,7 @@ public class PinConfirmationActivity extends AppLockActivity implements PinConfi
         .setTitleText("Payment Complete")
         .setConfirmText("OK")
         .setConfirmClickListener(sweetAlertDialog -> {
-          Intent intent = new Intent(PinConfirmationActivity.this, DetailedReceiptActivity.class);
+          Intent intent = new Intent(PinConfirmationActivity.this, TransactionDetailsActivity.class);
           intent.putExtra(getString(R.string.trans_token_extra), transaction.token);
           intent.putExtra(getString(R.string.from_payment_extra), true);
           startActivity(intent);

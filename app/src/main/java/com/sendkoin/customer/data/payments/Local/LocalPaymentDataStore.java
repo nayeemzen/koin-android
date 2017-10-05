@@ -18,7 +18,7 @@ import rx.Observable;
 import rx.functions.Func1;
 
 /**
- * Created by warefhaque on 5/20/17.
+ * Read/Write Payments to local DB ONLY
  */
 
 public class LocalPaymentDataStore {
@@ -60,6 +60,14 @@ public class LocalPaymentDataStore {
         .asRxObservable();
   }
 
+  /**
+   * Mapper to convert Proto Object to Storio Entity
+   * @param transaction - Proto Object to represent a transaction throughout the product
+   * @return PaymentEntity (Storio generated)
+   *
+   * @see Transaction
+   * @see PaymentEntity
+   */
   public PaymentEntity fromWire(Transaction transaction) {
     return new PaymentEntity(
         transaction.token,
@@ -70,6 +78,15 @@ public class LocalPaymentDataStore {
         transaction.merchant.store_type);
   }
 
+  /**
+   * Gets either:
+   *  - the OLDEST timestamp associated with payments stored
+   *  - the NEWEST timestamp associated with the payments stored
+   * @param fetchHistory -
+   *                     true : fetch latest
+   *                     false : fetch oldest
+   * @return PaymentEntity which contains the required time stamp
+   */
   public Observable<PaymentEntity> getTime(boolean fetchHistory){
     String orderBy = (fetchHistory) ?
         PaymentTable.COLUMN_CREATED_AT + " ASC" : PaymentTable.COLUMN_CREATED_AT + " DESC";
@@ -85,7 +102,7 @@ public class LocalPaymentDataStore {
   }
 
   /**
-   * Used in the test class to verify some tests only.
+   * Methods below are used in the test class to verify some tests only.
    * Doesn't need to return observables
    * @return
    */

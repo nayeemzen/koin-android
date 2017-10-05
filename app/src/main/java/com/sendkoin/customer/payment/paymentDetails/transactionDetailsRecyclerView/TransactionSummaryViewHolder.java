@@ -1,4 +1,4 @@
-package com.sendkoin.customer.payment.paymentDetails.detailedReceiptRecyclerView;
+package com.sendkoin.customer.payment.paymentDetails.transactionDetailsRecyclerView;
 
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
@@ -17,7 +17,7 @@ import mehdi.sakout.fancybuttons.FancyButton;
 /**
  * Created by warefhaque on 6/26/17.
  */
-public class DetailedReceiptHeaderViewHolder extends RecyclerView.ViewHolder{
+public class TransactionSummaryViewHolder extends RecyclerView.ViewHolder{
 
   @BindView(R.id.merchant_logo_pay_complete) AvatarView merchantLogoPaymentComplete;
   @BindView(R.id.merchant_name_pay_complete) TextView merchant_name_pay_complete;
@@ -30,7 +30,7 @@ public class DetailedReceiptHeaderViewHolder extends RecyclerView.ViewHolder{
   @BindView(R.id.barcode_layout) RelativeLayout barcodeLayout;
   @BindView(R.id.confirmation_code_button) FancyButton confirmationCodeButton;
 
-  public DetailedReceiptHeaderViewHolder(View itemView) {
+  public TransactionSummaryViewHolder(View itemView) {
     super(itemView);
     ButterKnife.bind(this, itemView);
     setUpConfirmButton();

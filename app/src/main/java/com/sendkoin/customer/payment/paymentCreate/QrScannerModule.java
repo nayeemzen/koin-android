@@ -11,15 +11,15 @@ import me.dm7.barcodescanner.zbar.ZBarScannerView;
 import retrofit2.Retrofit;
 
 /**
- * Dependencies for QRCodeScannerActivity
- * @see QRCodeScannerActivity
+ * Dependencies for QrScannerActivity
+ * @see QrScannerActivity
  */
 
 @Module
-public class QRPaymentModule {
-  private QRScannerContract.View view;
+public class QrScannerModule {
+  private QrScannerContract.View view;
 
-  public QRPaymentModule(QRScannerContract.View view) {
+  public QrScannerModule(QrScannerContract.View view) {
     this.view = view;
   }
 
@@ -37,14 +37,14 @@ public class QRPaymentModule {
 
   @Provides
   @CustomScope
-  public QRScannerContract.Presenter providesPresenter(InventoryService inventoryService,
+  public QrScannerContract.Presenter providesPresenter(InventoryService inventoryService,
                                                        LocalOrderDataStore localOrderDataStore){
-    return new QRScannerPresenter(view, inventoryService, localOrderDataStore);
+    return new QrScannerPresenter(view, inventoryService, localOrderDataStore);
   }
 
   @Provides
   @CustomScope
-  public QRScannerContract.View providesView(){
+  public QrScannerContract.View providesView(){
     return view;
   }
 

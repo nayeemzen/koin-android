@@ -1,4 +1,4 @@
-package com.sendkoin.customer.payment.paymentCreate.inventoryQr.confirmInventoryOrder;
+package com.sendkoin.customer.payment.paymentCreate.inventoryQr.confirmOrder;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,7 +14,7 @@ import com.sendkoin.api.QrCode;
 import com.sendkoin.api.SaleItem;
 import com.sendkoin.customer.R;
 import com.sendkoin.customer.payment.paymentCreate.PaymentFragment;
-import com.sendkoin.customer.payment.paymentCreate.QRCodeScannerActivity;
+import com.sendkoin.customer.payment.paymentCreate.QrScannerActivity;
 import com.sendkoin.sql.entities.InventoryOrderItemEntity;
 
 import java.io.IOException;
@@ -42,7 +42,7 @@ public class ConfirmOrderFragment extends PaymentFragment {
   @BindView(R.id.confirm_order_pay_amount) TextView confirmOrderTotalAmount;
   @BindView(R.id.confirm_order_total_items_text_view) TextView confirmOrderTotalItems;
 
-  private QRCodeScannerActivity qrCodeScannerActivity;
+  private QrScannerActivity qrScannerActivity;
   private ConfirmOrderRecyclerViewAdapter confirmOrderAdapter;
   private List<InventoryOrderItemEntity> inventoryOrderEntities;
   private QrCode qrCode;
@@ -58,7 +58,7 @@ public class ConfirmOrderFragment extends PaymentFragment {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    qrCodeScannerActivity = (QRCodeScannerActivity) getActivity();
+    qrScannerActivity = (QrScannerActivity) getActivity();
     setUpRecyclerView();
     return view;
 
@@ -73,13 +73,13 @@ public class ConfirmOrderFragment extends PaymentFragment {
   @Override
   public void onResume() {
     super.onResume();
-    qrCodeScannerActivity.mPresenter.getOrderItems();
+    qrScannerActivity.mPresenter.getOrderItems();
   }
 
   @OnClick(R.id.confirm_order_pay_layout)
   void clickedPay() {
     List<SaleItem> saleItems = convertPaymentEntitiesToSaleItems();
-    qrCodeScannerActivity.showPinConfirmationActivity(qrCode, saleItems);
+    qrScannerActivity.showPinConfirmationActivity(qrCode, saleItems);
   }
 
   private List<SaleItem> convertPaymentEntitiesToSaleItems() {
@@ -112,7 +112,7 @@ public class ConfirmOrderFragment extends PaymentFragment {
     confirmOrderAdapter.notifyDataSetChanged();
 
     // populate the checkout order to finalize the order
-    qrCodeScannerActivity.populateCheckoutButton(
+    qrScannerActivity.populateCheckoutButton(
         inventoryOrderEntities,
         confirmOrderPayLayout,
         confirmOrderTotalAmount,

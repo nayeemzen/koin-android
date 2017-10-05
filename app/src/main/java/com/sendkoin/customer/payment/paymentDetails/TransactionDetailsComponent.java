@@ -12,5 +12,5 @@ import dagger.Component;
 @CustomScope
 @Component(dependencies = NetComponent.class, modules = TransactionDetailsModule.class)
 public interface TransactionDetailsComponent {
-  void inject (DetailedReceiptActivity detailedReceiptActivity);
+  void inject (TransactionDetailsActivity transactionDetailsActivity);
 }

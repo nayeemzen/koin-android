@@ -10,8 +10,8 @@ import com.sendkoin.customer.MiscGenerator;
 import com.sendkoin.customer.QRPayment.QRPaymentTestModule;
 import com.sendkoin.customer.RxSchedulersOverrideRule;
 import com.sendkoin.customer.data.payments.Local.LocalPaymentDataStore;
+import com.sendkoin.customer.payment.paymentCreate.QrScannerContract;
 import com.sendkoin.customer.payment.paymentList.MainPaymentContract;
-import com.sendkoin.customer.payment.paymentCreate.QRScannerContract;
 import com.sendkoin.sql.entities.PaymentEntity;
 
 import org.junit.Before;
@@ -44,7 +44,7 @@ public class LoadPaymentTest {
   @Captor ArgumentCaptor<List<PaymentEntity>> argumentCaptor;
   @Inject MainPaymentContract.View view;
   @Inject MainPaymentContract.Presenter mainPaymentPresenter;
-  @Inject QRScannerContract.Presenter qrScannerPresenter;
+  @Inject QrScannerContract.Presenter qrScannerPresenter;
   @Inject LocalPaymentDataStore localPaymentDataStore;
   @Inject MiscGenerator miscGenerator;
 
@@ -55,7 +55,7 @@ public class LoadPaymentTest {
             .koinTestModule(new KoinTestModule())
             .build())
         .loadPaymentTestModule(new LoadPaymentTestModule(mock(MainPaymentContract.View.class)))
-        .qRPaymentTestModule(new QRPaymentTestModule(mock(QRScannerContract.View.class)))
+        .qRPaymentTestModule(new QRPaymentTestModule(mock(QrScannerContract.View.class)))
         .build()
         .inject(this);
     MockitoAnnotations.initMocks(this);

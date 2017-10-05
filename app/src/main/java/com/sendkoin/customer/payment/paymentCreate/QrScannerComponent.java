@@ -7,7 +7,7 @@ import dagger.Component;
 
 
 @CustomScope
-@Component(dependencies = NetComponent.class, modules = QRPaymentModule.class)
-public interface QRComponent {
-  void inject (QRCodeScannerActivity activity);
+@Component(dependencies = NetComponent.class, modules = QrScannerModule.class)
+public interface QrScannerComponent {
+  void inject (QrScannerActivity activity);
 }

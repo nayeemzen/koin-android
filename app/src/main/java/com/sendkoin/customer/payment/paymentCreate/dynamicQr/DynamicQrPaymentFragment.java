@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.sendkoin.api.QrCode;
 import com.sendkoin.customer.R;
-import com.sendkoin.customer.payment.paymentCreate.QRCodeScannerActivity;
+import com.sendkoin.customer.payment.paymentCreate.QrScannerActivity;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -25,7 +25,7 @@ import mehdi.sakout.fancybuttons.FancyButton;
  * Created by warefhaque on 7/9/17.
  */
 
-public class DynamicQRPaymentFragment extends android.app.Fragment {
+public class DynamicQrPaymentFragment extends android.app.Fragment {
   @BindView(R.id.merchant_logo)
   AvatarView merchantLogo;
   @BindView(R.id.sale_amount)
@@ -46,7 +46,7 @@ public class DynamicQRPaymentFragment extends android.app.Fragment {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    ((QRCodeScannerActivity) getActivity()).setUpLogo(merchantLogo, qrCode.merchant_name);
+    ((QrScannerActivity) getActivity()).setUpLogo(merchantLogo, qrCode.merchant_name);
     saleAmount.setText("$" + qrCode.amount.toString());
     return view;
   }
@@ -72,7 +72,7 @@ public class DynamicQRPaymentFragment extends android.app.Fragment {
 
   @OnClick(R.id.pay_button)
   void payClicked(){
-    ((QRCodeScannerActivity) getActivity())
+    ((QrScannerActivity) getActivity())
         .showPinConfirmationActivity(qrCode, Collections.emptyList());
   }
 }

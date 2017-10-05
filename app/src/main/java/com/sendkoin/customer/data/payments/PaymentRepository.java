@@ -9,10 +9,7 @@ import com.sendkoin.customer.data.payments.Local.LocalPaymentDataStore;
 import rx.Observable;
 
 /**
- * Created by warefhaque on 5/20/17.
- *
- * Intended to call on the REMOTE + LOCAL DB through LocalPaymentDataStore.
- * However in the presenter FLATMAP is used to perform this
+ * todo refactor this as payment presenter just flatmaps the service - no need for this anymore
  */
 
 

@@ -16,8 +16,8 @@ import com.sendkoin.api.QrCode;
 import com.sendkoin.customer.R;
 import com.sendkoin.customer.data.payments.Models.inventory.InventoryItemLocal;
 import com.sendkoin.customer.payment.paymentCreate.PaymentFragment;
-import com.sendkoin.customer.payment.paymentCreate.inventoryQr.confirmInventoryOrder.ConfirmOrderFragment;
-import com.sendkoin.customer.payment.paymentCreate.QRCodeScannerActivity;
+import com.sendkoin.customer.payment.paymentCreate.QrScannerActivity;
+import com.sendkoin.customer.payment.paymentCreate.inventoryQr.confirmOrder.ConfirmOrderFragment;
 import com.sendkoin.customer.payment.paymentCreate.inventoryQr.inventoryRecyclerView.InventoryRecyclerViewAdapter;
 import com.sendkoin.sql.entities.InventoryOrderItemEntity;
 
@@ -40,7 +40,7 @@ public class InventoryQRPaymentFragment extends PaymentFragment {
   @BindView(R.id.checkout_num_items_text_view) TextView checkoutTotalItemsTextView;
   @BindView(R.id.checkout_amount_text_view) TextView checkoutTotalAmountTextView;
 
-  QRCodeScannerActivity qrCodeScannerActivity;
+  QrScannerActivity qrScannerActivity;
   private InventoryRecyclerViewAdapter inventoryRecyclerViewAdapter;
   private QrCode qrCode;
 
@@ -53,13 +53,12 @@ public class InventoryQRPaymentFragment extends PaymentFragment {
     try {
       setUpArguments();
       setUpRecyclerView();
-      qrCodeScannerActivity = (QRCodeScannerActivity) getActivity();
+      qrScannerActivity = (QrScannerActivity) getActivity();
       // fetch the total inventory for the merchant
-      qrCodeScannerActivity.mPresenter.getInventory(qrCode.qr_token);
+      qrScannerActivity.mPresenter.getInventory(qrCode.qr_token);
     } catch (IOException e) {
       e.printStackTrace();
-      Toast.makeText(
-          qrCodeScannerActivity,
+      Toast.makeText(qrScannerActivity,
           "There was an error scanning. Please go back and try again",
           Toast.LENGTH_SHORT).show();
     }
@@ -82,7 +81,7 @@ public class InventoryQRPaymentFragment extends PaymentFragment {
   public void onResume() {
     super.onResume();
     // this is to update the checkout button at the bottom with the total amount
-    qrCodeScannerActivity.mPresenter.getOrderItems();
+    qrScannerActivity.mPresenter.getOrderItems();
   }
 
   /**
@@ -94,7 +93,7 @@ public class InventoryQRPaymentFragment extends PaymentFragment {
     Bundle bundle = new Bundle();
     bundle.putByteArray(getString(R.string.qr_code_bundle_identifier), qrCode.encode());
     confirmOrderFragment.setArguments(bundle);
-    qrCodeScannerActivity.replaceViewWith(confirmOrderFragment);
+    qrScannerActivity.replaceViewWith(confirmOrderFragment);
   }
 
   public void setUpRecyclerView() {
@@ -119,8 +118,8 @@ public class InventoryQRPaymentFragment extends PaymentFragment {
    */
   public void setUpDetailedInventoryFragmentView(InventoryItemLocal inventoryItemLocal){
     DetailedInventoryFragment detailedInventoryFragment =
-        new DetailedInventoryFragment(qrCodeScannerActivity, inventoryItemLocal,qrCode);
-    qrCodeScannerActivity.replaceViewWith(detailedInventoryFragment);
+        new DetailedInventoryFragment(qrScannerActivity, inventoryItemLocal,qrCode);
+    qrScannerActivity.replaceViewWith(detailedInventoryFragment);
   }
 
   /**
@@ -131,7 +130,7 @@ public class InventoryQRPaymentFragment extends PaymentFragment {
   @Override
   public void handleCurrentOrderItems(List<InventoryOrderItemEntity> inventoryOrderEntities) {
     if (inventoryOrderEntities.size() > 0) {
-      qrCodeScannerActivity.populateCheckoutButton(
+      qrScannerActivity.populateCheckoutButton(
           inventoryOrderEntities,
           checkoutConfirmationLayout,
           checkoutTotalAmountTextView,

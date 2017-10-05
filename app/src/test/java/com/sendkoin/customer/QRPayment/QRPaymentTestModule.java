@@ -8,8 +8,8 @@ import com.sendkoin.customer.data.payments.InventoryService;
 import com.sendkoin.customer.data.payments.Local.LocalOrderDataStore;
 import com.sendkoin.customer.data.payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.data.payments.PaymentService;
-import com.sendkoin.customer.payment.paymentCreate.QRScannerContract;
-import com.sendkoin.customer.payment.paymentCreate.QRScannerPresenter;
+import com.sendkoin.customer.payment.paymentCreate.QrScannerContract;
+import com.sendkoin.customer.payment.paymentCreate.QrScannerPresenter;
 
 import dagger.Module;
 import dagger.Provides;
@@ -22,9 +22,9 @@ import static org.mockito.Mockito.mock;
 
 @Module
 public class QRPaymentTestModule {
-  private QRScannerContract.View qrScannerView;
+  private QrScannerContract.View qrScannerView;
 
-  public QRPaymentTestModule(QRScannerContract.View view) {
+  public QRPaymentTestModule(QrScannerContract.View view) {
     this.qrScannerView = view;
   }
 
@@ -42,11 +42,11 @@ public class QRPaymentTestModule {
 
   @Provides
   @CustomScope
-  public QRScannerContract.Presenter providesPresenter(LocalPaymentDataStore localPaymentDataStore,
+  public QrScannerContract.Presenter providesPresenter(LocalPaymentDataStore localPaymentDataStore,
                                                        PaymentService paymentService,
                                                        InventoryService inventoryService,
                                                        LocalOrderDataStore localOrderDataStore){
-    return new QRScannerPresenter(
+    return new QrScannerPresenter(
         qrScannerView,
         localPaymentDataStore,
         paymentService,
@@ -57,7 +57,7 @@ public class QRPaymentTestModule {
 
   @Provides
   @CustomScope
-  public QRScannerContract.View providesView(){
+  public QrScannerContract.View providesView(){
     return qrScannerView;
   }
 

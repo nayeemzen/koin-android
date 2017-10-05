@@ -25,10 +25,10 @@ import rx.subscriptions.CompositeSubscription;
  * Created by warefhaque on 5/23/17.
  */
 
-public class QRScannerPresenter implements QRScannerContract.Presenter {
+public class QrScannerPresenter implements QrScannerContract.Presenter {
 
-  private static final String TAG = "QRScannerPresenter";
-  private QRScannerContract.View view;
+  private static final String TAG = "QrScannerPresenter";
+  private QrScannerContract.View view;
   private InventoryService inventoryService;
   private LocalOrderDataStore localOrderDataStore;
   public static final String MERCHANT_NAME = "merchant_name";
@@ -40,7 +40,7 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
   public static final String UNAUTHORIZED = "401";
 
   @Inject
-  public QRScannerPresenter(QRScannerContract.View view,
+  public QrScannerPresenter(QrScannerContract.View view,
                             InventoryService inventoryService,
                             LocalOrderDataStore localOrderDataStore) {
 
@@ -128,7 +128,7 @@ public class QRScannerPresenter implements QRScannerContract.Presenter {
    * Removes all the entries from the CurrentOrderTable and the InventoryOrderItemTable
    * @param transaction = null if called from the QRScannerActivity when back pressed
    *                    = transaction object when placing the complete order and transitioning to
-   *                    the DetailedReceiptActivity or detailed reciept of the payment.
+   *                    the TransactionDetailsActivity or detailed reciept of the payment.
    */
 
   @Override

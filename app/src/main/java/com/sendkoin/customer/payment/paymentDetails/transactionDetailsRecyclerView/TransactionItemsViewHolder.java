@@ -1,4 +1,4 @@
-package com.sendkoin.customer.payment.paymentDetails.detailedReceiptRecyclerView;
+package com.sendkoin.customer.payment.paymentDetails.transactionDetailsRecyclerView;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -13,7 +13,7 @@ import butterknife.ButterKnife;
  * Created by warefhaque on 6/26/17.
  */
 
-public class DetailedReceiptSaleItemViewHolder extends RecyclerView.ViewHolder {
+public class TransactionItemsViewHolder extends RecyclerView.ViewHolder {
   @BindView(R.id.item_name)
   TextView itemName;
   @BindView(R.id.item_price)
@@ -21,7 +21,7 @@ public class DetailedReceiptSaleItemViewHolder extends RecyclerView.ViewHolder {
   @BindView(R.id.item_quantity)
   TextView itemQuantity;
 
-  public DetailedReceiptSaleItemViewHolder(View itemView) {
+  public TransactionItemsViewHolder(View itemView) {
     super(itemView);
     ButterKnife.bind(this, itemView);
   }

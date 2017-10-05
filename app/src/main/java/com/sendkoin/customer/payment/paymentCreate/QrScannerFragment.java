@@ -21,7 +21,7 @@ import me.dm7.barcodescanner.zbar.ZBarScannerView;
  * Created by warefhaque on 6/1/17.
  */
 
-public class QRScannerFragment extends android.app.Fragment implements ZBarScannerView.ResultHandler {
+public class QrScannerFragment extends android.app.Fragment implements ZBarScannerView.ResultHandler {
   private ZBarScannerView mScannerView;
   public static final int PERMISSION_REQUEST_CAMERA = 1;
 
@@ -74,9 +74,9 @@ public class QRScannerFragment extends android.app.Fragment implements ZBarScann
   @Override
   public void handleResult(Result rawResult) {
 
-    if (rawResult.getContents().contains(QRScannerPresenter.MERCHANT_NAME)) {
+    if (rawResult.getContents().contains(QrScannerPresenter.MERCHANT_NAME)) {
       ScannerActivity scannerActivity = (ScannerActivity) getActivity();
-      Intent intent = new Intent(scannerActivity, QRCodeScannerActivity.class);
+      Intent intent = new Intent(scannerActivity, QrScannerActivity.class);
       intent.putExtra(AppLock.EXTRA_TYPE, AppLock.UNLOCK_PIN);
       intent.putExtra("qr_string", rawResult.getContents());
       startActivity(intent);

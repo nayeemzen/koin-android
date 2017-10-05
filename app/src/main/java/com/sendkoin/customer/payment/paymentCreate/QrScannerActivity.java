@@ -22,11 +22,11 @@ import com.sendkoin.api.QrCode;
 import com.sendkoin.api.QrType;
 import com.sendkoin.api.SaleItem;
 import com.sendkoin.customer.KoinApplication;
+import com.sendkoin.customer.payment.paymentCreate.dynamicQr.DynamicQrPaymentFragment;
 import com.sendkoin.customer.payment.paymentCreate.pinConfirmation.PinConfirmationActivity;
 import com.sendkoin.customer.R;
-import com.sendkoin.customer.payment.paymentCreate.dynamicQr.DynamicQRPaymentFragment;
 import com.sendkoin.customer.payment.paymentCreate.inventoryQr.InventoryQRPaymentFragment;
-import com.sendkoin.customer.payment.paymentCreate.staticQr.StaticQPaymentFragment;
+import com.sendkoin.customer.payment.paymentCreate.staticQr.StaticQrPaymentFragment;
 import com.sendkoin.sql.entities.InventoryOrderItemEntity;
 
 import java.util.List;
@@ -49,17 +49,17 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
  *   - whether to tell PinConfirmationActivity to process static or dynamic payments
  *   - whether to show/hide order confirmation button
  *
- * @see QRScannerContract
+ * @see QrScannerContract
  * @see PaymentFragment
- * @see DynamicQRPaymentFragment
- * @see StaticQPaymentFragment
+ * @see DynamicQrPaymentFragment
+ * @see StaticQrPaymentFragment
  * @see InventoryQRPaymentFragment
  */
 
-public class QRCodeScannerActivity extends Activity implements QRScannerContract.View {
+public class QrScannerActivity extends Activity implements QrScannerContract.View {
 
-  private static final String TAG = QRCodeScannerActivity.class.getSimpleName();
-  @Inject public QRScannerContract.Presenter mPresenter;
+  private static final String TAG = QrScannerActivity.class.getSimpleName();
+  @Inject public QrScannerContract.Presenter mPresenter;
   @Inject Gson mGson;
 
   @BindView(R.id.frame_layout) FrameLayout mFrameLayout;
@@ -88,10 +88,10 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
   }
 
   void setUpDagger() {
-    DaggerQRComponent.builder().netComponent(((KoinApplication) getApplication()
+    DaggerQrScannerComponent.builder().netComponent(((KoinApplication) getApplication()
         .getApplicationContext())
         .getNetComponent())
-        .qRPaymentModule(new QRPaymentModule(this))
+        .qRPaymentModule(new QrScannerModule(this))
         .build()
         .inject(this);
   }
@@ -109,8 +109,8 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
 
   /**
    * Decides which Fragment to inflate based on the kind of payment this is
-   * @param qrContent - QrCode coming in from QRScannerFragment
-   * @see QRScannerFragment
+   * @param qrContent - QrCode coming in from QrScannerFragment
+   * @see QrScannerFragment
    */
   public void showTransactionMethodScreen(String qrContent) {
 
@@ -119,14 +119,14 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     bundle.putByteArray(getString(R.string.qr_code_bundle_identifier), QrCode.ADAPTER.encode(qrCode));
     switch (qrCode.qr_type) {
       case DYNAMIC:
-        DynamicQRPaymentFragment dynamicQRPaymentFragment = new DynamicQRPaymentFragment();
-        dynamicQRPaymentFragment.setArguments(bundle);
-        replaceViewWith(dynamicQRPaymentFragment);
+        DynamicQrPaymentFragment dynamicQrPaymentFragment = new DynamicQrPaymentFragment();
+        dynamicQrPaymentFragment.setArguments(bundle);
+        replaceViewWith(dynamicQrPaymentFragment);
         break;
       case STATIC:
-        StaticQPaymentFragment staticQPaymentFragment = new StaticQPaymentFragment();
-        staticQPaymentFragment.setArguments(bundle);
-        replaceViewWith(staticQPaymentFragment);
+        StaticQrPaymentFragment staticQrPaymentFragment = new StaticQrPaymentFragment();
+        staticQrPaymentFragment.setArguments(bundle);
+        replaceViewWith(staticQrPaymentFragment);
         break;
       case INVENTORY_STATIC:
         inventoryQRPaymentFragment = new InventoryQRPaymentFragment();
@@ -187,7 +187,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
 
   /**
    * Handles the custom fragment switches when the customer presses back from
-   * InventoryQRPaymentFragment || StaticQPaymentFragment || DynamicQRPaymentFragment
+   * InventoryQRPaymentFragment || StaticQrPaymentFragment || DynamicQrPaymentFragment
    */
   @Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -198,8 +198,8 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
           showOrderCancelDialog();
         else
           finish();
-      } else if (currentFragment instanceof StaticQPaymentFragment
-          || currentFragment instanceof DynamicQRPaymentFragment){
+      } else if (currentFragment instanceof StaticQrPaymentFragment
+          || currentFragment instanceof DynamicQrPaymentFragment){
         finish();
       }
       else getFragmentManager().popBackStack();
@@ -296,7 +296,7 @@ public class QRCodeScannerActivity extends Activity implements QRScannerContract
     } else {
       bundleStaticTransaction(qrCode, saleItemList, bundle);
     }
-    Intent intent = new Intent(QRCodeScannerActivity.this, PinConfirmationActivity.class);
+    Intent intent = new Intent(QrScannerActivity.this, PinConfirmationActivity.class);
     intent.putExtra(getString(R.string.bundle_id_sale_summary), bundle);
     startActivity(intent);
   }

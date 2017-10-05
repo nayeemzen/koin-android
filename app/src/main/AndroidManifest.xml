@@ -26,7 +26,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.sendkoin.customer.payment.paymentCreate.QRCodeScannerActivity"
+            android:name="com.sendkoin.customer.payment.paymentCreate.QrScannerActivity"
             android:theme="@style/AppTheme.QRScanner"/>
 
 
@@ -59,7 +59,7 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-            android:name=".payment.paymentDetails.DetailedReceiptActivity"
+            android:name=".payment.paymentDetails.TransactionDetailsActivity"
             android:theme="@style/AppTheme.NoActionBar">
 
         </activity>

@@ -20,7 +20,7 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 
 /**
- * Created by warefhaque on 7/12/17.
+ * Read/Write the customers CURRENT order only
  */
 
 public class LocalOrderDataStore {
@@ -47,6 +47,13 @@ public class LocalOrderDataStore {
         .asRxObservable();
   }
 
+  /**
+   * Saves/Updates order item selected by user.
+   * Timestamp calculated here. Might refactor.
+   * @param inventoryItemLocal - the item selected by customer
+   * @param orderId - order this item is associated with
+   * @return PutResult just to know success/failure
+   */
   public Observable<PutResult> createOrUpdateItem(
      InventoryItemLocal inventoryItemLocal,
       String orderId) {
@@ -80,6 +87,15 @@ public class LocalOrderDataStore {
 
   }
 
+  /**
+   * Saves/Updates order
+   * TimeStamp + OrderId created here. Might Refactor
+   * @param qrToken - saving as may need to query group by qr_token in future
+   * @return CurrentOrderEntity - Needed by QrScannerPresenter to flatmap and save the items
+   * in this order
+   *
+   * @see com.sendkoin.customer.payment.paymentCreate.QrScannerPresenter
+   */
   public Observable<CurrentOrderEntity> createOrUpdateOrder(String qrToken) {
 
     return storIOSQLite.get().listOfObjects(CurrentOrderEntity.class).withQuery(Query.builder()
@@ -110,6 +126,10 @@ public class LocalOrderDataStore {
   }
 
 
+  /**
+   * Fetches the users current order with the list of items involved
+   * @return List<InventoryOrderItemEntity>
+   */
   public Observable<List<InventoryOrderItemEntity>> getCurrentOrder() {
     return storIOSQLite.get()
         .listOfObjects(InventoryOrderItemEntity.class)
@@ -120,6 +140,13 @@ public class LocalOrderDataStore {
         .asRxObservable();
   }
 
+  /**
+   * As the customer goes back to scanner OR finished paying order deleted and new order
+   * will be started.
+   * Operations below used in flatmap in QrScannerPresenter to delete order and items
+   * @param transaction - Proto Object representing transaction in product
+   * @return
+   */
   public Observable<Transaction> removeAllOrders(Transaction transaction) {
     return storIOSQLite.delete()
         .byQuery(DeleteQuery.builder()

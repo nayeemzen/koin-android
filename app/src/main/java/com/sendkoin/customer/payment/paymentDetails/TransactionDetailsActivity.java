@@ -21,9 +21,9 @@ import com.sendkoin.api.TransactionDetail;
 import com.sendkoin.customer.KoinApplication;
 import com.sendkoin.customer.MainActivity;
 import com.sendkoin.customer.R;
-import com.sendkoin.customer.payment.paymentDetails.detailedReceiptRecyclerView.DetailedReceiptAdapter;
-import com.sendkoin.customer.payment.paymentDetails.detailedReceiptRecyclerView.DetailedRecieptHeader;
-import com.sendkoin.customer.payment.paymentDetails.detailedReceiptRecyclerView.Item;
+import com.sendkoin.customer.payment.paymentDetails.transactionDetailsRecyclerView.TransactionDetailsAdapter;
+import com.sendkoin.customer.payment.paymentDetails.transactionDetailsRecyclerView.TransactionSummary;
+import com.sendkoin.customer.payment.paymentDetails.transactionDetailsRecyclerView.Item;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,7 @@ import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
  * Created by warefhaque on 6/5/17.
  */
 
-public class DetailedReceiptActivity
+public class TransactionDetailsActivity
     extends AppCompatActivity
     implements TransactionDetailsContract.View {
 
@@ -51,7 +51,7 @@ public class DetailedReceiptActivity
   @BindView(R.id.recycler_view_detailed_receipt) RecyclerView mRecyclerView;
 
   private IImageLoader mImageLoader;
-  private DetailedReceiptAdapter mAdapter;
+  private TransactionDetailsAdapter mAdapter;
   private String mTransactionToken;
   boolean mFromPayment = false;
 
@@ -81,7 +81,7 @@ public class DetailedReceiptActivity
   public boolean onKeyDown(int keyCode, KeyEvent event) {
     if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
       if (mFromPayment)
-        startActivity(new Intent(DetailedReceiptActivity.this, MainActivity.class));
+        startActivity(new Intent(TransactionDetailsActivity.this, MainActivity.class));
       else
         finish();
     }
@@ -119,12 +119,12 @@ public class DetailedReceiptActivity
         .setItemName(saleItem.name)
         .setQuantity(saleItem.quantity)).toList();
 
-    List<DetailedRecieptHeader> sections = new ArrayList<>();
-    sections.add(new DetailedRecieptHeader()
+    List<TransactionSummary> sections = new ArrayList<>();
+    sections.add(new TransactionSummary()
         .setChildList(items)
         .setTransaction(transactionDetail.transaction));
 
-    mAdapter = new DetailedReceiptAdapter(this, sections, mImageLoader);
+    mAdapter = new TransactionDetailsAdapter(this, sections, mImageLoader);
     mRecyclerView.setAdapter(mAdapter);
   }
 

@@ -14,7 +14,7 @@ import java.util.List;
  * Created by warefhaque on 5/23/17.
  */
 
-public interface QRScannerContract {
+public interface QrScannerContract {
 
   interface View {
     Context getContext();

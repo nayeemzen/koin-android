@@ -1,4 +1,4 @@
-package com.sendkoin.customer.payment.paymentCreate.inventoryQr.confirmInventoryOrder;
+package com.sendkoin.customer.payment.paymentCreate.inventoryQr.confirmOrder;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

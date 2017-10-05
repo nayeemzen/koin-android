@@ -9,7 +9,8 @@ import com.sendkoin.customer.FakePaymentService;
 import com.sendkoin.customer.KoinTestModule;
 import com.sendkoin.customer.MiscGenerator;
 import com.sendkoin.customer.RxSchedulersOverrideRule;
-import com.sendkoin.customer.payment.paymentCreate.QRScannerContract;
+import com.sendkoin.customer.payment.paymentCreate.QrScannerContract;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,8 +29,8 @@ import static org.mockito.Mockito.verify;
 public class QRPaymentTest {
   @Rule public RxSchedulersOverrideRule rxSchedulersOverrideRule = new RxSchedulersOverrideRule();
 
-  @Inject QRScannerContract.View view;
-  @Inject QRScannerContract.Presenter presenter;
+  @Inject QrScannerContract.View view;
+  @Inject QrScannerContract.Presenter presenter;
   @Inject MiscGenerator miscGenerator;
 
   @Before
@@ -38,7 +39,7 @@ public class QRPaymentTest {
         .koinTestComponent(DaggerKoinTestComponent.builder()
             .koinTestModule(new KoinTestModule())
             .build())
-        .qRPaymentTestModule(new QRPaymentTestModule(mock(QRScannerContract.View.class)))
+        .qRPaymentTestModule(new QRPaymentTestModule(mock(QrScannerContract.View.class)))
         .build()
         .inject(this);
     MockitoAnnotations.initMocks(this);

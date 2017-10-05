@@ -13,7 +13,7 @@ import android.widget.Toast;
 import com.sendkoin.api.QrCode;
 import com.sendkoin.api.SaleItem;
 import com.sendkoin.customer.R;
-import com.sendkoin.customer.payment.paymentCreate.QRCodeScannerActivity;
+import com.sendkoin.customer.payment.paymentCreate.QrScannerActivity;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -28,7 +28,7 @@ import mehdi.sakout.fancybuttons.FancyButton;
  * Created by warefhaque on 7/9/17.
  */
 
-public class StaticQPaymentFragment extends android.app.Fragment {
+public class StaticQrPaymentFragment extends android.app.Fragment {
 
   @BindView(R.id.pay_button) FancyButton payButton;
   @BindView(R.id.enter_sales_message) TextView saleAmoutMessage;
@@ -44,7 +44,7 @@ public class StaticQPaymentFragment extends android.app.Fragment {
     setupPayButton();
     try {
       setUpArguments();
-      ((QRCodeScannerActivity) getActivity()).setUpLogo(merchantLogo, qrCode.merchant_name);
+      ((QrScannerActivity) getActivity()).setUpLogo(merchantLogo, qrCode.merchant_name);
       saleAmoutMessage.setText(getString(R.string.static_qr_message) + qrCode.merchant_name);
     } catch (IOException e) {
       e.printStackTrace();
@@ -83,7 +83,7 @@ public class StaticQPaymentFragment extends android.app.Fragment {
 
     // process payment
     int saleAmount = Integer.parseInt(enterSaleAmount.getText().toString());
-    ((QRCodeScannerActivity) getActivity()).showPinConfirmationActivity(
+    ((QrScannerActivity) getActivity()).showPinConfirmationActivity(
         qrCode,
         Collections.singletonList(
             new SaleItem.Builder()
@@ -96,6 +96,6 @@ public class StaticQPaymentFragment extends android.app.Fragment {
   @Override
   public void onPause() {
     super.onPause();
-    ((QRCodeScannerActivity) getActivity()).mPresenter.unsubscribe();
+    ((QrScannerActivity) getActivity()).mPresenter.unsubscribe();
   }
 }

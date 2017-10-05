@@ -1,4 +1,4 @@
-package com.sendkoin.customer.payment.paymentDetails.detailedReceiptRecyclerView;
+package com.sendkoin.customer.payment.paymentDetails.transactionDetailsRecyclerView;
 
 /**
  * Created by warefhaque on 6/26/17.

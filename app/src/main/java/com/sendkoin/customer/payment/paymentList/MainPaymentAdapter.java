@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sendkoin.customer.MainActivity;
-import com.sendkoin.customer.payment.paymentDetails.DetailedReceiptActivity;
+import com.sendkoin.customer.payment.paymentDetails.TransactionDetailsActivity;
 import com.sendkoin.customer.R;
 import com.sendkoin.customer.utility.AvatarImageView;
 import com.sendkoin.sql.entities.PaymentEntity;
@@ -148,7 +148,7 @@ public class MainPaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
       if (clickedItem.getType() == ListItem.TYPE_PAYMENT){
         PaymentItem paymentItem = (PaymentItem) clickedItem;
 
-        Intent intent = new Intent(mainActivity, DetailedReceiptActivity.class);
+        Intent intent = new Intent(mainActivity, TransactionDetailsActivity.class);
         intent.putExtra(view.getContext()
             .getString(R.string.trans_token_extra), paymentItem.getTransactionToken());
         mainActivity.startActivity(intent);

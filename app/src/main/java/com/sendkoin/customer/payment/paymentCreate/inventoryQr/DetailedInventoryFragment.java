@@ -13,7 +13,7 @@ import com.sendkoin.api.QrCode;
 import com.sendkoin.customer.R;
 import com.sendkoin.customer.data.payments.Models.inventory.InventoryItemLocal;
 import com.sendkoin.customer.payment.paymentCreate.PaymentFragment;
-import com.sendkoin.customer.payment.paymentCreate.QRCodeScannerActivity;
+import com.sendkoin.customer.payment.paymentCreate.QrScannerActivity;
 import com.sendkoin.sql.entities.InventoryOrderItemEntity;
 import com.squareup.picasso.Picasso;
 
@@ -39,7 +39,7 @@ public class DetailedInventoryFragment extends PaymentFragment {
   @BindView(R.id.inventory_category_name_tv) TextView detailedItemNameTextView;
 
 
-  private QRCodeScannerActivity qrCodeScannerActivity;
+  private QrScannerActivity qrScannerActivity;
   private InventoryItemLocal inventoryItemLocal;
   private QrCode qrCode;
 
@@ -50,13 +50,13 @@ public class DetailedInventoryFragment extends PaymentFragment {
                            Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.inventory_detailed_item, container, false);
     ButterKnife.bind(this, view);
-    qrCodeScannerActivity = (QRCodeScannerActivity) getActivity();
+    qrScannerActivity = (QrScannerActivity) getActivity();
     return view;
   }
 
   private void setUpViews(String name, String description, String imageUrl, int price, int quantity) {
     detailedItemAddInstructions.setText("");
-    Picasso.with(qrCodeScannerActivity)
+    Picasso.with(qrScannerActivity)
         .load(imageUrl)
         .fit()
         .into(detailedItemImageView);
@@ -67,10 +67,10 @@ public class DetailedInventoryFragment extends PaymentFragment {
     detailedItemConfirmTextView.setText("Add "+String.valueOf(quantity) +" to order");
   }
 
-  public DetailedInventoryFragment(QRCodeScannerActivity qrCodeScannerActivity,
+  public DetailedInventoryFragment(QrScannerActivity qrScannerActivity,
                                   InventoryItemLocal inventoryItemLocal,
                                    QrCode qrCode) {
-    this.qrCodeScannerActivity = qrCodeScannerActivity;
+    this.qrScannerActivity = qrScannerActivity;
     this.inventoryItemLocal = inventoryItemLocal;
     this.qrCode = qrCode;
   }
@@ -102,22 +102,22 @@ public class DetailedInventoryFragment extends PaymentFragment {
 
   @OnClick(R.id.detailed_item_confirm_layout)
   void clickedConfirmItem() {
-    qrCodeScannerActivity.mPresenter.putOrder(
+    qrScannerActivity.mPresenter.putOrder(
         qrCode.qr_token, inventoryItemLocal);
-    qrCodeScannerActivity.getFragmentManager().popBackStack();
+    qrScannerActivity.getFragmentManager().popBackStack();
   }
 
   @Override
   public void onResume() {
     super.onResume();
-    qrCodeScannerActivity.mPresenter.getOrderItems();
+    qrScannerActivity.mPresenter.getOrderItems();
   }
 
 
   /**
    * Pulls the customers orders from the local Db. If the customer has ordered this item before
    * show the quantity he/she selected else show the default quantity
-   * todo : change the name of PaymentListItem... + pass PaymentListItem in the parameter to handleCurrentOrderItems and do if else
+   * todo : change the name of PaymentListItem... + pass PaymentListItem in the parameter
    * @param inventoryOrderEntities
    */
   @Override

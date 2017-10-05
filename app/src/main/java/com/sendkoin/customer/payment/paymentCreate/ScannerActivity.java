@@ -11,7 +11,7 @@ import butterknife.ButterKnife;
 
 /**
  * Holds the QrScanner
- * todo : QRScannerFragment just needs to be ported to QRCodeScannerActivity - delete this class
+ * todo : QrScannerFragment just needs to be ported to QrScannerActivity - delete this class
  */
 
 public class ScannerActivity extends Activity {
@@ -23,7 +23,7 @@ public class ScannerActivity extends Activity {
     setContentView(R.layout.activity_qrscanner);
     ButterKnife.bind(this);
 
-    QRScannerFragment qrScannerFragement = new QRScannerFragment();
+    QrScannerFragment qrScannerFragement = new QrScannerFragment();
     FragmentTransaction transaction = getFragmentManager().beginTransaction();
     transaction.add(R.id.frame_layout, qrScannerFragement);
     transaction.commit();
