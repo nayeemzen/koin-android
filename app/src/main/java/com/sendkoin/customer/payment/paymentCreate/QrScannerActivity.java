@@ -22,6 +22,7 @@ import com.sendkoin.api.QrCode;
 import com.sendkoin.api.QrType;
 import com.sendkoin.api.SaleItem;
 import com.sendkoin.customer.KoinApplication;
+import com.sendkoin.customer.data.payments.Local.LocalOrderDataStore;
 import com.sendkoin.customer.payment.paymentCreate.dynamicQr.DynamicQrPaymentFragment;
 import com.sendkoin.customer.payment.paymentCreate.pinConfirmation.PinConfirmationActivity;
 import com.sendkoin.customer.R;
@@ -61,6 +62,7 @@ public class QrScannerActivity extends Activity implements QrScannerContract.Vie
   private static final String TAG = QrScannerActivity.class.getSimpleName();
   @Inject public QrScannerContract.Presenter mPresenter;
   @Inject Gson mGson;
+  @Inject LocalOrderDataStore localOrderDataStore;
 
   @BindView(R.id.frame_layout) FrameLayout mFrameLayout;
 
@@ -129,7 +131,7 @@ public class QrScannerActivity extends Activity implements QrScannerContract.Vie
         replaceViewWith(staticQrPaymentFragment);
         break;
       case INVENTORY_STATIC:
-        inventoryQRPaymentFragment = new InventoryQRPaymentFragment(mPresenter);
+        inventoryQRPaymentFragment = new InventoryQRPaymentFragment(mPresenter, localOrderDataStore);
         inventoryQRPaymentFragment.setArguments(bundle);
         replaceViewWith(inventoryQRPaymentFragment);
         break;

@@ -14,6 +14,19 @@ public class InventoryItemLocal extends InventoryListItem {
   public String additionalNotes;
   public long inventoryItemId;
 
+  public InventoryItemLocal(String itemName, int itemPrice, int quantity, long inventoryItemId) {
+    this.itemName = itemName;
+    this.itemPrice = itemPrice;
+    this.quantity = quantity;
+    this.inventoryItemId = inventoryItemId;
+    this.setItemDescription("");
+    this.setAdditionalNotes("");
+    this.setItemImageUrl("");
+  }
+
+  public InventoryItemLocal() {
+  }
+
   public InventoryItemLocal setInventoryItemId(long inventoryItemId) {
     this.inventoryItemId = inventoryItemId;
     return this;

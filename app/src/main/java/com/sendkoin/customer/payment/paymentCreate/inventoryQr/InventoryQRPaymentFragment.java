@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.sendkoin.api.Category;
 import com.sendkoin.api.QrCode;
 import com.sendkoin.customer.R;
+import com.sendkoin.customer.data.payments.Local.LocalOrderDataStore;
 import com.sendkoin.customer.data.payments.Models.inventory.InventoryItemLocal;
 import com.sendkoin.customer.payment.paymentCreate.PaymentFragment;
 import com.sendkoin.customer.payment.paymentCreate.QrScannerActivity;
@@ -45,9 +46,12 @@ public class InventoryQRPaymentFragment extends PaymentFragment {
   private InventoryRecyclerViewAdapter inventoryRecyclerViewAdapter;
   private QrCode qrCode;
   private QrScannerContract.Presenter presenter;
+  private LocalOrderDataStore localOrderDataStore;
 
-  public InventoryQRPaymentFragment(QrScannerContract.Presenter presenter) {
+  public InventoryQRPaymentFragment(QrScannerContract.Presenter presenter,
+                                    LocalOrderDataStore localOrderDataStore) {
     this.presenter = presenter;
+    this.localOrderDataStore = localOrderDataStore;
   }
 
   @Nullable
@@ -94,7 +98,7 @@ public class InventoryQRPaymentFragment extends PaymentFragment {
    */
   @OnClick(R.id.checkout_total_order_layout)
   void clickedCheckout() {
-    ConfirmOrderFragment confirmOrderFragment = new ConfirmOrderFragment(presenter);
+    ConfirmOrderFragment confirmOrderFragment = new ConfirmOrderFragment(presenter, localOrderDataStore);
     Bundle bundle = new Bundle();
     bundle.putByteArray(getString(R.string.qr_code_bundle_identifier), qrCode.encode());
     confirmOrderFragment.setArguments(bundle);

@@ -11,6 +11,10 @@ import com.sendkoin.customer.data.payments.Local.LocalOrderDataStore;
 import com.sendkoin.customer.data.payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.data.payments.PaymentRepository;
 import com.sendkoin.customer.data.sql.KoinSQLiteOpenHelper;
+import com.sendkoin.sql.entities.CurrentOrderEntity;
+import com.sendkoin.sql.entities.CurrentOrderEntitySQLiteTypeMapping;
+import com.sendkoin.sql.entities.InventoryOrderItemEntity;
+import com.sendkoin.sql.entities.InventoryOrderItemEntitySQLiteTypeMapping;
 import com.sendkoin.sql.entities.PaymentEntity;
 import com.sendkoin.sql.entities.PaymentEntitySQLiteTypeMapping;
 import org.robolectric.RuntimeEnvironment;
@@ -47,6 +51,8 @@ public class KoinTestModule {
     return DefaultStorIOSQLite.builder()
         .sqliteOpenHelper(new KoinSQLiteOpenHelper(application))
         .addTypeMapping(PaymentEntity.class, new PaymentEntitySQLiteTypeMapping())
+        .addTypeMapping(InventoryOrderItemEntity.class, new InventoryOrderItemEntitySQLiteTypeMapping())
+        .addTypeMapping(CurrentOrderEntity.class, new CurrentOrderEntitySQLiteTypeMapping())
         .build();
   }
 

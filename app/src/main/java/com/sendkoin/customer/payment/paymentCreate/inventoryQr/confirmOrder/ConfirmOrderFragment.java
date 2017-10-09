@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.sendkoin.api.QrCode;
 import com.sendkoin.api.SaleItem;
 import com.sendkoin.customer.R;
+import com.sendkoin.customer.data.payments.Local.LocalOrderDataStore;
 import com.sendkoin.customer.payment.paymentCreate.PaymentFragment;
 import com.sendkoin.customer.payment.paymentCreate.QrScannerActivity;
 import com.sendkoin.customer.payment.paymentCreate.QrScannerContract;
@@ -48,9 +49,11 @@ public class ConfirmOrderFragment extends PaymentFragment {
   private List<InventoryOrderItemEntity> inventoryOrderEntities;
   private QrCode qrCode;
   private QrScannerContract.Presenter presenter;
+  private LocalOrderDataStore localOrderDataStore;
 
-  public ConfirmOrderFragment(QrScannerContract.Presenter presenter) {
+  public ConfirmOrderFragment(QrScannerContract.Presenter presenter, LocalOrderDataStore localOrderDataStore) {
     this.presenter = presenter;
+    this.localOrderDataStore = localOrderDataStore;
   }
 
   @Nullable
@@ -83,24 +86,8 @@ public class ConfirmOrderFragment extends PaymentFragment {
 
   @OnClick(R.id.confirm_order_pay_layout)
   void clickedPay() {
-    List<SaleItem> saleItems = convertPaymentEntitiesToSaleItems();
-   presenter.createInitiateTransactionRequest(qrCode, saleItems);
-  }
-
-  private List<SaleItem> convertPaymentEntitiesToSaleItems() {
-    List<SaleItem> saleItems = new ArrayList<>();
-    for (InventoryOrderItemEntity inventoryOrderItemEntity : inventoryOrderEntities) {
-      SaleItem saleItem = new SaleItem.Builder()
-          .name(inventoryOrderItemEntity.getItemName())
-          .price(inventoryOrderItemEntity.getItemPrice().intValue())
-          .quantity(inventoryOrderItemEntity.getItemQuantity().intValue())
-          .customer_notes(inventoryOrderItemEntity.getItemAdditionalNotes())
-          .sale_type(SaleItem.SaleType.QUICK_SALE)
-          .build();
-      saleItems.add(saleItem);
-    }
-
-    return saleItems;
+    presenter.createInitiateTransactionRequest(qrCode,
+        localOrderDataStore.toSaleItems(inventoryOrderEntities));
   }
 
   private void setUpRecyclerView() {

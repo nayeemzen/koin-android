@@ -4,6 +4,7 @@ import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
 import com.pushtorefresh.storio.sqlite.queries.DeleteQuery;
 import com.pushtorefresh.storio.sqlite.queries.Query;
+import com.sendkoin.api.SaleItem;
 import com.sendkoin.api.Transaction;
 import com.sendkoin.customer.data.payments.Models.inventory.InventoryItemLocal;
 import com.sendkoin.sql.entities.CurrentOrderEntity;
@@ -11,6 +12,7 @@ import com.sendkoin.sql.entities.InventoryOrderItemEntity;
 import com.sendkoin.sql.tables.CurrentOrderTable;
 import com.sendkoin.sql.tables.InventoryOrderItemTable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -140,6 +142,35 @@ public class LocalOrderDataStore {
         .asRxObservable();
   }
 
+  public List<SaleItem> toSaleItems(List<InventoryOrderItemEntity> inventoryOrderItemEntities) {
+    List<SaleItem> saleItems = new ArrayList<>();
+    for (InventoryOrderItemEntity inventoryOrderItemEntity : inventoryOrderItemEntities) {
+      SaleItem saleItem = new SaleItem.Builder()
+          .name(inventoryOrderItemEntity.getItemName())
+          .price(inventoryOrderItemEntity.getItemPrice().intValue())
+          .quantity(inventoryOrderItemEntity.getItemQuantity().intValue())
+          .customer_notes(inventoryOrderItemEntity.getItemAdditionalNotes())
+          .sale_type(SaleItem.SaleType.QUICK_SALE)
+          .build();
+      saleItems.add(saleItem);
+    }
+
+    return saleItems;
+  }
+
+  /**
+   * For testing whether correct items were stored or not
+   * @return
+   */
+  public List<InventoryOrderItemEntity> getCurrentOrderTest() {
+    return storIOSQLite.get()
+        .listOfObjects(InventoryOrderItemEntity.class)
+        .withQuery(Query.builder()
+            .table(InventoryOrderItemTable.TABLE)
+            .build())
+        .prepare()
+        .executeAsBlocking();
+  }
   /**
    * As the customer goes back to scanner OR finished paying order deleted and new order
    * will be started.

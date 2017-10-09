@@ -13,6 +13,8 @@ import com.sendkoin.customer.payment.paymentCreate.QrScannerPresenter;
 import com.sendkoin.customer.payment.paymentCreate.pinConfirmation.PinConfirmationContract;
 import com.sendkoin.customer.payment.paymentCreate.pinConfirmation.PinConfirmationPresenter;
 
+import java.util.Random;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -77,4 +79,9 @@ public class CreatePaymentTestModule {
     return pinConfirmationView;
   }
 
+  @Provides
+  @CustomScope
+  public Random providesRandom() {
+    return new Random();
+  }
 }
