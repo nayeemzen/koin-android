@@ -11,6 +11,7 @@ import com.sendkoin.api.Merchant;
 import com.sendkoin.api.Order;
 import com.sendkoin.api.Transaction;
 import com.sendkoin.api.TransactionDetail;
+import com.sendkoin.api.TransactionState;
 import com.sendkoin.customer.data.payments.PaymentService;
 
 import java.util.ArrayList;
@@ -54,12 +55,18 @@ public class FakePaymentService implements PaymentService {
   public Observable<InitiateStaticTransactionResponse> initiateCurrentTransaction(
       @Body InitiateStaticTransactionRequest initiateStaticTransactionRequest) {
 
+    int total = Stream.of(initiateStaticTransactionRequest.sale_items)
+        .mapToInt(saleItem -> saleItem.price * saleItem.quantity)
+        .sum();
     //1. build a transaction AND order
     Transaction transaction = new Transaction.Builder()
         .created_at(System.currentTimeMillis())
         .token(initiateStaticTransactionRequest.qr_token)
+        .amount(total)
+        .state(TransactionState.PROCESSING)
         .merchant(new Merchant.Builder()
             .store_name("Gloria Jeans")
+            .store_type("Coffee Shop")
             .build())
         .build();
 

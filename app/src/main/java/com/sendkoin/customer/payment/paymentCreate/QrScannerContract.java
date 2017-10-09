@@ -1,8 +1,13 @@
 package com.sendkoin.customer.payment.paymentCreate;
 
 import android.content.Context;
+import android.os.Bundle;
 
+import com.sendkoin.api.AcceptTransactionRequest;
 import com.sendkoin.api.Category;
+import com.sendkoin.api.InitiateStaticTransactionRequest;
+import com.sendkoin.api.QrCode;
+import com.sendkoin.api.SaleItem;
 import com.sendkoin.api.Transaction;
 import com.sendkoin.customer.BasePresenter;
 import com.sendkoin.customer.data.payments.Models.inventory.InventoryItemLocal;
@@ -20,6 +25,8 @@ public interface QrScannerContract {
     Context getContext();
     void showInventoryItems(List<Category> groupedInventoryItems);
     void handleOrderItems(List<InventoryOrderItemEntity> inventoryOrderEntities);
+    void processStaticTransaction(InitiateStaticTransactionRequest initiateStaticTransactionRequest);
+    void processDynamicTransaction(AcceptTransactionRequest acceptTransactionRequest);
     void showOrderDeleted();
   }
 
@@ -28,6 +35,8 @@ public interface QrScannerContract {
     void getOrderItems();
     void putOrder(String qrToken,InventoryItemLocal inventoryItemLocal);
     void removeAllOrders(Transaction transaction);
+    void createInitiateTransactionRequest(QrCode qrCode, List<SaleItem> saleItemList);
+    void createAcceptTransactionRequest(QrCode qrCode);
   }
 
 

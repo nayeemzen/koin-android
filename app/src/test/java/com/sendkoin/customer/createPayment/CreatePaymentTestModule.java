@@ -10,6 +10,8 @@ import com.sendkoin.customer.data.payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.data.payments.PaymentService;
 import com.sendkoin.customer.payment.paymentCreate.QrScannerContract;
 import com.sendkoin.customer.payment.paymentCreate.QrScannerPresenter;
+import com.sendkoin.customer.payment.paymentCreate.pinConfirmation.PinConfirmationContract;
+import com.sendkoin.customer.payment.paymentCreate.pinConfirmation.PinConfirmationPresenter;
 
 import dagger.Module;
 import dagger.Provides;
@@ -21,11 +23,14 @@ import static org.mockito.Mockito.mock;
  */
 
 @Module
-public class QRPaymentTestModule {
+public class CreatePaymentTestModule {
   private QrScannerContract.View qrScannerView;
+  private PinConfirmationContract.View pinConfirmationView;
 
-  public QRPaymentTestModule(QrScannerContract.View view) {
+  public CreatePaymentTestModule(QrScannerContract.View view,
+                                 PinConfirmationContract.View pinConfirmationView) {
     this.qrScannerView = view;
+    this.pinConfirmationView = pinConfirmationView;
   }
 
   @Provides
@@ -42,21 +47,34 @@ public class QRPaymentTestModule {
 
   @Provides
   @CustomScope
-  public QrScannerContract.Presenter providesPresenter(LocalPaymentDataStore localPaymentDataStore,
-                                                       PaymentService paymentService,
-                                                       InventoryService inventoryService,
+  public QrScannerContract.Presenter providesPresenter(InventoryService inventoryService,
                                                        LocalOrderDataStore localOrderDataStore){
-    return new QrScannerPresenter(
-        qrScannerView,
-        inventoryService,
-        localOrderDataStore);
+    return new QrScannerPresenter(qrScannerView, inventoryService, localOrderDataStore);
   }
 
+  @Provides
+  @CustomScope
+  public PinConfirmationContract.Presenter providesPinConfirmationPresenter(
+      LocalOrderDataStore localOrderDataStore,
+      LocalPaymentDataStore localPaymentDataStore,
+      PaymentService paymentService){
+    return new PinConfirmationPresenter(
+        pinConfirmationView,
+        localOrderDataStore,
+        localPaymentDataStore,
+        paymentService);
+  }
 
   @Provides
   @CustomScope
   public QrScannerContract.View providesView(){
     return qrScannerView;
+  }
+
+  @Provides
+  @CustomScope
+  PinConfirmationContract.View providesPinConfirmationView () {
+    return pinConfirmationView;
   }
 
 }

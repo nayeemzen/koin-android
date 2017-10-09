@@ -1,5 +1,7 @@
 package com.sendkoin.customer;
 
+import android.os.Bundle;
+
 import com.sendkoin.api.Merchant;
 import com.sendkoin.api.QrCode;
 import com.sendkoin.api.QrType;
@@ -8,6 +10,7 @@ import com.sendkoin.api.Transaction;
 import com.sendkoin.api.TransactionState;
 import com.sendkoin.customer.data.FakePaymentService;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -62,7 +65,7 @@ public class MiscGenerator {
    * Generates sale items required to make ANY transaction
    * @return Singleton list of sale items according to SaleItem proto buff.
    */
-  public List<SaleItem> generateSaleItems() {
+  public List<SaleItem> generateStaticPaymentSaleItems() {
     return Collections.singletonList(
         new SaleItem.Builder()
             .name("One Time Payment")

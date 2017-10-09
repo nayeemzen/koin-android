@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.sendkoin.api.QrCode;
 import com.sendkoin.customer.R;
 import com.sendkoin.customer.payment.paymentCreate.QrScannerActivity;
+import com.sendkoin.customer.payment.paymentCreate.QrScannerContract;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -34,6 +35,11 @@ public class DynamicQrPaymentFragment extends android.app.Fragment {
   FancyButton payButton;
 
   private QrCode qrCode;
+  private QrScannerContract.Presenter presenter;
+
+  public DynamicQrPaymentFragment(QrScannerContract.Presenter presenter) {
+    this.presenter = presenter;
+  }
 
   @Nullable
   @Override
@@ -72,7 +78,6 @@ public class DynamicQrPaymentFragment extends android.app.Fragment {
 
   @OnClick(R.id.pay_button)
   void payClicked(){
-    ((QrScannerActivity) getActivity())
-        .showPinConfirmationActivity(qrCode, Collections.emptyList());
+    presenter.createAcceptTransactionRequest(qrCode);
   }
 }

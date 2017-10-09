@@ -119,17 +119,17 @@ public class QrScannerActivity extends Activity implements QrScannerContract.Vie
     bundle.putByteArray(getString(R.string.qr_code_bundle_identifier), QrCode.ADAPTER.encode(qrCode));
     switch (qrCode.qr_type) {
       case DYNAMIC:
-        DynamicQrPaymentFragment dynamicQrPaymentFragment = new DynamicQrPaymentFragment();
+        DynamicQrPaymentFragment dynamicQrPaymentFragment = new DynamicQrPaymentFragment(mPresenter);
         dynamicQrPaymentFragment.setArguments(bundle);
         replaceViewWith(dynamicQrPaymentFragment);
         break;
       case STATIC:
-        StaticQrPaymentFragment staticQrPaymentFragment = new StaticQrPaymentFragment();
+        StaticQrPaymentFragment staticQrPaymentFragment = new StaticQrPaymentFragment(mPresenter);
         staticQrPaymentFragment.setArguments(bundle);
         replaceViewWith(staticQrPaymentFragment);
         break;
       case INVENTORY_STATIC:
-        inventoryQRPaymentFragment = new InventoryQRPaymentFragment();
+        inventoryQRPaymentFragment = new InventoryQRPaymentFragment(mPresenter);
         inventoryQRPaymentFragment.setArguments(bundle);
         replaceViewWith(inventoryQRPaymentFragment);
         break;
@@ -161,6 +161,30 @@ public class QrScannerActivity extends Activity implements QrScannerContract.Vie
     PaymentFragment paymentFragment
         = (PaymentFragment) getFragmentManager().findFragmentById(R.id.frame_layout);
     paymentFragment.handleCurrentOrderItems(inventoryOrderEntities);
+  }
+
+  public void showPinConfirmationActivity(Bundle transactionBundle) {
+    Intent intent = new Intent(QrScannerActivity.this, PinConfirmationActivity.class);
+    intent.putExtra(getString(R.string.bundle_id_sale_summary), transactionBundle);
+    startActivity(intent);
+  }
+
+  @Override
+  public void processStaticTransaction(InitiateStaticTransactionRequest initiateStaticTransactionRequest) {
+    Bundle staticBundle = new Bundle();
+    staticBundle.putByteArray(
+        InitiateStaticTransactionRequest.class.getSimpleName(),
+        InitiateStaticTransactionRequest.ADAPTER.encode(initiateStaticTransactionRequest));
+    showPinConfirmationActivity(staticBundle);
+  }
+
+  @Override
+  public void processDynamicTransaction(AcceptTransactionRequest acceptTransactionRequest) {
+    Bundle dynamicBundle = new Bundle();
+    dynamicBundle.putByteArray(
+        AcceptTransactionRequest.class.getSimpleName(),
+        AcceptTransactionRequest.ADAPTER.encode(acceptTransactionRequest));
+    showPinConfirmationActivity(dynamicBundle);
   }
 
   /**
@@ -281,59 +305,4 @@ public class QrScannerActivity extends Activity implements QrScannerContract.Vie
            * inventoryOrderItemEntity.getItemQuantity().intValue())
        .sum();
   }
-
-  /**
-   * Pass the proper transaction object to the PinConfirmationActivity which makes the payment
-   * @param qrCode - contains the required token to process payment
-   * @param saleItemList - items the customer bought
-   */
-  public void showPinConfirmationActivity(QrCode qrCode, List<SaleItem> saleItemList) {
-
-    Bundle bundle = new Bundle();
-    bundle.putByteArray(QrType.class.getSimpleName(), QrType.ADAPTER.encode(qrCode.qr_type));
-    if (qrCode.qr_type == QrType.DYNAMIC) {
-      bundleDynamicTransaction(qrCode, bundle);
-    } else {
-      bundleStaticTransaction(qrCode, saleItemList, bundle);
-    }
-    Intent intent = new Intent(QrScannerActivity.this, PinConfirmationActivity.class);
-    intent.putExtra(getString(R.string.bundle_id_sale_summary), bundle);
-    startActivity(intent);
-  }
-
-  /**
-   * Create the bundle for static and inventory static transactions
-   * @param qrCode - contains the required token to process payment
-   * @param saleItemList -
-   *                     inventory static : items the customer bought
-   *                     static : empty list
-   * @param bundle - holds the token and items
-   */
-  private void bundleStaticTransaction(QrCode qrCode, List<SaleItem> saleItemList, Bundle bundle) {
-    InitiateStaticTransactionRequest initiateStaticTransactionRequest =
-        new InitiateStaticTransactionRequest.Builder()
-            .sale_items(saleItemList)
-            .qr_token(qrCode.qr_token)
-            .build();
-    bundle.putByteArray(
-        InitiateStaticTransactionRequest.class.getSimpleName(),
-        InitiateStaticTransactionRequest.ADAPTER.encode(initiateStaticTransactionRequest));
-  }
-
-  /**
-   * Create the bundle for dynamic transactions
-   * @param qrCode - contains the required token to process payment
-   * @param bundle - holds the token and items
-   */
-  private void bundleDynamicTransaction(QrCode qrCode, Bundle bundle) {
-    AcceptTransactionRequest acceptTransactionRequest =
-        new AcceptTransactionRequest.Builder()
-            .idempotence_token(UUID.randomUUID().toString())
-            .qr_token(qrCode.qr_token)
-            .build();
-    bundle.putByteArray(
-        AcceptTransactionRequest.class.getSimpleName(),
-        AcceptTransactionRequest.ADAPTER.encode(acceptTransactionRequest));
-  }
-
 }

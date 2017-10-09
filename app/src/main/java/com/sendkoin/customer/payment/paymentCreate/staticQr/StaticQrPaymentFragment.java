@@ -14,6 +14,7 @@ import com.sendkoin.api.QrCode;
 import com.sendkoin.api.SaleItem;
 import com.sendkoin.customer.R;
 import com.sendkoin.customer.payment.paymentCreate.QrScannerActivity;
+import com.sendkoin.customer.payment.paymentCreate.QrScannerContract;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -35,6 +36,12 @@ public class StaticQrPaymentFragment extends android.app.Fragment {
   @BindView(R.id.merchant_logo) AvatarView merchantLogo;
   @BindView(R.id.enter_sales) EditText enterSaleAmount;
   private QrCode qrCode;
+  private QrScannerContract.Presenter presenter;
+
+
+  public StaticQrPaymentFragment(QrScannerContract.Presenter presenter) {
+    this.presenter = presenter;
+  }
 
   @Nullable
   @Override
@@ -83,7 +90,7 @@ public class StaticQrPaymentFragment extends android.app.Fragment {
 
     // process payment
     int saleAmount = Integer.parseInt(enterSaleAmount.getText().toString());
-    ((QrScannerActivity) getActivity()).showPinConfirmationActivity(
+    presenter.createInitiateTransactionRequest(
         qrCode,
         Collections.singletonList(
             new SaleItem.Builder()

@@ -15,6 +15,7 @@ import com.sendkoin.api.SaleItem;
 import com.sendkoin.customer.R;
 import com.sendkoin.customer.payment.paymentCreate.PaymentFragment;
 import com.sendkoin.customer.payment.paymentCreate.QrScannerActivity;
+import com.sendkoin.customer.payment.paymentCreate.QrScannerContract;
 import com.sendkoin.sql.entities.InventoryOrderItemEntity;
 
 import java.io.IOException;
@@ -46,7 +47,11 @@ public class ConfirmOrderFragment extends PaymentFragment {
   private ConfirmOrderRecyclerViewAdapter confirmOrderAdapter;
   private List<InventoryOrderItemEntity> inventoryOrderEntities;
   private QrCode qrCode;
+  private QrScannerContract.Presenter presenter;
 
+  public ConfirmOrderFragment(QrScannerContract.Presenter presenter) {
+    this.presenter = presenter;
+  }
 
   @Nullable
   @Override
@@ -79,7 +84,7 @@ public class ConfirmOrderFragment extends PaymentFragment {
   @OnClick(R.id.confirm_order_pay_layout)
   void clickedPay() {
     List<SaleItem> saleItems = convertPaymentEntitiesToSaleItems();
-    qrScannerActivity.showPinConfirmationActivity(qrCode, saleItems);
+   presenter.createInitiateTransactionRequest(qrCode, saleItems);
   }
 
   private List<SaleItem> convertPaymentEntitiesToSaleItems() {

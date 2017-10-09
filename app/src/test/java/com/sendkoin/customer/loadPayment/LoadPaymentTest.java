@@ -3,15 +3,10 @@ package com.sendkoin.customer.loadPayment;
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.google.common.collect.Ordering;
-import com.sendkoin.api.QrCode;
-import com.sendkoin.api.QrType;
-import com.sendkoin.api.SaleItem;
-import com.sendkoin.api.Transaction;
 import com.sendkoin.customer.DaggerKoinTestComponent;
-import com.sendkoin.customer.data.FakePaymentService;
 import com.sendkoin.customer.KoinTestModule;
 import com.sendkoin.customer.MiscGenerator;
-import com.sendkoin.customer.createPayment.QRPaymentTestModule;
+import com.sendkoin.customer.createPayment.CreatePaymentTestModule;
 import com.sendkoin.customer.RxSchedulersOverrideRule;
 import com.sendkoin.customer.data.payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.payment.paymentCreate.QrScannerContract;
@@ -27,9 +22,6 @@ import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -50,7 +42,6 @@ public class LoadPaymentTest {
   @Captor ArgumentCaptor<List<PaymentEntity>> argumentCaptor;
   @Inject MainPaymentContract.View view;
   @Inject MainPaymentContract.Presenter mainPaymentPresenter;
-  @Inject QrScannerContract.Presenter qrScannerPresenter;
   @Inject LocalPaymentDataStore localPaymentDataStore;
   @Inject MiscGenerator miscGenerator;
 
@@ -61,10 +52,10 @@ public class LoadPaymentTest {
             .koinTestModule(new KoinTestModule())
             .build())
         .loadPaymentTestModule(new LoadPaymentTestModule(mock(MainPaymentContract.View.class)))
-        .qRPaymentTestModule(new QRPaymentTestModule(mock(QrScannerContract.View.class)))
         .build()
         .inject(this);
     MockitoAnnotations.initMocks(this);
+    // make the fake remote DB
     miscGenerator.createTransactionHash();
     localPaymentDataStore.clearDB();
   }

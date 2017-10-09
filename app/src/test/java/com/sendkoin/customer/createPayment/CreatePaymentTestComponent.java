@@ -11,7 +11,7 @@ import dagger.Component;
 @CustomScope
 @Component(
     dependencies = KoinTestComponent.class,
-    modules = QRPaymentTestModule.class)
-public interface QRPaymentTestComponent {
-  void inject (QRPaymentTest qrPaymentTest);
+    modules = CreatePaymentTestModule.class)
+public interface CreatePaymentTestComponent {
+  void inject (CreatePaymentTest createPaymentTest);
 }

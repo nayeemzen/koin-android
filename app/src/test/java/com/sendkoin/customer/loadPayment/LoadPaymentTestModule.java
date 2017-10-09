@@ -1,5 +1,6 @@
 package com.sendkoin.customer.loadPayment;
 
+import com.sendkoin.customer.data.FakePaymentService;
 import com.sendkoin.customer.data.dagger.CustomScope;
 import com.sendkoin.customer.data.payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.data.payments.PaymentRepository;
@@ -9,6 +10,7 @@ import com.sendkoin.customer.payment.paymentList.MainPaymentPresenter;
 
 import dagger.Module;
 import dagger.Provides;
+import retrofit2.Retrofit;
 
 /**
  * Created by warefhaque on 6/15/17.
@@ -21,6 +23,12 @@ public class LoadPaymentTestModule {
 
   public LoadPaymentTestModule(MainPaymentContract.View view) {
     this.view = view;
+  }
+
+  @Provides
+  @CustomScope
+  public PaymentService providesFakePaymentService () {
+    return new FakePaymentService();
   }
 
   @Provides

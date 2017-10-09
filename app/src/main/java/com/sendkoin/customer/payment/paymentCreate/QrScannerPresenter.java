@@ -1,10 +1,16 @@
 package com.sendkoin.customer.payment.paymentCreate;
 
 
+import android.os.Bundle;
 import android.util.Log;
 
 import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
+import com.sendkoin.api.AcceptTransactionRequest;
 import com.sendkoin.api.GetInventoryResponse;
+import com.sendkoin.api.InitiateStaticTransactionRequest;
+import com.sendkoin.api.QrCode;
+import com.sendkoin.api.QrType;
+import com.sendkoin.api.SaleItem;
 import com.sendkoin.api.Transaction;
 import com.sendkoin.customer.data.payments.InventoryService;
 import com.sendkoin.customer.data.payments.Local.LocalOrderDataStore;
@@ -12,6 +18,7 @@ import com.sendkoin.customer.data.payments.Models.inventory.InventoryItemLocal;
 import com.sendkoin.sql.entities.InventoryOrderItemEntity;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -155,6 +162,36 @@ public class QrScannerPresenter implements QrScannerContract.Presenter {
     compositeSubscription.add(subscription);
   }
 
+  /**
+   * Create the proto for static and inventory static transactions
+   * @param qrCode - contains the required token to process payment
+   * @param saleItemList -
+   *                     inventory static : items the customer bought
+   *                     static : empty list
+   */
+  @Override
+  public void createInitiateTransactionRequest(QrCode qrCode, List<SaleItem> saleItemList) {
+    InitiateStaticTransactionRequest initiateStaticTransactionRequest =
+        new InitiateStaticTransactionRequest.Builder()
+            .sale_items(saleItemList)
+            .qr_token(qrCode.qr_token)
+            .build();
+    view.processStaticTransaction(initiateStaticTransactionRequest);
+  }
+
+  /**
+   * Create the proto for dynamic transactions
+   * @param qrCode - contains the required token to process payment
+   */
+  @Override
+  public void createAcceptTransactionRequest(QrCode qrCode) {
+    AcceptTransactionRequest acceptTransactionRequest =
+        new AcceptTransactionRequest.Builder()
+            .idempotence_token(UUID.randomUUID().toString())
+            .qr_token(qrCode.qr_token)
+            .build();
+    view.processDynamicTransaction(acceptTransactionRequest);
+  }
 
   @Override
   public void subscribe() {}

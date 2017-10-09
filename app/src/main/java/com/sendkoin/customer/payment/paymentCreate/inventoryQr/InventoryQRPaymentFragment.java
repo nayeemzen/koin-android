@@ -17,6 +17,7 @@ import com.sendkoin.customer.R;
 import com.sendkoin.customer.data.payments.Models.inventory.InventoryItemLocal;
 import com.sendkoin.customer.payment.paymentCreate.PaymentFragment;
 import com.sendkoin.customer.payment.paymentCreate.QrScannerActivity;
+import com.sendkoin.customer.payment.paymentCreate.QrScannerContract;
 import com.sendkoin.customer.payment.paymentCreate.inventoryQr.confirmOrder.ConfirmOrderFragment;
 import com.sendkoin.customer.payment.paymentCreate.inventoryQr.inventoryRecyclerView.InventoryRecyclerViewAdapter;
 import com.sendkoin.sql.entities.InventoryOrderItemEntity;
@@ -43,7 +44,11 @@ public class InventoryQRPaymentFragment extends PaymentFragment {
   QrScannerActivity qrScannerActivity;
   private InventoryRecyclerViewAdapter inventoryRecyclerViewAdapter;
   private QrCode qrCode;
+  private QrScannerContract.Presenter presenter;
 
+  public InventoryQRPaymentFragment(QrScannerContract.Presenter presenter) {
+    this.presenter = presenter;
+  }
 
   @Nullable
   @Override
@@ -89,7 +94,7 @@ public class InventoryQRPaymentFragment extends PaymentFragment {
    */
   @OnClick(R.id.checkout_total_order_layout)
   void clickedCheckout() {
-    ConfirmOrderFragment confirmOrderFragment = new ConfirmOrderFragment();
+    ConfirmOrderFragment confirmOrderFragment = new ConfirmOrderFragment(presenter);
     Bundle bundle = new Bundle();
     bundle.putByteArray(getString(R.string.qr_code_bundle_identifier), qrCode.encode());
     confirmOrderFragment.setArguments(bundle);
