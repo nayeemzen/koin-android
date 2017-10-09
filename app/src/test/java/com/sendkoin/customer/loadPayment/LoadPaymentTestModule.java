@@ -1,4 +1,4 @@
-package com.sendkoin.customer.LoadPayments;
+package com.sendkoin.customer.loadPayment;
 
 import com.sendkoin.customer.data.dagger.CustomScope;
 import com.sendkoin.customer.data.payments.Local.LocalPaymentDataStore;
@@ -31,10 +31,9 @@ public class LoadPaymentTestModule {
 
   @Provides
   @CustomScope
-  public MainPaymentContract.Presenter providesPresenter(
-      LocalPaymentDataStore localPaymentDataStore,
-      PaymentRepository paymentRepository,
-      PaymentService paymentService){
+  public MainPaymentContract.Presenter providesPresenter(LocalPaymentDataStore localPaymentDataStore,
+                                                         PaymentRepository paymentRepository,
+                                                         PaymentService paymentService){
     return new MainPaymentPresenter(view, localPaymentDataStore, paymentRepository, paymentService);
   }
 

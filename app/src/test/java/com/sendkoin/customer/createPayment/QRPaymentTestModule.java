@@ -1,8 +1,8 @@
-package com.sendkoin.customer.QRPayment;
+package com.sendkoin.customer.createPayment;
 
 
-import com.sendkoin.customer.FakeInventoryService;
-import com.sendkoin.customer.FakePaymentService;
+import com.sendkoin.customer.data.FakeInventoryService;
+import com.sendkoin.customer.data.FakePaymentService;
 import com.sendkoin.customer.data.dagger.CustomScope;
 import com.sendkoin.customer.data.payments.InventoryService;
 import com.sendkoin.customer.data.payments.Local.LocalOrderDataStore;
@@ -48,8 +48,6 @@ public class QRPaymentTestModule {
                                                        LocalOrderDataStore localOrderDataStore){
     return new QrScannerPresenter(
         qrScannerView,
-        localPaymentDataStore,
-        paymentService,
         inventoryService,
         localOrderDataStore);
   }

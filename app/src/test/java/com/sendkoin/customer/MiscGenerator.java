@@ -1,24 +1,17 @@
 package com.sendkoin.customer;
 
-import android.text.format.DateFormat;
-
-import com.annimon.stream.Stream;
 import com.sendkoin.api.Merchant;
 import com.sendkoin.api.QrCode;
 import com.sendkoin.api.QrType;
 import com.sendkoin.api.SaleItem;
 import com.sendkoin.api.Transaction;
 import com.sendkoin.api.TransactionState;
-import com.sendkoin.sql.entities.PaymentEntity;
+import com.sendkoin.customer.data.FakePaymentService;
 
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 
 import static com.annimon.stream.Collectors.groupingBy;
-import static com.annimon.stream.Collectors.toList;
 
 /**
  * Miscellaneous Generator Class

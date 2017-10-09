@@ -1,4 +1,4 @@
-package com.sendkoin.customer;
+package com.sendkoin.customer.data;
 
 import com.sendkoin.api.GetInventoryResponse;
 import com.sendkoin.customer.data.payments.InventoryService;

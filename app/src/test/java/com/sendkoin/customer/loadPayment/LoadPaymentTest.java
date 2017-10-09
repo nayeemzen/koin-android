@@ -1,13 +1,17 @@
-package com.sendkoin.customer.LoadPayments;
+package com.sendkoin.customer.loadPayment;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+import com.google.common.collect.Ordering;
 import com.sendkoin.api.QrCode;
 import com.sendkoin.api.QrType;
 import com.sendkoin.api.SaleItem;
+import com.sendkoin.api.Transaction;
 import com.sendkoin.customer.DaggerKoinTestComponent;
-import com.sendkoin.customer.FakePaymentService;
+import com.sendkoin.customer.data.FakePaymentService;
 import com.sendkoin.customer.KoinTestModule;
 import com.sendkoin.customer.MiscGenerator;
-import com.sendkoin.customer.QRPayment.QRPaymentTestModule;
+import com.sendkoin.customer.createPayment.QRPaymentTestModule;
 import com.sendkoin.customer.RxSchedulersOverrideRule;
 import com.sendkoin.customer.data.payments.Local.LocalPaymentDataStore;
 import com.sendkoin.customer.payment.paymentCreate.QrScannerContract;
@@ -24,6 +28,8 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -60,52 +66,26 @@ public class LoadPaymentTest {
         .inject(this);
     MockitoAnnotations.initMocks(this);
     miscGenerator.createTransactionHash();
+    localPaymentDataStore.clearDB();
   }
 
+  /**
+   * When application not found -> ./gradlew clean test
+   * Tests if MainPresenter working properly
+   *  - calls "remote" server
+   *  - saves transactions in local db
+   *  - loads transactions from local db
+   *  - checks if new transactions appear first
+   */
   @Test
-  public void loadPayments() throws Exception {
-
-    //1. start with a fresh db
-    localPaymentDataStore.deleteAllPayments();
-    assert (localPaymentDataStore.getAllPayments().size() == 0);
-
-    //2. subscribe to the stream of items coming from the local DB
+  public void loadPayments() {
     mainPaymentPresenter.subscribe();
-    List<PaymentEntity> payments = new ArrayList<>();
-    // upon subscribing ou get a call back from the DB but DB is empty
-    verify(view).showPaymentItems(payments);
-
-    //3. "process" a fake transaction on the local DB
-    QrCode firstQrCode = miscGenerator.generateQRCode(QrType.DYNAMIC, "1");
-    List<SaleItem> firstSaleItems = miscGenerator.generateSaleItems();
-    qrScannerPresenter.acceptTransaction(firstQrCode, firstSaleItems);
-
-    // process another transaction on the local DB
-    QrCode secondQRCode = miscGenerator.generateQRCode(QrType.DYNAMIC, "2");
-    List<SaleItem> secondSaleItems = miscGenerator.generateSaleItems();
-    qrScannerPresenter.acceptTransaction(secondQRCode,secondSaleItems);
-
-    // EVERY TIME the DB changes you get a call back - RX MAGIC!!
-    // YOU must get 3 callbacks for 3 processed transactions otherwise something went wrong!
-    verify(view, times(3)).showPaymentItems(argumentCaptor.capture());
+    verify(view, times(2)).showPaymentItems(argumentCaptor.capture());
     List<PaymentEntity> paymentEntities = argumentCaptor.getValue();
+    List<Long> transactionTimes = Stream.of(paymentEntities)
+        .map(PaymentEntity::getCreatedAt)
+        .collect(Collectors.toList());
 
-    // 4. VERIFY the Transactions in DB are loaded in descending order like they
-    // are supposed to. Transaction with token  "2" has a higher timestamp!!
-    PaymentEntity paymentEntity = paymentEntities.get(0);
-    assert (paymentEntity
-        .getMerchantName()
-        .equals(FakePaymentService
-            .paymentEntityLinkedHashMap.get(secondQRCode.qr_token)
-            .merchant
-            .store_name));
-
-    PaymentEntity paymentEntity2 = paymentEntities.get(1);
-    assert (paymentEntity2
-        .getMerchantName()
-        .equals(FakePaymentService
-            .paymentEntityLinkedHashMap.get(firstQrCode.qr_token)
-            .merchant
-            .store_name));
+    assert Ordering.natural().reverse().isOrdered(transactionTimes);
   }
 }

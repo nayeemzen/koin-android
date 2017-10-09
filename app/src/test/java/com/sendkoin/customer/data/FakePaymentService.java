@@ -1,5 +1,6 @@
-package com.sendkoin.customer;
+package com.sendkoin.customer.data;
 
+import com.annimon.stream.Stream;
 import com.sendkoin.api.AcceptTransactionRequest;
 import com.sendkoin.api.AcceptTransactionResponse;
 import com.sendkoin.api.InitiateStaticTransactionRequest;
@@ -13,6 +14,7 @@ import com.sendkoin.api.TransactionDetail;
 import com.sendkoin.customer.data.payments.PaymentService;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 
 import retrofit2.http.Body;
@@ -32,7 +34,7 @@ public class FakePaymentService implements PaymentService {
       @Query("page") int pageNumber) {
 
     ListTransactionsResponse listTransactionsResponse = new ListTransactionsResponse.Builder()
-        .transactions(new ArrayList<>())
+        .transactions(new ArrayList<>(paymentEntityLinkedHashMap.values()))
         .has_next_page(false)
         .build();
 

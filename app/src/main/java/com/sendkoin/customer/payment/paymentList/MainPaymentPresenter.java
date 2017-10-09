@@ -126,8 +126,7 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
    */
   private Observable<ListTransactionsResponse> fetchTransactions(QueryParameters queryParameters,
                                                                  int pageNumber) {
-    // TODO(waref): Use authenticator and interceptor in OkHttp. Don't pass authentication header
-    // directly in retrofit.
+
     return paymentRepository
         .getAllPayments(paymentService, queryParameters, pageNumber)
         .subscribeOn(Schedulers.io())

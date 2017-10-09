@@ -91,7 +91,7 @@ public class QrScannerActivity extends Activity implements QrScannerContract.Vie
     DaggerQrScannerComponent.builder().netComponent(((KoinApplication) getApplication()
         .getApplicationContext())
         .getNetComponent())
-        .qRPaymentModule(new QrScannerModule(this))
+        .qrScannerModule(new QrScannerModule(this))
         .build()
         .inject(this);
   }

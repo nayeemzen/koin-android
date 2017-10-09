@@ -1,5 +1,7 @@
 package com.sendkoin.customer;
 
+import android.app.Application;
+
 import com.google.gson.Gson;
 import com.sendkoin.customer.data.payments.Local.LocalOrderDataStore;
 import com.sendkoin.customer.data.payments.Local.LocalPaymentDataStore;
@@ -16,5 +18,5 @@ public interface KoinTestComponent {
   LocalPaymentDataStore localPaymentDataStore();
   LocalOrderDataStore localOrderDataStore();
   MiscGenerator miscGenerator();
-  Gson gson();
+  Application application();
 }

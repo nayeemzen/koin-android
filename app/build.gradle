@@ -61,6 +61,9 @@ android {
         main.java.srcDirs += wireGeneratedPath
         main.java.srcDirs += sqlGeneratedPath
     }
+    configurations.all {
+        resolutionStrategy.force 'com.google.guava:guava:23.1-android'
+    }
 }
 
 dependencies {
@@ -68,6 +71,7 @@ dependencies {
 
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.google.code.findbugs'
     })
 
     compile 'com.android.support:appcompat-v7:25.3.1'
@@ -84,8 +88,7 @@ dependencies {
     androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
     // Roboelectric
-    testCompile 'org.robolectric:robolectric:3.3.2'
-    // AssertJ
+    testCompile "org.robolectric:robolectric:3.4.2"    // AssertJ
     testCompile 'org.assertj:assertj-core:3.6.2'
 
     // AndroidSwipeLayout
@@ -180,12 +183,17 @@ dependencies {
         transitive = true
     }
 
+    //guava
+    compile 'com.google.guava:guava:23.1-android'
+
+
     compile 'uk.me.lewisdeane.ldialogs:ldialogs:1.2.0@aar'
 
 
 }
 
 // This handles the protocol buffer generation with wire
+//./gradlew generateWireClasses
 task generateWireClasses {
     description = 'Generate Java classes from protocol buffer (.proto) schema files for use with squareup\'s wire library'
     delete(wireGeneratedPath)

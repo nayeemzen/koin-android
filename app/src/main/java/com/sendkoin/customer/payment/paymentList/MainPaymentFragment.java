@@ -90,7 +90,7 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment
     setUpDagger();
     setupRecyclerView();
     listenForListScroll();
-//    localPaymentDataStore.deleteAllPayments();
+//    localPaymentDataStore.clearDB();
   }
 
   /**

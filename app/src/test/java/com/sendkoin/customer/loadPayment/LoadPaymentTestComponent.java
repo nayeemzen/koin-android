@@ -1,7 +1,7 @@
-package com.sendkoin.customer.LoadPayments;
+package com.sendkoin.customer.loadPayment;
 
 import com.sendkoin.customer.KoinTestComponent;
-import com.sendkoin.customer.QRPayment.QRPaymentTestModule;
+import com.sendkoin.customer.createPayment.QRPaymentTestModule;
 import com.sendkoin.customer.data.dagger.CustomScope;
 
 import dagger.Component;

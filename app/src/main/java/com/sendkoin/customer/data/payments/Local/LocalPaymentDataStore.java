@@ -117,7 +117,7 @@ public class LocalPaymentDataStore {
   }
 
 
-  public void deleteAllPayments() {
+  public void clearDB() {
     storIOSQLite.delete()
         .byQuery(DeleteQuery.builder().table(PaymentTable.TABLE).build())
         .prepare()

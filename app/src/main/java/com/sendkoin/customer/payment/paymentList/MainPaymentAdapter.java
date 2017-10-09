@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.sendkoin.api.Transaction;
 import com.sendkoin.customer.MainActivity;
 import com.sendkoin.customer.payment.paymentDetails.TransactionDetailsActivity;
 import com.sendkoin.customer.R;
@@ -167,7 +168,7 @@ public class MainPaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
   }
 
-  public abstract class ListItem {
+  public abstract class ListItem{
 
     public static final int TYPE_DATE = 0;
     public static final int TYPE_PAYMENT = 1;
