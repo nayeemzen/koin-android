@@ -52,7 +52,7 @@ public class StaticQrPaymentFragment extends android.app.Fragment {
     try {
       setUpArguments();
       ((QrScannerActivity) getActivity()).setUpLogo(merchantLogo, qrCode.merchant_name);
-      saleAmoutMessage.setText(getString(R.string.static_qr_message) + qrCode.merchant_name);
+      saleAmoutMessage.setText(getString(R.string.static_qr_message) + " " +qrCode.merchant_name);
     } catch (IOException e) {
       e.printStackTrace();
       Toast.makeText(getActivity(), "Unable to set up payment. Please try again.", Toast.LENGTH_SHORT).show();

@@ -25,8 +25,10 @@ public interface QrScannerContract {
     Context getContext();
     void showInventoryItems(List<Category> groupedInventoryItems);
     void handleOrderItems(List<InventoryOrderItemEntity> inventoryOrderEntities);
-    void processStaticTransaction(InitiateStaticTransactionRequest initiateStaticTransactionRequest);
-    void processDynamicTransaction(AcceptTransactionRequest acceptTransactionRequest);
+    void processStaticTransaction(InitiateStaticTransactionRequest initiateStaticTransactionRequest,
+                                  QrCode qrCode);
+    void processDynamicTransaction(AcceptTransactionRequest acceptTransactionRequest,
+                                   QrCode qrCode);
     void showOrderDeleted();
   }
 

@@ -33,6 +33,7 @@ android {
             def aptOutputDir = new File(buildDir, "generated/source/apt/${it.unitTestVariant.dirName}")
             it.unitTestVariant.addJavaSourceFoldersToModel(aptOutputDir)
         }
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -186,6 +187,7 @@ dependencies {
     //guava
     compile 'com.google.guava:guava:23.1-android'
 
+    compile 'com.android.support:multidex:1.0.1'
 
     compile 'uk.me.lewisdeane.ldialogs:ldialogs:1.2.0@aar'
 

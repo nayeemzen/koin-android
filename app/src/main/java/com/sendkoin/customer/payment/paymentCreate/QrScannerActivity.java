@@ -172,8 +172,10 @@ public class QrScannerActivity extends Activity implements QrScannerContract.Vie
   }
 
   @Override
-  public void processStaticTransaction(InitiateStaticTransactionRequest initiateStaticTransactionRequest) {
+  public void processStaticTransaction(InitiateStaticTransactionRequest initiateStaticTransactionRequest,
+                                       QrCode qrCode) {
     Bundle staticBundle = new Bundle();
+    staticBundle.putByteArray(QrType.class.getSimpleName(),QrType.ADAPTER.encode(qrCode.qr_type));
     staticBundle.putByteArray(
         InitiateStaticTransactionRequest.class.getSimpleName(),
         InitiateStaticTransactionRequest.ADAPTER.encode(initiateStaticTransactionRequest));
@@ -181,8 +183,10 @@ public class QrScannerActivity extends Activity implements QrScannerContract.Vie
   }
 
   @Override
-  public void processDynamicTransaction(AcceptTransactionRequest acceptTransactionRequest) {
+  public void processDynamicTransaction(AcceptTransactionRequest acceptTransactionRequest,
+                                        QrCode qrCode) {
     Bundle dynamicBundle = new Bundle();
+    dynamicBundle.putByteArray(QrType.class.getSimpleName(),QrType.ADAPTER.encode(qrCode.qr_type));
     dynamicBundle.putByteArray(
         AcceptTransactionRequest.class.getSimpleName(),
         AcceptTransactionRequest.ADAPTER.encode(acceptTransactionRequest));

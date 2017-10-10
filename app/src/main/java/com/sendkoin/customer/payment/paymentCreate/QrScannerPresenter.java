@@ -176,7 +176,7 @@ public class QrScannerPresenter implements QrScannerContract.Presenter {
             .sale_items(saleItemList)
             .qr_token(qrCode.qr_token)
             .build();
-    view.processStaticTransaction(initiateStaticTransactionRequest);
+    view.processStaticTransaction(initiateStaticTransactionRequest, qrCode);
   }
 
   /**
@@ -190,7 +190,7 @@ public class QrScannerPresenter implements QrScannerContract.Presenter {
             .idempotence_token(UUID.randomUUID().toString())
             .qr_token(qrCode.qr_token)
             .build();
-    view.processDynamicTransaction(acceptTransactionRequest);
+    view.processDynamicTransaction(acceptTransactionRequest, qrCode);
   }
 
   @Override

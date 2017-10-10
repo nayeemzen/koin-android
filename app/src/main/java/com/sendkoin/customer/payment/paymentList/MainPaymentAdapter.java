@@ -133,7 +133,7 @@ public class MainPaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public void setItem(PaymentItem paymentItem) {
       paymentPlaceName.setText(paymentItem.paymentEntity.getMerchantName());
-      paymentPlaceType.setText(paymentItem.paymentEntity.getMerchantType());
+      paymentPlaceType.setText("#"+paymentItem.paymentEntity.getMerchantType());
       paymentAmount.setText("$" + paymentItem.paymentEntity.getAmount().intValue());
       merchantLogo.setBackgroundColor(Color.parseColor("#f2f2f2"));
       merchantLogo.setName(paymentItem.paymentEntity.getMerchantName());

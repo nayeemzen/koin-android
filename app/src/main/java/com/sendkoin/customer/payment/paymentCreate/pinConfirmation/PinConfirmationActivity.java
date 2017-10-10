@@ -115,16 +115,23 @@ public class PinConfirmationActivity extends AppLockActivity implements PinConfi
     if (getIntent().hasExtra(getString(R.string.bundle_id_sale_summary)) && pinSuccessCount == 1) {
       Bundle bundle = getIntent().getBundleExtra(getString(R.string.bundle_id_sale_summary));
 
-      showLoadingDialog();
+
       try {
-        QrType qrType = QrType.ADAPTER.decode(bundle.getByteArray(QrType.class.getSimpleName()));
-        if (qrType == QrType.DYNAMIC) {
-          processDynamicTransaction(bundle);
+        showLoadingDialog();
+        byte[] qrTypeByteArray= bundle.getByteArray(QrType.class.getSimpleName());
+        if (qrTypeByteArray != null){
+          QrType qrType = QrType.ADAPTER.decode(qrTypeByteArray);
+          if (qrType == QrType.DYNAMIC) {
+            processDynamicTransaction(bundle);
+          } else {
+            processStaticTransaction(bundle);
+          }
         } else {
-          processStaticTransaction(bundle);
+          showTransactionError("Local error. Please scan again");
         }
       } catch (IOException e) {
         e.printStackTrace();
+        showTransactionError("Local error. Please scan again");
       }
     }
   }
@@ -195,7 +202,14 @@ public class PinConfirmationActivity extends AppLockActivity implements PinConfi
 
   @Override
   public void showTransactionError(String errorMessage) {
-    Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+    pDialog
+        .setTitleText("Error")
+        .setContentText(errorMessage)
+        .setConfirmText("OK")
+        .setConfirmClickListener(sweetAlertDialog -> {
+          pDialog.dismissWithAnimation();
+        })
+        .changeAlertType(SweetAlertDialog.ERROR_TYPE);
   }
 
 }

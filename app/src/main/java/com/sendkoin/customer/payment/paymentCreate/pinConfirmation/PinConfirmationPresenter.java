@@ -77,8 +77,8 @@ public class PinConfirmationPresenter implements PinConfirmationContract.Present
 
           @Override
           public void onError(Throwable e) {
-            view.showTransactionError(getErrorMessage(e));
             Log.e(TAG, e.getMessage());
+            view.showTransactionError(getErrorMessage(e));
           }
 
           @Override
