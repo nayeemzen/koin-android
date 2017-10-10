@@ -47,17 +47,11 @@ public class MainPaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     List<ListItem> result = new ArrayList<>();
 
     for (String date : groupedHashMap.keySet()) {
-      DateItem dateItem = new DateItem();
-      dateItem.date = date;
+      DateItem dateItem = new DateItem().setDate(date);
       result.add(dateItem);
 
       for (PaymentEntity paymentEntity : groupedHashMap.get(date)) {
-        PaymentItem paymentItem = new PaymentItem()
-            .setPlaceName(paymentEntity.getMerchantName())
-            .setPlaceType(paymentEntity.getMerchantType())
-            .setTransactionToken(paymentEntity.getTransactionToken())
-            .setPaidAmount(Integer.toString(paymentEntity.getAmount().intValue()));
-
+        PaymentItem paymentItem = new PaymentItem().setPaymentEntity(paymentEntity);
         result.add(paymentItem);
       }
     }
@@ -67,7 +61,6 @@ public class MainPaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
   @Override
   public int getItemViewType(int position) {
-
     return groupedList.get(position).getType();
   }
 
@@ -106,12 +99,7 @@ public class MainPaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
       case ListItem.TYPE_PAYMENT:
         PaymentItem paymentItem = (PaymentItem) groupedList.get(position);
         PaymentHistoryViewHolder paymentHistoryViewHolder = (PaymentHistoryViewHolder) holder;
-        paymentHistoryViewHolder.paymentPlaceName.setText(paymentItem.placeName);
-        paymentHistoryViewHolder.paymentPlaceType.setText(paymentItem.placeType);
-        paymentHistoryViewHolder.paymentAmount.setText("$" + paymentItem.paidAmount);
-        paymentHistoryViewHolder.merchantLogo.setBackgroundColor(Color.parseColor("#f2f2f2"));
-        paymentHistoryViewHolder.merchantLogo.setName(paymentItem.placeName);
-        paymentHistoryViewHolder.merchantLogo.setTextColor(Color.parseColor("#37B3B8"));
+        paymentHistoryViewHolder.setItem(paymentItem);
         break;
       case ListItem.TYPE_DATE:
         DateItem dateItem = (DateItem) groupedList.get(position);
@@ -143,6 +131,15 @@ public class MainPaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
       itemView.setOnClickListener(this);
     }
 
+    public void setItem(PaymentItem paymentItem) {
+      paymentPlaceName.setText(paymentItem.paymentEntity.getMerchantName());
+      paymentPlaceType.setText(paymentItem.paymentEntity.getMerchantType());
+      paymentAmount.setText("$" + paymentItem.paymentEntity.getAmount().intValue());
+      merchantLogo.setBackgroundColor(Color.parseColor("#f2f2f2"));
+      merchantLogo.setName(paymentItem.paymentEntity.getMerchantName());
+      merchantLogo.setTextColor(Color.parseColor("#37B3B8"));
+    }
+
     @Override
     public void onClick(View view) {
       ListItem clickedItem = groupedList.get(getAdapterPosition());
@@ -151,7 +148,7 @@ public class MainPaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         Intent intent = new Intent(mainActivity, TransactionDetailsActivity.class);
         intent.putExtra(view.getContext()
-            .getString(R.string.trans_token_extra), paymentItem.getTransactionToken());
+            .getString(R.string.trans_token_extra), paymentItem.paymentEntity.getTransactionToken());
         mainActivity.startActivity(intent);
       }
     }
@@ -170,42 +167,18 @@ public class MainPaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
   public abstract class ListItem{
 
-    public static final int TYPE_DATE = 0;
-    public static final int TYPE_PAYMENT = 1;
+    static final int TYPE_DATE = 0;
+    static final int TYPE_PAYMENT = 1;
 
     public abstract int getType();
   }
   public class PaymentItem extends ListItem {
+    PaymentEntity paymentEntity;
 
-    public String placeName;
-    public String placeType;
-    public String paidAmount;
-    public String transactionToken;
-
-    public String getTransactionToken() {
-      return transactionToken;
-    }
-
-    public PaymentItem setTransactionToken(String transactionToken) {
-      this.transactionToken = transactionToken;
+    public PaymentItem setPaymentEntity(PaymentEntity paymentEntity) {
+      this.paymentEntity = paymentEntity;
       return this;
     }
-
-    public PaymentItem setPlaceName(String placeName) {
-      this.placeName = placeName;
-      return this;
-    }
-
-    public PaymentItem setPlaceType(String placeType) {
-      this.placeType = "#" + placeType;
-      return this;
-    }
-
-    public PaymentItem setPaidAmount(String paidAmount) {
-      this.paidAmount = paidAmount;
-      return this;
-    }
-
 
     @Override
     public int getType() {
@@ -214,8 +187,12 @@ public class MainPaymentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
   }
 
   public class DateItem extends ListItem {
-
     String date;
+
+    public DateItem setDate(String date) {
+      this.date = date;
+      return this;
+    }
 
     @Override
     public int getType() {
