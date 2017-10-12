@@ -15,7 +15,6 @@ public interface MainPaymentContract {
   interface View {
     /**
      * Pass the list of user's past payments after they have been saved locally
-     * @param payments list of payments
      */
     void showPaymentItems(List<PaymentEntity> payments);
     Context getApplicationContext();

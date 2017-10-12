@@ -40,9 +40,7 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Created by warefhaque on 5/20/17.
- */
+
 @Module
 public class NetModule {
   private static final String AUTHORIZATION = "Authorization";

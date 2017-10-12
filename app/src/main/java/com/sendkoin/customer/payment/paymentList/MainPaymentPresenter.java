@@ -140,6 +140,9 @@ public class MainPaymentPresenter implements MainPaymentContract.Presenter {
         });
   }
 
+  /**
+   * Load from local DB
+   */
   private void loadTransactionsFromStorIO() {
     Subscription subscription = localPaymentDataStore.getAllTransactions()
         .subscribeOn(Schedulers.io())

@@ -76,7 +76,7 @@ public class CreatePaymentTest {
     //1. initiate the transaction after entering amount
     presenter.createInitiateTransactionRequest(qrCode,saleItems);
     //2. verify correct proto object created and passed to PinConfirmationActivity
-    verify(view).processStaticTransaction(initiateStaticTransactionRequest);
+    verify(view).processStaticTransaction(initiateStaticTransactionRequest,qrCode);
     //3. correct pin entered - process the payment
     pinConfirmationPresenter.processStaticTransactionRequest(initiateStaticTransactionRequest);
     //4. payment complete
@@ -108,7 +108,7 @@ public class CreatePaymentTest {
     //3. initiate the transaction after entering amount
     presenter.createInitiateTransactionRequest(qrCode,saleItems);
     //4. verify correct proto object created and passed to PinConfirmationActivity
-    verify(view).processStaticTransaction(initiateStaticTransactionRequest);
+    verify(view).processStaticTransaction(initiateStaticTransactionRequest,qrCode);
     //5. correct pin entered - process the payment
     pinConfirmationPresenter.processStaticTransactionRequest(initiateStaticTransactionRequest);
     //6. payment complete

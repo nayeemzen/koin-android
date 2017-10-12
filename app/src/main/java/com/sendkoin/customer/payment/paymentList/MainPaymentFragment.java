@@ -48,8 +48,6 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment
     implements MainPaymentContract.View {
 
   @Inject MainPaymentContract.Presenter mPresenter;
-  @Inject Gson mGson;
-  @Inject LocalPaymentDataStore localPaymentDataStore;
 
   @BindView(R.id.fab_create_payment) FloatingActionButton mFabCreatePayment;
   @BindView(R.id.recycler_view_main_payment) RecyclerView mRecyclerView;
@@ -61,28 +59,6 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment
   private Unbinder mUnbinder;
   private MainPaymentAdapter mMainPaymentAdapter;
   private int mVisibleThreshold = 1; // for the scrolling detector
-
-  /**
-   * Show and hide the RecyclerView accordingly
-   */
-  private enum UIState {
-    PAYMENTS,
-    NO_PAYMENTS
-  }
-
-  public void setUiState(UIState uiState) {
-    switch (uiState) {
-      case PAYMENTS:
-        mTextNotPayments.setVisibility(View.GONE);
-        mRecyclerView.setVisibility(View.VISIBLE);
-        break;
-      case NO_PAYMENTS:
-        mTextNotPayments.setText(R.string.no_transactions);
-        mTextNotPayments.setVisibility(View.VISIBLE);
-        break;
-
-    }
-  }
 
   @Override
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -254,6 +230,29 @@ public class MainPaymentFragment extends android.support.v4.app.Fragment
       }
     });
   }
+
+  /**
+   * Show and hide the RecyclerView accordingly
+   */
+  private enum UIState {
+    PAYMENTS,
+    NO_PAYMENTS
+  }
+
+  public void setUiState(UIState uiState) {
+    switch (uiState) {
+      case PAYMENTS:
+        mTextNotPayments.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.VISIBLE);
+        break;
+      case NO_PAYMENTS:
+        mTextNotPayments.setText(R.string.no_transactions);
+        mTextNotPayments.setVisibility(View.VISIBLE);
+        break;
+
+    }
+  }
+
 
 
 }
