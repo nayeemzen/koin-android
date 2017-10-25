@@ -11,8 +11,17 @@ QR Code based Mobile Wallet
    * Dynamic Qr codes - scan the Qr from the merchant application and hit "Pay"
    * Inventory Qr codes - scan the Qr code, select from a range of items on the menu and hit "Pay"
 
+### Architecture
+
+![alt text](https://cms-assets.tutsplus.com/uploads/users/1308/posts/26206/image/MVP-Android.png)
+
+  - **Seperation of concerns** : MVP provides a layer of abstraction between the business logic (presenter), view logic (activity,fragment etc.) and the data (models) so that they are not coupled to one another and allow for dependency-inversion.
+  - **Testing** : Because the presenter, view, and model are independent and interact via interfaces they can be tested independently by creating fakes and mocks.
+
+
 ### Models
-[Protocol Buffers](https://github.com/google/protobuf) is an interface definition language that is used here to represent the models and Data Transfer Objects (DTO). This makes the DTOs platform independent with minimal boilerplate code.
+ - [Protocol Buffers](https://github.com/google/protobuf) is an interface definition language that is used here to represent some of the models and Data Transfer Objects (DTO). This makes the DTOs platform independent with minimal boilerplate code.
+ - [Storio](https://github.com/pushtorefresh/storio) is the local DB used the generated classes are used for the remaining models.
 
 
 ### Dependencies

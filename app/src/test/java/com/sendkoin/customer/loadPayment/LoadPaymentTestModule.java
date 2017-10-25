@@ -12,9 +12,6 @@ import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
 
-/**
- * Created by warefhaque on 6/15/17.
- */
 
 @Module
 public class LoadPaymentTestModule {

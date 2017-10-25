@@ -8,6 +8,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/place_holder"
         android:layout_centerInParent="true"
-        android:text="Hey, I am Main TRANSFER Fragment"/>
+        android:text="Rewards coming soon!"/>
 
 </RelativeLayout>

@@ -23,9 +23,6 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
 
-/**
- * Created by warefhaque on 6/14/17.
- */
 
 public class FakePaymentService implements PaymentService {
   public static LinkedHashMap<String,Transaction> paymentEntityLinkedHashMap = new LinkedHashMap<>();
